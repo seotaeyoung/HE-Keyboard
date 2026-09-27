@@ -1,0 +1,5531 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>HE Keyboard</title>
+
+<style>
+:root {
+    --bg: #080b10;
+    --panel: #0d1118;
+    --panel2: #111722;
+    --panel3: #151c28;
+
+    --border: #202938;
+    --border-light: #2c374a;
+
+    --text: #e7eaf0;
+    --sub: #818b9d;
+
+    --purple: #8b5cf6;
+    --purple2: #a78bfa;
+
+    --green: #4ade80;
+    --orange: #fb923c;
+    --red: #fb7185;
+    --cyan: #22d3ee;
+
+    --sidebar-open: 230px;
+    --sidebar-closed: 64px;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+html,
+body {
+    margin: 0;
+    width: 100%;
+    height: 100%;
+
+    background: var(--bg);
+    color: var(--text);
+
+    font-family:
+        "Cascadia Code",
+        "JetBrains Mono",
+        "Consolas",
+        monospace;
+}
+
+body {
+    overflow: hidden;
+
+    background:
+        linear-gradient(
+            rgba(255,255,255,0.015) 1px,
+            transparent 1px
+        ),
+        linear-gradient(
+            90deg,
+            rgba(255,255,255,0.015) 1px,
+            transparent 1px
+        ),
+        var(--bg);
+
+    background-size: 24px 24px;
+}
+
+button,
+input,
+select {
+    font-family: inherit;
+}
+
+
+/* =========================================================
+   APP
+========================================================= */
+
+.app {
+    height: 100vh;
+
+    display: grid;
+
+    grid-template-columns:
+        var(--sidebar-open)
+        minmax(0, 1fr);
+
+    transition:
+        grid-template-columns 0.2s ease;
+}
+
+.app.sidebar-collapsed {
+    grid-template-columns:
+        var(--sidebar-closed)
+        minmax(0, 1fr);
+}
+
+
+/* =========================================================
+   SIDEBAR
+========================================================= */
+
+.sidebar {
+    position: relative;
+
+    min-width: 0;
+
+    background:
+        rgba(9, 13, 20, 0.98);
+
+    border-right:
+        1px solid var(--border);
+
+    display: flex;
+    flex-direction: column;
+
+    padding: 16px;
+
+    overflow: hidden;
+}
+
+.sidebar-header {
+    display: flex;
+    align-items: center;
+
+    height: 36px;
+
+    margin-bottom: 18px;
+}
+
+.brand {
+    white-space: nowrap;
+
+    font-size: 18px;
+    font-weight: 700;
+
+    letter-spacing: 1px;
+}
+
+.brand span {
+    color: var(--purple2);
+}
+
+.brand-short {
+    display: none;
+
+    color: var(--purple2);
+
+    font-size: 17px;
+
+    font-weight: 800;
+}
+
+.sidebar-collapsed .brand {
+    display: none;
+}
+
+.sidebar-collapsed .brand-short {
+    display: block;
+}
+
+.device-card {
+    background: var(--panel);
+
+    border:
+        1px solid var(--border);
+
+    padding: 12px;
+
+    margin-bottom: 18px;
+}
+
+.device-title {
+    display: flex;
+    align-items: center;
+
+    gap: 8px;
+
+    white-space: nowrap;
+
+    font-size: 12px;
+}
+
+.status-dot {
+    width: 8px;
+    height: 8px;
+
+    min-width: 8px;
+
+    border-radius: 50%;
+
+    background: var(--green);
+
+    box-shadow:
+        0 0 8px var(--green);
+}
+
+.device-small {
+    color: var(--sub);
+
+    font-size: 9px;
+
+    line-height: 1.8;
+
+    margin-top: 9px;
+
+    white-space: nowrap;
+}
+
+.sidebar-collapsed .device-card {
+    padding: 10px;
+
+    display: flex;
+    justify-content: center;
+}
+
+.sidebar-collapsed .device-title span,
+.sidebar-collapsed .device-small {
+    display: none;
+}
+
+.nav-title {
+    color: #556073;
+
+    font-size: 9px;
+
+    margin-bottom: 7px;
+}
+
+.sidebar-collapsed .nav-title {
+    display: none;
+}
+
+.nav-button {
+    width: 100%;
+    height: 42px;
+
+    border: none;
+
+    border-radius: 6px;
+
+    background: transparent;
+
+    color: #9da7b9;
+
+    cursor: pointer;
+
+    display: flex;
+    align-items: center;
+
+    padding: 0 10px;
+
+    margin-bottom: 4px;
+
+    text-align: left;
+}
+
+.nav-button:hover {
+    color: white;
+
+    background: #121824;
+}
+
+.nav-button.active {
+    color: #d4c8ff;
+
+    background:
+        rgba(139,92,246,0.18);
+}
+
+.nav-symbol {
+    width: 28px;
+
+    min-width: 28px;
+
+    color: var(--purple2);
+
+    font-weight: bold;
+
+    text-align: center;
+}
+
+.nav-name {
+    margin-left: 4px;
+
+    white-space: nowrap;
+}
+
+.sidebar-collapsed .nav-button {
+    padding: 0;
+
+    justify-content: center;
+}
+
+.sidebar-collapsed .nav-symbol {
+    width: auto;
+
+    font-size: 15px;
+}
+
+.sidebar-collapsed .nav-name {
+    display: none;
+}
+
+.sidebar-bottom {
+    margin-top: auto;
+}
+
+.sidebar-collapsed .sidebar-bottom {
+    display: none;
+}
+
+.unsaved {
+    color: #647084;
+
+    font-size: 9px;
+
+    margin-bottom: 8px;
+}
+
+.save-button {
+    width: 100%;
+
+    border:
+        1px solid #7948e2;
+
+    background: #7037e9;
+
+    color: white;
+
+    padding: 10px;
+
+    border-radius: 5px;
+
+    cursor: pointer;
+}
+
+
+/* =========================================================
+   MAIN
+========================================================= */
+
+.main {
+    min-width: 0;
+
+    display: flex;
+    flex-direction: column;
+}
+
+.topbar {
+    height: 56px;
+
+    flex: 0 0 56px;
+
+    border-bottom:
+        1px solid var(--border);
+
+    background:
+        rgba(8, 11, 16, 0.93);
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    padding: 0 20px;
+}
+
+.topbar-left {
+    display: flex;
+    align-items: center;
+
+    gap: 13px;
+}
+
+.sidebar-toggle {
+    width: 34px;
+    height: 32px;
+
+    border:
+        1px solid var(--border);
+
+    background: var(--panel);
+
+    color: #b7c0ce;
+
+    cursor: pointer;
+
+    border-radius: 5px;
+
+    font-size: 16px;
+}
+
+.sidebar-toggle:hover {
+    border-color: #5e477e;
+
+    color: white;
+}
+
+.breadcrumb {
+    color: var(--sub);
+
+    font-size: 11px;
+}
+
+.breadcrumb strong {
+    color: #cabdff;
+}
+
+.top-status {
+    display: flex;
+    align-items: center;
+
+    gap: 8px;
+
+    color: #778196;
+
+    font-size: 10px;
+}
+
+.content {
+    min-height: 0;
+
+    flex: 1;
+
+    overflow-y: auto;
+
+    padding: 20px;
+}
+
+.page {
+    display: none;
+}
+
+.page.active {
+    display: block;
+}
+
+
+/* =========================================================
+   COMMON
+========================================================= */
+
+.page-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+
+    margin-bottom: 17px;
+}
+
+.page-title {
+    font-size: 29px;
+
+    font-weight: 700;
+
+    margin-bottom: 5px;
+}
+
+.page-description {
+    font-size: 11px;
+
+    color: var(--sub);
+}
+
+.terminal-command {
+    border:
+        1px solid var(--border);
+
+    background: var(--panel);
+
+    color: #687487;
+
+    padding: 8px 11px;
+
+    font-size: 10px;
+}
+
+.terminal-command span {
+    color: var(--purple2);
+}
+
+.panel {
+    background:
+        rgba(13, 17, 24, 0.95);
+
+    border:
+        1px solid var(--border);
+
+    border-radius: 7px;
+
+    padding: 14px;
+
+    min-width: 0;
+}
+
+.panel-title {
+    color: #c7cfdb;
+
+    font-size: 11px;
+
+    margin-bottom: 12px;
+
+    font-weight: 600;
+}
+
+.small-text {
+    color: var(--sub);
+
+    font-size: 9px;
+}
+
+
+/* =========================================================
+   HOME
+========================================================= */
+
+.home-grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(4, minmax(0, 1fr));
+
+    gap: 12px;
+
+    margin-bottom: 12px;
+}
+
+.info-card {
+    min-height: 125px;
+
+    background: var(--panel);
+
+    border:
+        1px solid var(--border);
+
+    border-radius: 7px;
+
+    padding: 14px;
+}
+
+.info-label {
+    color: #687387;
+
+    font-size: 9px;
+
+    margin-bottom: 11px;
+}
+
+.info-value {
+    font-size: 20px;
+
+    color: #d9deea;
+
+    margin-bottom: 7px;
+}
+
+.info-value.good {
+    color: var(--green);
+}
+
+.info-value.purple {
+    color: #c7b7ff;
+}
+
+.info-sub {
+    color: #717b8d;
+
+    font-size: 9px;
+
+    line-height: 1.6;
+}
+
+.home-wide-grid {
+    display: grid;
+
+    grid-template-columns:
+        minmax(0, 1.5fr)
+        minmax(300px, 1fr);
+
+    gap: 12px;
+}
+
+.readonly-table {
+    width: 100%;
+
+    border-collapse: collapse;
+
+    font-size: 10px;
+}
+
+.readonly-table td {
+    padding: 9px 4px;
+
+    border-bottom:
+        1px solid #161e2a;
+}
+
+.readonly-table td:first-child {
+    color: #687387;
+}
+
+.readonly-table td:last-child {
+    text-align: right;
+
+    color: #d7dce7;
+}
+
+
+/* =========================================================
+   KEYS HEADER CONTROLS
+========================================================= */
+
+.keys-meta {
+    display: grid;
+
+    grid-template-columns:
+        minmax(0, 1fr)
+        auto
+        auto;
+
+    gap: 10px;
+
+    margin-bottom: 12px;
+}
+
+.profile-strip,
+.performance-strip {
+    display: flex;
+
+    align-items: center;
+
+    gap: 6px;
+
+    background: var(--panel);
+
+    border:
+        1px solid var(--border);
+
+    padding: 8px;
+
+    border-radius: 6px;
+}
+
+.meta-label {
+    color: #667185;
+
+    font-size: 9px;
+
+    margin-right: 5px;
+}
+
+.profile-button {
+    border:
+        1px solid var(--border);
+
+    background: #101621;
+
+    color: #788397;
+
+    padding: 7px 11px;
+
+    cursor: pointer;
+
+    font-size: 9px;
+}
+
+.profile-button.active {
+    border-color: var(--purple);
+
+    color: white;
+
+    background:
+        rgba(139,92,246,0.17);
+}
+
+.polling-select {
+    background: #101621;
+
+    border:
+        1px solid var(--border);
+
+    color: white;
+
+    padding: 6px 8px;
+
+    font-size: 9px;
+}
+
+
+/* =========================================================
+   KEYS LAYOUT
+========================================================= */
+
+.keys-grid {
+    display: grid;
+
+    grid-template-columns:
+        minmax(0, 1fr)
+        270px;
+
+    gap: 12px;
+}
+
+
+/* =========================================================
+   KEYBOARD
+========================================================= */
+
+.keyboard-panel {
+    min-width: 0;
+}
+
+.keyboard-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    margin-bottom: 11px;
+}
+
+.legend {
+    display: flex;
+
+    gap: 12px;
+
+    color: #626d80;
+
+    font-size: 8px;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+
+    gap: 5px;
+}
+
+.legend-square {
+    width: 8px;
+    height: 8px;
+
+    border:
+        1px solid #3c4657;
+
+    background: #151c27;
+}
+
+.legend-square.hall {
+    border-color: var(--purple);
+}
+
+.legend-square.mechanical {
+    background: #0d1218;
+
+    border-color: #303746;
+}
+
+.segmented {
+    display: flex;
+
+    border:
+        1px solid var(--border);
+
+    background: #0a0e14;
+}
+
+.segmented button {
+    border: none;
+
+    background: transparent;
+
+    color: #6c7688;
+
+    padding: 7px 12px;
+
+    cursor: pointer;
+
+    font-size: 9px;
+}
+
+.segmented button.active {
+    background: #32186a;
+
+    color: white;
+}
+
+.keyboard-stage {
+    width: 100%;
+
+    background: #090d13;
+
+    border:
+        1px solid #1b2431;
+
+    border-radius: 5px;
+
+    padding: 10px;
+}
+
+
+/* =========================================================
+   FUNCTION ROW
+========================================================= */
+
+.function-row {
+    display: grid;
+
+    grid-template-columns:
+        repeat(19, minmax(0, 1fr));
+
+    gap: 3px;
+
+    margin-bottom: 10px;
+}
+
+.function-space {
+    min-width: 0;
+}
+
+
+/* =========================================================
+   KEYBOARD BODY
+========================================================= */
+
+.keyboard-body {
+    display: grid;
+
+    grid-template-columns:
+        minmax(0, 1fr)
+        230px;
+
+    gap: 10px;
+
+    align-items: start;
+}
+
+.hall-board {
+    min-width: 0;
+}
+
+.hall-row {
+    display: grid;
+
+    grid-template-columns:
+        repeat(60, minmax(0, 1fr));
+
+    gap: 2px;
+
+    margin-bottom: 4px;
+}
+
+.key {
+    min-width: 0;
+
+    height: 39px;
+
+    padding: 0 3px;
+
+    border:
+        1px solid #394559;
+
+    border-radius: 4px;
+
+    background:
+        linear-gradient(
+            180deg,
+            #171e29,
+            #101620
+        );
+
+    color: #dce1ea;
+
+    box-shadow:
+        inset 0 1px 0
+        rgba(255,255,255,0.05);
+
+    font-size: 9px;
+
+    cursor: pointer;
+
+    transition: 0.1s;
+}
+
+.key:hover {
+    border-color: #685091;
+}
+
+.key.current {
+    border:
+        2px solid var(--purple);
+
+    box-shadow:
+        0 0 10px
+        rgba(139,92,246,0.4);
+}
+
+.key.multi {
+    border:
+        2px solid var(--orange);
+}
+
+.key.pressed {
+    background: #123622;
+
+    border-color: var(--green);
+
+    color: #bdffd4;
+}
+
+.mech-key {
+    min-width: 0;
+
+    height: 39px;
+
+    border:
+        1px solid #2c3441;
+
+    border-radius: 4px;
+
+    background:
+        linear-gradient(
+            180deg,
+            #111720,
+            #0c1118
+        );
+
+    color: #586376;
+
+    font-size: 8px;
+
+    cursor: default;
+
+    opacity: 0.8;
+}
+
+.mechanical-side {
+    display: grid;
+
+    grid-template-columns:
+        1fr 1.25fr;
+
+    gap: 8px;
+}
+
+.cluster-title {
+    color: #485265;
+
+    font-size: 7px;
+
+    margin-bottom: 4px;
+}
+
+.nav-cluster {
+    display: grid;
+
+    grid-template-columns:
+        repeat(3, minmax(0, 1fr));
+
+    gap: 3px;
+}
+
+.arrow-cluster {
+    display: grid;
+
+    grid-template-columns:
+        repeat(3, minmax(0, 1fr));
+
+    gap: 3px;
+
+    margin-top: 12px;
+}
+
+.numpad {
+    display: grid;
+
+    grid-template-columns:
+        repeat(4, minmax(0, 1fr));
+
+    grid-template-rows:
+        repeat(5, 39px);
+
+    gap: 3px;
+}
+
+.numpad .mech-key {
+    height: auto;
+}
+
+.numpad-plus,
+.numpad-enter {
+    grid-row: span 2;
+}
+
+.numpad-zero {
+    grid-column: span 2;
+}
+
+
+/* =========================================================
+   SETTINGS
+========================================================= */
+
+.selected-key {
+    color: #cabaff;
+
+    font-size: 30px;
+
+    margin-bottom: 14px;
+}
+
+.field {
+    margin-bottom: 15px;
+}
+
+.field-line {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 8px;
+
+    margin-bottom: 6px;
+}
+
+.field-label {
+    color: #afb8c6;
+
+    font-size: 9px;
+}
+
+.number-input {
+    width: 70px;
+
+    border:
+        1px solid var(--border);
+
+    background: #111722;
+
+    color: white;
+
+    padding: 5px;
+
+    text-align: right;
+
+    font-size: 9px;
+}
+
+input[type="range"] {
+    width: 100%;
+
+    accent-color: var(--purple);
+}
+
+.toggle {
+    appearance: none;
+
+    width: 34px;
+    height: 18px;
+
+    background: #242c39;
+
+    border-radius: 20px;
+
+    position: relative;
+
+    cursor: pointer;
+}
+
+.toggle::before {
+    content: "";
+
+    position: absolute;
+
+    width: 14px;
+    height: 14px;
+
+    border-radius: 50%;
+
+    background: white;
+
+    top: 2px;
+    left: 2px;
+
+    transition: 0.15s;
+}
+
+.toggle:checked {
+    background: var(--purple);
+}
+
+.toggle:checked::before {
+    left: 18px;
+}
+
+.live-state-box {
+    border:
+        1px solid var(--border);
+
+    background: #090e14;
+
+    padding: 11px;
+
+    margin-top: 10px;
+}
+
+.live-state-value {
+    display: flex;
+    align-items: center;
+
+    gap: 8px;
+
+    color: var(--green);
+
+    font-size: 16px;
+}
+
+
+/* =========================================================
+   TRAVEL VISUALIZATION
+========================================================= */
+
+.travel-panel {
+    margin-top: 12px;
+}
+
+.travel-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    margin-bottom: 12px;
+}
+
+.travel-number {
+    font-size: 25px;
+
+    color: #c8b8ff;
+}
+
+.travel-visual {
+    position: relative;
+
+    height: 88px;
+
+    margin:
+        4px 8px 0 8px;
+}
+
+.travel-axis {
+    position: absolute;
+
+    left: 0;
+    right: 0;
+
+    top: 38px;
+
+    height: 12px;
+
+    background: #151c27;
+
+    border:
+        1px solid #2a3443;
+
+    overflow: hidden;
+
+    border-radius: 4px;
+}
+
+.deadzone {
+    position: absolute;
+
+    top: 0;
+    bottom: 0;
+
+    background:
+        rgba(251,113,133,0.27);
+}
+
+.deadzone.top {
+    left: 0;
+}
+
+.deadzone.bottom {
+    right: 0;
+}
+
+.usable-zone {
+    position: absolute;
+
+    top: 0;
+    bottom: 0;
+
+    background:
+        rgba(74,222,128,0.08);
+}
+
+.axis-marker {
+    position: absolute;
+
+    top: 22px;
+
+    width: 2px;
+
+    height: 44px;
+
+    transform:
+        translateX(-1px);
+
+    z-index: 4;
+}
+
+.axis-marker::before {
+    content: "";
+
+    position: absolute;
+
+    width: 7px;
+    height: 7px;
+
+    border-radius: 50%;
+
+    left: -2.5px;
+
+    top: -2px;
+}
+
+.axis-marker .marker-label {
+    position: absolute;
+
+    white-space: nowrap;
+
+    font-size: 8px;
+
+    top: -15px;
+
+    transform:
+        translateX(-50%);
+}
+
+.marker-actuation {
+    background: var(--purple);
+}
+
+.marker-actuation::before {
+    background: var(--purple);
+}
+
+.marker-actuation .marker-label {
+    color: #bca9ff;
+}
+
+.marker-current {
+    background: var(--cyan);
+
+    z-index: 7;
+}
+
+.marker-current::before {
+    width: 10px;
+    height: 10px;
+
+    left: -4px;
+    top: -3.5px;
+
+    background: var(--cyan);
+
+    box-shadow:
+        0 0 11px
+        rgba(34,211,238,0.85);
+}
+
+.marker-current .marker-label {
+    top: 50px;
+
+    color: var(--cyan);
+}
+
+.marker-rt {
+    background: var(--orange);
+}
+
+.marker-rt::before {
+    background: var(--orange);
+}
+
+.marker-rt .marker-label {
+    color: var(--orange);
+}
+
+.travel-scale {
+    position: absolute;
+
+    top: 61px;
+
+    left: 0;
+    right: 0;
+
+    display: flex;
+    justify-content: space-between;
+
+    color: #536075;
+
+    font-size: 8px;
+}
+
+.visual-legend {
+    display: flex;
+    flex-wrap: wrap;
+
+    gap: 12px;
+
+    color: #697488;
+
+    font-size: 8px;
+
+    margin-top: 6px;
+}
+
+.visual-legend-item {
+    display: flex;
+    align-items: center;
+
+    gap: 5px;
+}
+
+.legend-dot {
+    width: 7px;
+    height: 7px;
+
+    border-radius: 50%;
+}
+
+.mock-slider-row {
+    display: grid;
+
+    grid-template-columns:
+        90px minmax(0, 1fr);
+
+    align-items: center;
+
+    gap: 10px;
+
+    margin-top: 12px;
+}
+
+.mock-slider-label {
+    color: #697487;
+
+    font-size: 8px;
+}
+
+
+/* =========================================================
+   KEYS LOWER GRID
+========================================================= */
+
+.keys-lower-grid {
+    display: grid;
+
+    grid-template-columns:
+        1.2fr 1fr 1fr;
+
+    gap: 12px;
+
+    margin-top: 12px;
+}
+
+.apply-buttons {
+    display: flex;
+    flex-wrap: wrap;
+
+    gap: 7px;
+}
+
+.action-button {
+    border:
+        1px solid var(--border);
+
+    background: #111722;
+
+    color: #c0c7d3;
+
+    padding: 8px 10px;
+
+    cursor: pointer;
+
+    font-size: 8px;
+}
+
+.action-button.primary {
+    border-color: #8053ea;
+
+    background: #6935d8;
+
+    color: white;
+}
+
+.selection-count {
+    color: var(--orange);
+
+    margin-top: 9px;
+
+    font-size: 8px;
+}
+
+.calibration-values {
+    display: grid;
+
+    grid-template-columns:
+        1fr 1fr;
+
+    gap: 7px;
+
+    margin-bottom: 9px;
+}
+
+.calibration-value {
+    background: #0a0f15;
+
+    border:
+        1px solid var(--border);
+
+    padding: 8px;
+}
+
+.calibration-value .label {
+    color: #657084;
+
+    font-size: 7px;
+
+    margin-bottom: 5px;
+}
+
+.calibration-value .value {
+    color: #cbd2de;
+
+    font-size: 11px;
+}
+
+.performance-value {
+    display: flex;
+
+    align-items: center;
+    justify-content: space-between;
+
+    border-bottom:
+        1px solid #161e29;
+
+    padding: 7px 0;
+
+    font-size: 8px;
+}
+
+.performance-value span:first-child {
+    color: #667185;
+}
+
+.performance-value span:last-child {
+    color: #cfd5df;
+}
+
+
+/* =========================================================
+   CONSOLE
+========================================================= */
+
+.console {
+    height: 105px;
+
+    margin-top: 12px;
+
+    border:
+        1px solid var(--border);
+
+    background: #06090d;
+
+    overflow-y: auto;
+
+    padding: 9px;
+
+    color: #748094;
+
+    font-size: 8px;
+}
+
+.console-line {
+    line-height: 1.7;
+}
+
+.prompt {
+    color: var(--purple2);
+}
+
+.good {
+    color: var(--green);
+}
+
+
+/* =========================================================
+   LIGHTING / DEVICE
+========================================================= */
+
+.placeholder {
+    min-height: 420px;
+
+    border:
+        1px dashed var(--border-light);
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    flex-direction: column;
+
+    color: #596476;
+}
+
+.placeholder strong {
+    color: #aeb7c4;
+
+    margin-bottom: 10px;
+}
+
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (max-width: 1250px) {
+
+    .keys-grid {
+        grid-template-columns:
+            minmax(0, 1fr);
+    }
+
+    .home-grid {
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+    }
+
+}
+
+</style>
+</head>
+
+
+<body>
+
+<div
+    class="app"
+    id="app"
+>
+
+    <!-- =====================================================
+         SIDEBAR
+    ====================================================== -->
+
+    <aside class="sidebar">
+
+        <div class="sidebar-header">
+
+            <div class="brand">
+                HE_<span>KEYBOARD</span>
+            </div>
+
+            <div class="brand-short">
+                HE
+            </div>
+
+        </div>
+
+
+        <div class="device-card">
+
+            <div class="device-title">
+
+                <div class="status-dot"></div>
+
+                <span>
+                    HE Keyboard
+                </span>
+
+            </div>
+
+
+            <div class="device-small">
+
+                STATUS&nbsp;&nbsp;&nbsp;CONNECTED [MOCK]<br>
+
+                MCU&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;M484KIDAE<br>
+
+                USB&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span id="sidebarPolling">8000 Hz</span><br>
+
+                PROFILE&nbsp;&nbsp;<span id="sidebarProfile">Profile 1</span>
+
+            </div>
+
+        </div>
+
+
+        <div class="nav-title">
+            // NAV
+        </div>
+
+
+        <button
+            class="nav-button"
+            data-page="home"
+        >
+
+            <span class="nav-symbol">
+                H
+            </span>
+
+            <span class="nav-name">
+                $ home
+            </span>
+
+        </button>
+
+
+        <button
+            class="nav-button active"
+            data-page="keys"
+        >
+
+            <span class="nav-symbol">
+                K
+            </span>
+
+            <span class="nav-name">
+                $ keys
+            </span>
+
+        </button>
+
+
+        <button
+            class="nav-button"
+            data-page="lighting"
+        >
+
+            <span class="nav-symbol">
+                L
+            </span>
+
+            <span class="nav-name">
+                $ lighting
+            </span>
+
+        </button>
+
+
+        <button
+            class="nav-button"
+            data-page="device"
+        >
+
+            <span class="nav-symbol">
+                D
+            </span>
+
+            <span class="nav-name">
+                $ device
+            </span>
+
+        </button>
+
+
+        <div class="sidebar-bottom">
+
+            <div class="unsaved">
+                ● no unsaved changes
+            </div>
+
+
+            <button
+                id="saveKeyboard"
+                class="save-button"
+            >
+                SAVE_TO_KEYBOARD
+            </button>
+
+        </div>
+
+    </aside>
+
+
+    <!-- =====================================================
+         MAIN
+    ====================================================== -->
+
+    <main class="main">
+
+
+        <header class="topbar">
+
+
+            <div class="topbar-left">
+
+                <button
+                    id="sidebarToggle"
+                    class="sidebar-toggle"
+                    title="Collapse sidebar"
+                >
+                    ☰
+                </button>
+
+
+                <div class="breadcrumb">
+
+                    root / keyboard /
+
+                    <strong id="breadcrumb">
+                        keys
+                    </strong>
+
+                </div>
+
+            </div>
+
+
+            <div class="top-status">
+
+                <div class="status-dot"></div>
+
+                CONNECTED
+
+            </div>
+
+        </header>
+
+
+        <div class="content">
+
+
+            <!-- =================================================
+                 HOME
+            ================================================== -->
+
+            <section
+                id="page-home"
+                class="page"
+            >
+
+                <div class="page-header">
+
+                    <div>
+
+                        <div class="page-title">
+                            /home
+                        </div>
+
+                        <div class="page-description">
+                            read-only keyboard status
+                        </div>
+
+                    </div>
+
+
+                    <div class="terminal-command">
+
+                        <span>></span>
+
+                        device.status --read-only
+
+                    </div>
+
+                </div>
+
+
+                <div class="home-grid">
+
+
+                    <div class="info-card">
+
+                        <div class="info-label">
+                            DEVICE_STATUS
+                        </div>
+
+                        <div class="info-value good">
+                            CONNECTED
+                        </div>
+
+                        <div class="info-sub">
+
+                            Mock device<br>
+
+                            M484KIDAE<br>
+
+                            61 Hall Sensors
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="info-card">
+
+                        <div class="info-label">
+                            ACTIVE_PROFILE
+                        </div>
+
+                        <div
+                            class="info-value purple"
+                            id="homeProfile"
+                        >
+                            PROFILE_1
+                        </div>
+
+                        <div class="info-sub">
+
+                            onboard profile<br>
+
+                            rotary selector ready
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="info-card">
+
+                        <div class="info-label">
+                            USB_POLLING
+                        </div>
+
+                        <div
+                            class="info-value"
+                            id="homePolling"
+                        >
+                            8000 Hz
+                        </div>
+
+                        <div
+                            class="info-sub"
+                            id="homePollingSub"
+                        >
+                            0.125 ms report interval
+                        </div>
+
+                    </div>
+
+
+                    <div class="info-card">
+
+                        <div class="info-label">
+                            KEY_STATE
+                        </div>
+
+                        <div
+                            class="info-value"
+                            id="homeKeyState"
+                        >
+                            W : RELEASED
+                        </div>
+
+                        <div class="info-sub">
+
+                            last selected key<br>
+
+                            live state mirror
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div class="home-wide-grid">
+
+
+                    <div class="panel">
+
+                        <div class="panel-title">
+                            CURRENT_KEY_CONFIGURATION [READ ONLY]
+                        </div>
+
+
+                        <table class="readonly-table">
+
+                            <tr>
+
+                                <td>
+                                    selected_key
+                                </td>
+
+                                <td id="homeSelectedKey">
+                                    W
+                                </td>
+
+                            </tr>
+
+
+                            <tr>
+
+                                <td>
+                                    actuation_point
+                                </td>
+
+                                <td id="homeActuation">
+                                    1.50 mm
+                                </td>
+
+                            </tr>
+
+
+                            <tr>
+
+                                <td>
+                                    rapid_trigger
+                                </td>
+
+                                <td id="homeRT">
+                                    ENABLED
+                                </td>
+
+                            </tr>
+
+
+                            <tr>
+
+                                <td>
+                                    rt_sensitivity
+                                </td>
+
+                                <td id="homeRTSensitivity">
+                                    0.20 mm
+                                </td>
+
+                            </tr>
+
+
+                            <tr>
+
+                                <td>
+                                    top_deadzone
+                                </td>
+
+                                <td id="homeTopDeadzone">
+                                    0.10 mm
+                                </td>
+
+                            </tr>
+
+
+                            <tr>
+
+                                <td>
+                                    bottom_deadzone
+                                </td>
+
+                                <td id="homeBottomDeadzone">
+                                    0.10 mm
+                                </td>
+
+                            </tr>
+
+                        </table>
+
+                    </div>
+
+
+                    <div class="panel">
+
+                        <div class="panel-title">
+                            SYSTEM
+                        </div>
+
+
+                        <table class="readonly-table">
+
+                            <tr>
+
+                                <td>
+                                    firmware
+                                </td>
+
+                                <td>
+                                    0.1.0 MOCK
+                                </td>
+
+                            </tr>
+
+
+                            <tr>
+
+                                <td>
+                                    hall_keys
+                                </td>
+
+                                <td>
+                                    61
+                                </td>
+
+                            </tr>
+
+
+                            <tr>
+
+                                <td>
+                                    mux
+                                </td>
+
+                                <td>
+                                    TMUX1208 × 8
+                                </td>
+
+                            </tr>
+
+
+                            <tr>
+
+                                <td>
+                                    lighting
+                                </td>
+
+                                <td>
+                                    WS2812B × 10
+                                </td>
+
+                            </tr>
+
+
+                            <tr>
+
+                                <td>
+                                    interface
+                                </td>
+
+                                <td>
+                                    USB HID
+                                </td>
+
+                            </tr>
+
+                        </table>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- =================================================
+                 KEYS
+            ================================================== -->
+
+            <section
+                id="page-keys"
+                class="page active"
+            >
+
+
+                <div class="page-header">
+
+
+                    <div>
+
+                        <div class="page-title">
+                            /keys
+                        </div>
+
+                        <div class="page-description">
+                            key behaviour / rapid trigger / calibration / profiles / performance
+                        </div>
+
+                    </div>
+
+
+                    <div class="terminal-command">
+
+                        <span>></span>
+
+                        keyboard.configure --hall
+
+                    </div>
+
+                </div>
+
+
+                <!-- =============================================
+                     PROFILE + PERFORMANCE
+                ============================================== -->
+
+                <div class="keys-meta">
+
+
+                    <div class="profile-strip">
+
+                        <span class="meta-label">
+                            PROFILE
+                        </span>
+
+
+                        <button
+                            class="profile-button active"
+                            data-profile="1"
+                        >
+                            PROFILE_1
+                        </button>
+
+
+                        <button
+                            class="profile-button"
+                            data-profile="2"
+                        >
+                            PROFILE_2
+                        </button>
+
+
+                        <button
+                            class="profile-button"
+                            data-profile="3"
+                        >
+                            PROFILE_3
+                        </button>
+
+                    </div>
+
+
+                    <div class="performance-strip">
+
+                        <span class="meta-label">
+                            POLLING
+                        </span>
+
+
+                        <select
+                            id="pollingSelect"
+                            class="polling-select"
+                        >
+
+                            <option value="1000">
+                                1000 Hz
+                            </option>
+
+                            <option value="2000">
+                                2000 Hz
+                            </option>
+
+                            <option value="4000">
+                                4000 Hz
+                            </option>
+
+                            <option
+                                value="8000"
+                                selected
+                            >
+                                8000 Hz
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <div class="performance-strip">
+
+                        <span class="meta-label">
+                            SCAN
+                        </span>
+
+                        <span
+                            class="small-text"
+                            id="scanRate"
+                        >
+                            ~40 kHz MOCK
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <!-- =============================================
+                     MAIN KEYS GRID
+                ============================================== -->
+
+                <div class="keys-grid">
+
+
+                    <!-- =========================================
+                         KEYBOARD
+                    ========================================== -->
+
+                    <div class="panel keyboard-panel">
+
+
+                        <div class="keyboard-toolbar">
+
+
+                            <div>
+
+                                <div class="panel-title">
+                                    KEYBOARD_MATRIX
+                                </div>
+
+
+                                <div class="legend">
+
+                                    <div class="legend-item">
+
+                                        <div
+                                            class="legend-square hall"
+                                        ></div>
+
+                                        HALL 61
+
+                                    </div>
+
+
+                                    <div class="legend-item">
+
+                                        <div
+                                            class="legend-square mechanical"
+                                        ></div>
+
+                                        MECHANICAL / VISUAL
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+
+                            <div class="segmented">
+
+
+                                <button
+                                    id="singleMode"
+                                    class="active"
+                                >
+                                    SINGLE
+                                </button>
+
+
+                                <button
+                                    id="multiMode"
+                                >
+                                    MULTI
+                                </button>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="keyboard-stage">
+
+
+                            <div
+                                id="functionRow"
+                                class="function-row"
+                            ></div>
+
+
+                            <div class="keyboard-body">
+
+
+                                <div
+                                    id="keyboard"
+                                    class="hall-board"
+                                ></div>
+
+
+                                <div class="mechanical-side">
+
+
+                                    <div>
+
+                                        <div class="cluster-title">
+                                            NAV / ARROWS
+                                        </div>
+
+
+                                        <div
+                                            id="navCluster"
+                                            class="nav-cluster"
+                                        ></div>
+
+
+                                        <div
+                                            id="arrowCluster"
+                                            class="arrow-cluster"
+                                        ></div>
+
+                                    </div>
+
+
+                                    <div>
+
+                                        <div class="cluster-title">
+                                            NUMPAD
+                                        </div>
+
+
+                                        <div
+                                            id="numpad"
+                                            class="numpad"
+                                        ></div>
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- =========================================
+                         SETTINGS
+                    ========================================== -->
+
+                    <div class="panel">
+
+
+                        <div class="panel-title">
+                            SELECTED_KEY
+                        </div>
+
+
+                        <div
+                            id="selectedKey"
+                            class="selected-key"
+                        >
+                            W
+                        </div>
+
+
+                        <!-- Actuation -->
+
+                        <div class="field">
+
+
+                            <div class="field-line">
+
+                                <span class="field-label">
+                                    actuation
+                                </span>
+
+
+                                <input
+                                    id="actuationNumber"
+                                    class="number-input"
+                                    type="number"
+                                    min="0.10"
+                                    max="4.00"
+                                    step="0.05"
+                                    value="1.50"
+                                >
+
+                            </div>
+
+
+                            <input
+                                id="actuation"
+                                type="range"
+                                min="10"
+                                max="400"
+                                value="150"
+                            >
+
+                        </div>
+
+
+                        <!-- RT -->
+
+                        <div class="field">
+
+
+                            <div class="field-line">
+
+                                <span class="field-label">
+                                    rapid_trigger
+                                </span>
+
+
+                                <input
+                                    id="rtToggle"
+                                    class="toggle"
+                                    type="checkbox"
+                                    checked
+                                >
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- RT Sensitivity -->
+
+                        <div class="field">
+
+
+                            <div class="field-line">
+
+                                <span class="field-label">
+                                    rt_sensitivity
+                                </span>
+
+
+                                <input
+                                    id="rtNumber"
+                                    class="number-input"
+                                    type="number"
+                                    min="0.05"
+                                    max="2.00"
+                                    step="0.05"
+                                    value="0.20"
+                                >
+
+                            </div>
+
+
+                            <input
+                                id="rtSensitivity"
+                                type="range"
+                                min="5"
+                                max="200"
+                                value="20"
+                            >
+
+                        </div>
+
+
+                        <!-- Top deadzone -->
+
+                        <div class="field">
+
+
+                            <div class="field-line">
+
+                                <span class="field-label">
+                                    top_deadzone
+                                </span>
+
+
+                                <input
+                                    id="topDeadzoneNumber"
+                                    class="number-input"
+                                    type="number"
+                                    min="0"
+                                    max="1"
+                                    step="0.05"
+                                    value="0.10"
+                                >
+
+                            </div>
+
+
+                            <input
+                                id="topDeadzone"
+                                type="range"
+                                min="0"
+                                max="100"
+                                value="10"
+                            >
+
+                        </div>
+
+
+                        <!-- Bottom deadzone -->
+
+                        <div class="field">
+
+
+                            <div class="field-line">
+
+                                <span class="field-label">
+                                    bottom_deadzone
+                                </span>
+
+
+                                <input
+                                    id="bottomDeadzoneNumber"
+                                    class="number-input"
+                                    type="number"
+                                    min="0"
+                                    max="1"
+                                    step="0.05"
+                                    value="0.10"
+                                >
+
+                            </div>
+
+
+                            <input
+                                id="bottomDeadzone"
+                                type="range"
+                                min="0"
+                                max="100"
+                                value="10"
+                            >
+
+                        </div>
+
+
+                        <div class="live-state-box">
+
+                            <div class="panel-title">
+                                LIVE_STATE
+                            </div>
+
+
+                            <div class="live-state-value">
+
+                                <div class="status-dot"></div>
+
+                                <span id="keyState">
+                                    RELEASED
+                                </span>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- =============================================
+                     TRAVEL VISUALIZATION
+                ============================================== -->
+
+                <div class="panel travel-panel">
+
+
+                    <div class="travel-header">
+
+
+                        <div>
+
+                            <div class="panel-title">
+                                SWITCH_TRAVEL_VISUALIZER
+                            </div>
+
+
+                            <div class="small-text">
+                                travel / deadzone / actuation / rapid-trigger threshold
+                            </div>
+
+                        </div>
+
+
+                        <div
+                            id="travelValue"
+                            class="travel-number"
+                        >
+                            0.00 mm
+                        </div>
+
+                    </div>
+
+
+                    <div class="travel-visual">
+
+
+                        <div class="travel-axis">
+
+
+                            <div
+                                id="topDeadzoneVisual"
+                                class="deadzone top"
+                            ></div>
+
+
+                            <div
+                                id="usableZoneVisual"
+                                class="usable-zone"
+                            ></div>
+
+
+                            <div
+                                id="bottomDeadzoneVisual"
+                                class="deadzone bottom"
+                            ></div>
+
+                        </div>
+
+
+                        <!-- actuation -->
+
+                        <div
+                            id="actuationMarker"
+                            class="
+                                axis-marker
+                                marker-actuation
+                            "
+                        >
+
+                            <div class="marker-label">
+                                AP
+                            </div>
+
+                        </div>
+
+
+                        <!-- RT -->
+
+                        <div
+                            id="rtMarker"
+                            class="
+                                axis-marker
+                                marker-rt
+                            "
+                        >
+
+                            <div
+                                id="rtMarkerLabel"
+                                class="marker-label"
+                            >
+                                RT
+                            </div>
+
+                        </div>
+
+
+                        <!-- Current -->
+
+                        <div
+                            id="currentMarker"
+                            class="
+                                axis-marker
+                                marker-current
+                            "
+                        >
+
+                            <div class="marker-label">
+                                CURRENT
+                            </div>
+
+                        </div>
+
+
+                        <div class="travel-scale">
+
+                            <span>
+                                0.00 mm
+                            </span>
+
+                            <span>
+                                1.00
+                            </span>
+
+                            <span>
+                                2.00
+                            </span>
+
+                            <span>
+                                3.00
+                            </span>
+
+                            <span>
+                                4.00 mm
+                            </span>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="visual-legend">
+
+
+                        <div class="visual-legend-item">
+
+                            <div
+                                class="legend-dot"
+                                style="
+                                    background:#fb7185;
+                                "
+                            ></div>
+
+                            Deadzone
+
+                        </div>
+
+
+                        <div class="visual-legend-item">
+
+                            <div
+                                class="legend-dot"
+                                style="
+                                    background:#8b5cf6;
+                                "
+                            ></div>
+
+                            Actuation Point
+
+                        </div>
+
+
+                        <div class="visual-legend-item">
+
+                            <div
+                                class="legend-dot"
+                                style="
+                                    background:#fb923c;
+                                "
+                            ></div>
+
+                            RT Dynamic Point
+
+                        </div>
+
+
+                        <div class="visual-legend-item">
+
+                            <div
+                                class="legend-dot"
+                                style="
+                                    background:#22d3ee;
+                                "
+                            ></div>
+
+                            Current Travel
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="mock-slider-row">
+
+
+                        <div class="mock-slider-label">
+                            MOCK_SENSOR
+                        </div>
+
+
+                        <input
+                            id="travel"
+                            type="range"
+                            min="0"
+                            max="400"
+                            value="0"
+                        >
+
+                    </div>
+
+                </div>
+
+
+                <!-- =============================================
+                     LOWER
+                ============================================== -->
+
+                <div class="keys-lower-grid">
+
+
+                    <!-- Apply -->
+
+                    <div class="panel">
+
+                        <div class="panel-title">
+                            APPLY_CURRENT_SETTINGS
+                        </div>
+
+
+                        <div class="apply-buttons">
+
+
+                            <button
+                                id="applyAll"
+                                class="
+                                    action-button
+                                    primary
+                                "
+                            >
+                                APPLY_ALL_61
+                            </button>
+
+
+                            <button
+                                id="applySelected"
+                                class="action-button"
+                            >
+                                APPLY_SELECTED
+                            </button>
+
+
+                            <button
+                                id="clearSelection"
+                                class="action-button"
+                            >
+                                CLEAR_SELECTION
+                            </button>
+
+                        </div>
+
+
+                        <div
+                            id="selectionCount"
+                            class="selection-count"
+                        >
+                            selected_for_batch = 0
+                        </div>
+
+                    </div>
+
+
+                    <!-- Calibration -->
+
+                    <div class="panel">
+
+                        <div class="panel-title">
+                            CALIBRATION
+                        </div>
+
+
+                        <div class="calibration-values">
+
+
+                            <div class="calibration-value">
+
+                                <div class="label">
+                                    REST_RAW
+                                </div>
+
+                                <div
+                                    id="restRaw"
+                                    class="value"
+                                >
+                                    512
+                                </div>
+
+                            </div>
+
+
+                            <div class="calibration-value">
+
+                                <div class="label">
+                                    BOTTOM_RAW
+                                </div>
+
+                                <div
+                                    id="bottomRaw"
+                                    class="value"
+                                >
+                                    3500
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="apply-buttons">
+
+
+                            <button
+                                id="setRest"
+                                class="action-button"
+                            >
+                                SET_REST
+                            </button>
+
+
+                            <button
+                                id="setBottom"
+                                class="action-button"
+                            >
+                                SET_BOTTOM
+                            </button>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- Performance -->
+
+                    <div class="panel">
+
+                        <div class="panel-title">
+                            PERFORMANCE
+                        </div>
+
+
+                        <div class="performance-value">
+
+                            <span>
+                                USB Polling
+                            </span>
+
+                            <span id="performancePolling">
+                                8000 Hz
+                            </span>
+
+                        </div>
+
+
+                        <div class="performance-value">
+
+                            <span>
+                                Report Interval
+                            </span>
+
+                            <span id="reportInterval">
+                                0.125 ms
+                            </span>
+
+                        </div>
+
+
+                        <div class="performance-value">
+
+                            <span>
+                                Hall Scan
+                            </span>
+
+                            <span>
+                                ~40 kHz MOCK
+                            </span>
+
+                        </div>
+
+
+                        <div class="performance-value">
+
+                            <span>
+                                USB Mode
+                            </span>
+
+                            <span>
+                                HID HS
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div
+                    id="console"
+                    class="console"
+                >
+
+                    <div class="console-line">
+
+                        <span class="prompt">
+                            HE>
+                        </span>
+
+                        mock keyboard initialized
+
+                    </div>
+
+
+                    <div class="console-line">
+
+                        <span class="prompt">
+                            HE>
+                        </span>
+
+                        hall matrix:
+
+                        <span class="good">
+                            61 keys
+                        </span>
+
+                    </div>
+
+
+                    <div class="console-line">
+
+                        <span class="prompt">
+                            HE>
+                        </span>
+
+                        ready_
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- =================================================
+                 LIGHTING
+            ================================================== -->
+
+            <section
+                id="page-lighting"
+                class="page"
+            >
+
+                <div class="page-header">
+
+                    <div>
+
+                        <div class="page-title">
+                            /lighting
+                        </div>
+
+                        <div class="page-description">
+                            WS2812B lighting
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div class="placeholder">
+
+                    <strong>
+                        WS2812B LIGHTING
+                    </strong>
+
+                    next implementation
+
+                </div>
+
+            </section>
+
+
+            <!-- =================================================
+                 DEVICE
+            ================================================== -->
+
+            <section
+                id="page-device"
+                class="page"
+            >
+
+                <div class="page-header">
+
+                    <div>
+
+                        <div class="page-title">
+                            /device
+                        </div>
+
+                        <div class="page-description">
+                            firmware / device information
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div class="placeholder">
+
+                    <strong>
+                        DEVICE / FIRMWARE
+                    </strong>
+
+                    next implementation
+
+                </div>
+
+            </section>
+
+        </div>
+
+    </main>
+
+</div>
+
+
+<script>
+
+/* =========================================================
+   61 HALL KEYS
+   0.25U = 1 grid column
+========================================================= */
+
+const hallRows = [
+
+    [
+        ["`",4],
+        ["1",4],
+        ["2",4],
+        ["3",4],
+        ["4",4],
+        ["5",4],
+        ["6",4],
+        ["7",4],
+        ["8",4],
+        ["9",4],
+        ["0",4],
+        ["-",4],
+        ["=",4],
+        ["Backspace",8]
+    ],
+
+    [
+        ["Tab",6],
+
+        ["Q",4],
+        ["W",4],
+        ["E",4],
+        ["R",4],
+        ["T",4],
+        ["Y",4],
+        ["U",4],
+        ["I",4],
+        ["O",4],
+        ["P",4],
+        ["[",4],
+        ["]",4],
+
+        ["\\",6]
+    ],
+
+    [
+        ["Caps",7],
+
+        ["A",4],
+        ["S",4],
+        ["D",4],
+        ["F",4],
+        ["G",4],
+        ["H",4],
+        ["J",4],
+        ["K",4],
+        ["L",4],
+        [";",4],
+        ["'",4],
+
+        ["Enter",9]
+    ],
+
+    [
+        ["LShift",9],
+
+        ["Z",4],
+        ["X",4],
+        ["C",4],
+        ["V",4],
+        ["B",4],
+        ["N",4],
+        ["M",4],
+        [",",4],
+        [".",4],
+        ["/",4],
+
+        ["RShift",11]
+    ],
+
+    [
+        ["LCtrl",5],
+        ["LWin",5],
+        ["LAlt",5],
+
+        ["Space",25],
+
+        ["RAlt",5],
+        ["Fn",5],
+        ["Menu",5],
+        ["RCtrl",5]
+    ]
+
+];
+
+
+/* =========================================================
+   MECHANICAL VISUAL ONLY
+========================================================= */
+
+const functionKeys = [
+
+    "Esc",
+
+    "__SPACE__",
+
+    "F1",
+    "F2",
+    "F3",
+    "F4",
+
+    "__SPACE__",
+
+    "F5",
+    "F6",
+    "F7",
+    "F8",
+
+    "__SPACE__",
+
+    "F9",
+    "F10",
+    "F11",
+    "F12",
+
+    "PrtSc",
+    "ScrLk",
+    "Pause"
+
+];
+
+
+const navigationKeys = [
+
+    "Ins",
+    "Home",
+    "PgUp",
+
+    "Del",
+    "End",
+    "PgDn"
+
+];
+
+
+const arrowKeys = [
+
+    null,
+    "↑",
+    null,
+
+    "←",
+    "↓",
+    "→"
+
+];
+
+
+const numpadKeys = [
+
+    {
+        key: "Num"
+    },
+
+    {
+        key: "/"
+    },
+
+    {
+        key: "*"
+    },
+
+    {
+        key: "-"
+    },
+
+
+    {
+        key: "7"
+    },
+
+    {
+        key: "8"
+    },
+
+    {
+        key: "9"
+    },
+
+    {
+        key: "+",
+        className:
+            "numpad-plus"
+    },
+
+
+    {
+        key: "4"
+    },
+
+    {
+        key: "5"
+    },
+
+    {
+        key: "6"
+    },
+
+
+    {
+        key: "1"
+    },
+
+    {
+        key: "2"
+    },
+
+    {
+        key: "3"
+    },
+
+    {
+        key: "Enter",
+        className:
+            "numpad-enter"
+    },
+
+
+    {
+        key: "0",
+        className:
+            "numpad-zero"
+    },
+
+    {
+        key: "."
+    }
+
+];
+
+
+/* =========================================================
+   SETTINGS
+========================================================= */
+
+const settings = {};
+
+
+hallRows
+    .flat()
+    .forEach(
+        ([key]) => {
+
+            settings[key] = {
+
+                actuation:
+                    1.50,
+
+                rapidTrigger:
+                    true,
+
+                rtSensitivity:
+                    0.20,
+
+                topDeadzone:
+                    0.10,
+
+                bottomDeadzone:
+                    0.10,
+
+                depth:
+                    0.00,
+
+                pressed:
+                    false,
+
+                rtArmed:
+                    false,
+
+                maxDepth:
+                    0.00,
+
+                minDepth:
+                    0.00,
+
+                restRaw:
+                    512,
+
+                bottomRaw:
+                    3500
+
+            };
+
+        }
+    );
+
+
+let selectedKey =
+    "W";
+
+
+let mode =
+    "single";
+
+
+let batchSelection =
+    new Set();
+
+
+let currentProfile =
+    1;
+
+
+let pollingRate =
+    8000;
+
+
+/* =========================================================
+   DOM
+========================================================= */
+
+const app =
+    document.getElementById(
+        "app"
+    );
+
+
+const keyboard =
+    document.getElementById(
+        "keyboard"
+    );
+
+
+const selectedKeyLabel =
+    document.getElementById(
+        "selectedKey"
+    );
+
+
+const travel =
+    document.getElementById(
+        "travel"
+    );
+
+
+const travelValue =
+    document.getElementById(
+        "travelValue"
+    );
+
+
+const actuation =
+    document.getElementById(
+        "actuation"
+    );
+
+
+const actuationNumber =
+    document.getElementById(
+        "actuationNumber"
+    );
+
+
+const rtToggle =
+    document.getElementById(
+        "rtToggle"
+    );
+
+
+const rtSensitivity =
+    document.getElementById(
+        "rtSensitivity"
+    );
+
+
+const rtNumber =
+    document.getElementById(
+        "rtNumber"
+    );
+
+
+const topDeadzone =
+    document.getElementById(
+        "topDeadzone"
+    );
+
+
+const topDeadzoneNumber =
+    document.getElementById(
+        "topDeadzoneNumber"
+    );
+
+
+const bottomDeadzone =
+    document.getElementById(
+        "bottomDeadzone"
+    );
+
+
+const bottomDeadzoneNumber =
+    document.getElementById(
+        "bottomDeadzoneNumber"
+    );
+
+
+const keyState =
+    document.getElementById(
+        "keyState"
+    );
+
+
+const selectionCount =
+    document.getElementById(
+        "selectionCount"
+    );
+
+
+const consoleBox =
+    document.getElementById(
+        "console"
+    );
+
+
+/* =========================================================
+   CONSOLE
+========================================================= */
+
+function log(
+    text,
+    good = false
+) {
+
+    const line =
+        document.createElement(
+            "div"
+        );
+
+
+    line.className =
+        "console-line";
+
+
+    line.innerHTML =
+
+        `<span class="prompt">HE></span> ` +
+
+        (
+            good
+
+            ? `<span class="good">${text}</span>`
+
+            : text
+        );
+
+
+    consoleBox.appendChild(
+        line
+    );
+
+
+    consoleBox.scrollTop =
+        consoleBox.scrollHeight;
+
+}
+
+
+/* =========================================================
+   SIDEBAR COLLAPSE
+========================================================= */
+
+document
+    .getElementById(
+        "sidebarToggle"
+    )
+    .onclick =
+        () => {
+
+            app.classList.toggle(
+                "sidebar-collapsed"
+            );
+
+        };
+
+
+/* =========================================================
+   BUILD HALL KEYS
+========================================================= */
+
+function buildHallKeyboard() {
+
+    keyboard.innerHTML =
+        "";
+
+
+    hallRows.forEach(
+        row => {
+
+            const rowElement =
+                document.createElement(
+                    "div"
+                );
+
+
+            rowElement.className =
+                "hall-row";
+
+
+            row.forEach(
+                ([key, span]) => {
+
+                    const button =
+                        document.createElement(
+                            "button"
+                        );
+
+
+                    button.className =
+                        "key";
+
+
+                    button.dataset.key =
+                        key;
+
+
+                    button.textContent =
+                        key;
+
+
+                    button.style.gridColumn =
+                        `span ${span}`;
+
+
+                    button.onclick =
+                        () =>
+                            keyClicked(
+                                key
+                            );
+
+
+                    rowElement.appendChild(
+                        button
+                    );
+
+                }
+            );
+
+
+            keyboard.appendChild(
+                rowElement
+            );
+
+        }
+    );
+
+
+    updateKeyboardVisual();
+
+}
+
+
+/* =========================================================
+   BUILD FUNCTION ROW
+========================================================= */
+
+function buildFunctionRow() {
+
+    const row =
+        document.getElementById(
+            "functionRow"
+        );
+
+
+    functionKeys.forEach(
+        key => {
+
+            if (
+                key ===
+                "__SPACE__"
+            ) {
+
+                const space =
+                    document.createElement(
+                        "div"
+                    );
+
+
+                space.className =
+                    "function-space";
+
+
+                row.appendChild(
+                    space
+                );
+
+
+                return;
+
+            }
+
+
+            const button =
+                document.createElement(
+                    "button"
+                );
+
+
+            button.className =
+                "mech-key";
+
+
+            button.textContent =
+                key;
+
+
+            button.disabled =
+                true;
+
+
+            row.appendChild(
+                button
+            );
+
+        }
+    );
+
+}
+
+
+/* =========================================================
+   BUILD NAV
+========================================================= */
+
+function buildNav() {
+
+    const nav =
+        document.getElementById(
+            "navCluster"
+        );
+
+
+    navigationKeys.forEach(
+        key => {
+
+            const button =
+                document.createElement(
+                    "button"
+                );
+
+
+            button.className =
+                "mech-key";
+
+
+            button.textContent =
+                key;
+
+
+            button.disabled =
+                true;
+
+
+            nav.appendChild(
+                button
+            );
+
+        }
+    );
+
+
+    const arrows =
+        document.getElementById(
+            "arrowCluster"
+        );
+
+
+    arrowKeys.forEach(
+        key => {
+
+            if (
+                key === null
+            ) {
+
+                arrows.appendChild(
+                    document.createElement(
+                        "div"
+                    )
+                );
+
+
+                return;
+
+            }
+
+
+            const button =
+                document.createElement(
+                    "button"
+                );
+
+
+            button.className =
+                "mech-key";
+
+
+            button.textContent =
+                key;
+
+
+            button.disabled =
+                true;
+
+
+            arrows.appendChild(
+                button
+            );
+
+        }
+    );
+
+}
+
+
+/* =========================================================
+   BUILD NUMPAD
+========================================================= */
+
+function buildNumpad() {
+
+    const pad =
+        document.getElementById(
+            "numpad"
+        );
+
+
+    numpadKeys.forEach(
+        item => {
+
+            const button =
+                document.createElement(
+                    "button"
+                );
+
+
+            button.className =
+                "mech-key";
+
+
+            if (
+                item.className
+            ) {
+
+                button.classList.add(
+                    item.className
+                );
+
+            }
+
+
+            button.textContent =
+                item.key;
+
+
+            button.disabled =
+                true;
+
+
+            pad.appendChild(
+                button
+            );
+
+        }
+    );
+
+}
+
+
+/* =========================================================
+   KEY CLICK
+========================================================= */
+
+function keyClicked(
+    key
+) {
+
+    if (
+        mode ===
+        "multi"
+    ) {
+
+        if (
+            batchSelection.has(
+                key
+            )
+        ) {
+
+            batchSelection.delete(
+                key
+            );
+
+        }
+
+        else {
+
+            batchSelection.add(
+                key
+            );
+
+        }
+
+
+        updateSelectionCount();
+
+        updateKeyboardVisual();
+
+        return;
+
+    }
+
+
+    selectedKey =
+        key;
+
+
+    loadSelectedKey();
+
+
+    log(
+        `selected key = ${key}`
+    );
+
+}
+
+
+/* =========================================================
+   LOAD KEY
+========================================================= */
+
+function loadSelectedKey() {
+
+    const s =
+        settings[
+            selectedKey
+        ];
+
+
+    selectedKeyLabel.textContent =
+        selectedKey;
+
+
+    actuation.value =
+        Math.round(
+            s.actuation * 100
+        );
+
+
+    actuationNumber.value =
+        s.actuation.toFixed(2);
+
+
+    rtToggle.checked =
+        s.rapidTrigger;
+
+
+    rtSensitivity.value =
+        Math.round(
+            s.rtSensitivity * 100
+        );
+
+
+    rtNumber.value =
+        s.rtSensitivity.toFixed(2);
+
+
+    topDeadzone.value =
+        Math.round(
+            s.topDeadzone * 100
+        );
+
+
+    topDeadzoneNumber.value =
+        s.topDeadzone.toFixed(2);
+
+
+    bottomDeadzone.value =
+        Math.round(
+            s.bottomDeadzone * 100
+        );
+
+
+    bottomDeadzoneNumber.value =
+        s.bottomDeadzone.toFixed(2);
+
+
+    travel.value =
+        Math.round(
+            s.depth * 100
+        );
+
+
+    document
+        .getElementById(
+            "restRaw"
+        )
+        .textContent =
+            s.restRaw;
+
+
+    document
+        .getElementById(
+            "bottomRaw"
+        )
+        .textContent =
+            s.bottomRaw;
+
+
+    updateTravelUI();
+
+    updateKeyboardVisual();
+
+    updateHome();
+
+}
+
+
+/* =========================================================
+   RT LOGIC
+========================================================= */
+
+function processRapidTrigger(
+    s
+) {
+
+    const depth =
+        s.depth;
+
+
+    const validTop =
+        s.topDeadzone;
+
+
+    const validBottom =
+        4 -
+        s.bottomDeadzone;
+
+
+    if (
+        depth <=
+        validTop
+    ) {
+
+        if (
+            !s.pressed
+        ) {
+
+            s.minDepth =
+                depth;
+
+        }
+
+    }
+
+
+    if (
+        depth >=
+        validBottom
+    ) {
+
+        s.depth =
+            validBottom;
+
+    }
+
+
+    if (
+        !s.rapidTrigger
+    ) {
+
+        s.pressed =
+
+            s.depth >=
+            s.actuation;
+
+
+        s.rtArmed =
+            false;
+
+
+        return;
+
+    }
+
+
+    if (
+        !s.rtArmed
+    ) {
+
+        if (
+            s.depth >=
+            s.actuation
+        ) {
+
+            s.pressed =
+                true;
+
+
+            s.rtArmed =
+                true;
+
+
+            s.maxDepth =
+                s.depth;
+
+
+            s.minDepth =
+                s.depth;
+
+        }
+
+        else {
+
+            s.pressed =
+                false;
+
+
+            s.maxDepth =
+                s.depth;
+
+
+            s.minDepth =
+                s.depth;
+
+        }
+
+
+        return;
+
+    }
+
+
+    if (
+        s.pressed
+    ) {
+
+        if (
+            s.depth >
+            s.maxDepth
+        ) {
+
+            s.maxDepth =
+                s.depth;
+
+        }
+
+
+        const releasePoint =
+
+            s.maxDepth -
+
+            s.rtSensitivity;
+
+
+        if (
+            s.depth <=
+            releasePoint
+        ) {
+
+            s.pressed =
+                false;
+
+
+            s.minDepth =
+                s.depth;
+
+
+            log(
+
+                `${selectedKey} RELEASE @ ${s.depth.toFixed(2)} mm`
+
+            );
+
+        }
+
+    }
+
+    else {
+
+        if (
+            s.depth <
+            s.minDepth
+        ) {
+
+            s.minDepth =
+                s.depth;
+
+        }
+
+
+        const pressPoint =
+
+            s.minDepth +
+
+            s.rtSensitivity;
+
+
+        if (
+            s.depth >=
+            pressPoint
+        ) {
+
+            s.pressed =
+                true;
+
+
+            s.maxDepth =
+                s.depth;
+
+
+            log(
+
+                `${selectedKey} PRESS @ ${s.depth.toFixed(2)} mm`,
+
+                true
+
+            );
+
+        }
+
+    }
+
+}
+
+
+/* =========================================================
+   RT DYNAMIC POINT
+========================================================= */
+
+function getRTPoint(
+    s
+) {
+
+    if (
+        !s.rapidTrigger ||
+        !s.rtArmed
+    ) {
+
+        return null;
+
+    }
+
+
+    if (
+        s.pressed
+    ) {
+
+        return {
+
+            value:
+                Math.max(
+                    0,
+                    s.maxDepth -
+                    s.rtSensitivity
+                ),
+
+            label:
+                "RT RELEASE"
+
+        };
+
+    }
+
+
+    return {
+
+        value:
+            Math.min(
+                4,
+                s.minDepth +
+                s.rtSensitivity
+            ),
+
+        label:
+            "RT PRESS"
+
+    };
+
+}
+
+
+/* =========================================================
+   TRAVEL
+========================================================= */
+
+travel.addEventListener(
+
+    "input",
+
+    () => {
+
+        const s =
+            settings[
+                selectedKey
+            ];
+
+
+        s.depth =
+
+            Number(
+                travel.value
+            ) / 100;
+
+
+        processRapidTrigger(
+            s
+        );
+
+
+        updateTravelUI();
+
+        updateKeyboardVisual();
+
+        updateHome();
+
+    }
+
+);
+
+
+function updateTravelUI() {
+
+    const s =
+        settings[
+            selectedKey
+        ];
+
+
+    travelValue.textContent =
+
+        `${s.depth.toFixed(2)} mm`;
+
+
+    keyState.textContent =
+
+        s.pressed
+
+        ? "PRESSED"
+
+        : "RELEASED";
+
+
+    const pct =
+        value =>
+            Math.max(
+                0,
+                Math.min(
+                    100,
+                    value / 4 * 100
+                )
+            );
+
+
+    /* Deadzones */
+
+    document
+        .getElementById(
+            "topDeadzoneVisual"
+        )
+        .style.width =
+            `${pct(s.topDeadzone)}%`;
+
+
+    document
+        .getElementById(
+            "bottomDeadzoneVisual"
+        )
+        .style.width =
+            `${pct(s.bottomDeadzone)}%`;
+
+
+    document
+        .getElementById(
+            "usableZoneVisual"
+        )
+        .style.left =
+            `${pct(s.topDeadzone)}%`;
+
+
+    document
+        .getElementById(
+            "usableZoneVisual"
+        )
+        .style.right =
+            `${pct(s.bottomDeadzone)}%`;
+
+
+    /* AP */
+
+    document
+        .getElementById(
+            "actuationMarker"
+        )
+        .style.left =
+            `${pct(s.actuation)}%`;
+
+
+    /* Current */
+
+    document
+        .getElementById(
+            "currentMarker"
+        )
+        .style.left =
+            `${pct(s.depth)}%`;
+
+
+    /* RT */
+
+    const rt =
+        getRTPoint(
+            s
+        );
+
+
+    const rtMarker =
+        document.getElementById(
+            "rtMarker"
+        );
+
+
+    if (
+        rt === null
+    ) {
+
+        rtMarker.style.display =
+            "none";
+
+    }
+
+    else {
+
+        rtMarker.style.display =
+            "block";
+
+
+        rtMarker.style.left =
+            `${pct(rt.value)}%`;
+
+
+        document
+            .getElementById(
+                "rtMarkerLabel"
+            )
+            .textContent =
+                rt.label;
+
+    }
+
+}
+
+
+/* =========================================================
+   ACTUATION
+========================================================= */
+
+actuation.addEventListener(
+
+    "input",
+
+    () => {
+
+        const value =
+
+            Number(
+                actuation.value
+            ) / 100;
+
+
+        settings[
+            selectedKey
+        ].actuation =
+            value;
+
+
+        actuationNumber.value =
+            value.toFixed(2);
+
+
+        updateTravelUI();
+
+        updateHome();
+
+    }
+
+);
+
+
+actuationNumber.addEventListener(
+
+    "change",
+
+    () => {
+
+        let value =
+
+            Number(
+                actuationNumber.value
+            );
+
+
+        value =
+            Math.max(
+                0.1,
+                Math.min(
+                    4,
+                    value
+                )
+            );
+
+
+        settings[
+            selectedKey
+        ].actuation =
+            value;
+
+
+        actuation.value =
+            Math.round(
+                value * 100
+            );
+
+
+        actuationNumber.value =
+            value.toFixed(2);
+
+
+        updateTravelUI();
+
+        updateHome();
+
+    }
+
+);
+
+
+/* =========================================================
+   RT
+========================================================= */
+
+rtToggle.addEventListener(
+
+    "change",
+
+    () => {
+
+        const s =
+            settings[
+                selectedKey
+            ];
+
+
+        s.rapidTrigger =
+            rtToggle.checked;
+
+
+        s.rtArmed =
+            false;
+
+
+        processRapidTrigger(
+            s
+        );
+
+
+        updateTravelUI();
+
+        updateHome();
+
+    }
+
+);
+
+
+rtSensitivity.addEventListener(
+
+    "input",
+
+    () => {
+
+        const value =
+
+            Number(
+                rtSensitivity.value
+            ) / 100;
+
+
+        settings[
+            selectedKey
+        ].rtSensitivity =
+            value;
+
+
+        rtNumber.value =
+            value.toFixed(2);
+
+
+        updateTravelUI();
+
+        updateHome();
+
+    }
+
+);
+
+
+rtNumber.addEventListener(
+
+    "change",
+
+    () => {
+
+        let value =
+
+            Number(
+                rtNumber.value
+            );
+
+
+        value =
+            Math.max(
+                0.05,
+                Math.min(
+                    2,
+                    value
+                )
+            );
+
+
+        settings[
+            selectedKey
+        ].rtSensitivity =
+            value;
+
+
+        rtSensitivity.value =
+            Math.round(
+                value * 100
+            );
+
+
+        rtNumber.value =
+            value.toFixed(2);
+
+
+        updateTravelUI();
+
+        updateHome();
+
+    }
+
+);
+
+
+/* =========================================================
+   DEADZONE
+========================================================= */
+
+topDeadzone.addEventListener(
+
+    "input",
+
+    () => {
+
+        const value =
+
+            Number(
+                topDeadzone.value
+            ) / 100;
+
+
+        settings[
+            selectedKey
+        ].topDeadzone =
+            value;
+
+
+        topDeadzoneNumber.value =
+            value.toFixed(2);
+
+
+        updateTravelUI();
+
+        updateHome();
+
+    }
+
+);
+
+
+topDeadzoneNumber.addEventListener(
+
+    "change",
+
+    () => {
+
+        let value =
+
+            Number(
+                topDeadzoneNumber.value
+            );
+
+
+        value =
+            Math.max(
+                0,
+                Math.min(
+                    1,
+                    value
+                )
+            );
+
+
+        settings[
+            selectedKey
+        ].topDeadzone =
+            value;
+
+
+        topDeadzone.value =
+            Math.round(
+                value * 100
+            );
+
+
+        topDeadzoneNumber.value =
+            value.toFixed(2);
+
+
+        updateTravelUI();
+
+        updateHome();
+
+    }
+
+);
+
+
+bottomDeadzone.addEventListener(
+
+    "input",
+
+    () => {
+
+        const value =
+
+            Number(
+                bottomDeadzone.value
+            ) / 100;
+
+
+        settings[
+            selectedKey
+        ].bottomDeadzone =
+            value;
+
+
+        bottomDeadzoneNumber.value =
+            value.toFixed(2);
+
+
+        updateTravelUI();
+
+        updateHome();
+
+    }
+
+);
+
+
+bottomDeadzoneNumber.addEventListener(
+
+    "change",
+
+    () => {
+
+        let value =
+
+            Number(
+                bottomDeadzoneNumber.value
+            );
+
+
+        value =
+            Math.max(
+                0,
+                Math.min(
+                    1,
+                    value
+                )
+            );
+
+
+        settings[
+            selectedKey
+        ].bottomDeadzone =
+            value;
+
+
+        bottomDeadzone.value =
+            Math.round(
+                value * 100
+            );
+
+
+        bottomDeadzoneNumber.value =
+            value.toFixed(2);
+
+
+        updateTravelUI();
+
+        updateHome();
+
+    }
+
+);
+
+
+/* =========================================================
+   KEYBOARD VISUAL
+========================================================= */
+
+function updateKeyboardVisual() {
+
+    document
+        .querySelectorAll(
+            ".key"
+        )
+        .forEach(
+            button => {
+
+                const key =
+                    button.dataset.key;
+
+
+                const s =
+                    settings[
+                        key
+                    ];
+
+
+                button.classList.toggle(
+
+                    "current",
+
+                    mode ===
+                    "single" &&
+
+                    selectedKey ===
+                    key
+
+                );
+
+
+                button.classList.toggle(
+
+                    "multi",
+
+                    batchSelection.has(
+                        key
+                    )
+
+                );
+
+
+                button.classList.toggle(
+
+                    "pressed",
+
+                    s.pressed
+
+                );
+
+            }
+        );
+
+}
+
+
+/* =========================================================
+   SINGLE / MULTI
+========================================================= */
+
+document
+    .getElementById(
+        "singleMode"
+    )
+    .onclick =
+        () => {
+
+            mode =
+                "single";
+
+
+            document
+                .getElementById(
+                    "singleMode"
+                )
+                .classList.add(
+                    "active"
+                );
+
+
+            document
+                .getElementById(
+                    "multiMode"
+                )
+                .classList.remove(
+                    "active"
+                );
+
+
+            updateKeyboardVisual();
+
+        };
+
+
+document
+    .getElementById(
+        "multiMode"
+    )
+    .onclick =
+        () => {
+
+            mode =
+                "multi";
+
+
+            document
+                .getElementById(
+                    "multiMode"
+                )
+                .classList.add(
+                    "active"
+                );
+
+
+            document
+                .getElementById(
+                    "singleMode"
+                )
+                .classList.remove(
+                    "active"
+                );
+
+
+            updateKeyboardVisual();
+
+        };
+
+
+/* =========================================================
+   COPY SETTINGS
+========================================================= */
+
+function copySettings(
+    key
+) {
+
+    const source =
+        settings[
+            selectedKey
+        ];
+
+
+    const target =
+        settings[
+            key
+        ];
+
+
+    target.actuation =
+        source.actuation;
+
+
+    target.rapidTrigger =
+        source.rapidTrigger;
+
+
+    target.rtSensitivity =
+        source.rtSensitivity;
+
+
+    target.topDeadzone =
+        source.topDeadzone;
+
+
+    target.bottomDeadzone =
+        source.bottomDeadzone;
+
+}
+
+
+document
+    .getElementById(
+        "applyAll"
+    )
+    .onclick =
+        () => {
+
+            Object
+                .keys(
+                    settings
+                )
+                .forEach(
+                    copySettings
+                );
+
+
+            log(
+                "settings applied to all 61 hall keys",
+                true
+            );
+
+        };
+
+
+document
+    .getElementById(
+        "applySelected"
+    )
+    .onclick =
+        () => {
+
+            if (
+                batchSelection.size ===
+                0
+            ) {
+
+                log(
+                    "ERROR: no selected keys"
+                );
+
+
+                return;
+
+            }
+
+
+            batchSelection
+                .forEach(
+                    copySettings
+                );
+
+
+            log(
+
+                `settings applied to ${batchSelection.size} keys`,
+
+                true
+
+            );
+
+        };
+
+
+document
+    .getElementById(
+        "clearSelection"
+    )
+    .onclick =
+        () => {
+
+            batchSelection.clear();
+
+
+            updateSelectionCount();
+
+            updateKeyboardVisual();
+
+
+            log(
+                "selection cleared"
+            );
+
+        };
+
+
+function updateSelectionCount() {
+
+    selectionCount.textContent =
+
+        `selected_for_batch = ${batchSelection.size}`;
+
+}
+
+
+/* =========================================================
+   CALIBRATION MOCK
+========================================================= */
+
+document
+    .getElementById(
+        "setRest"
+    )
+    .onclick =
+        () => {
+
+            const s =
+                settings[
+                    selectedKey
+                ];
+
+
+            s.restRaw =
+                Math.round(
+                    500 +
+                    s.depth * 40
+                );
+
+
+            document
+                .getElementById(
+                    "restRaw"
+                )
+                .textContent =
+                    s.restRaw;
+
+
+            log(
+
+                `${selectedKey} rest calibration = ${s.restRaw}`,
+
+                true
+
+            );
+
+        };
+
+
+document
+    .getElementById(
+        "setBottom"
+    )
+    .onclick =
+        () => {
+
+            const s =
+                settings[
+                    selectedKey
+                ];
+
+
+            s.bottomRaw =
+                Math.round(
+                    3400 +
+                    s.depth * 40
+                );
+
+
+            document
+                .getElementById(
+                    "bottomRaw"
+                )
+                .textContent =
+                    s.bottomRaw;
+
+
+            log(
+
+                `${selectedKey} bottom calibration = ${s.bottomRaw}`,
+
+                true
+
+            );
+
+        };
+
+
+/* =========================================================
+   PROFILES
+========================================================= */
+
+document
+    .querySelectorAll(
+        ".profile-button"
+    )
+    .forEach(
+        button => {
+
+            button.onclick =
+                () => {
+
+                    currentProfile =
+
+                        Number(
+                            button.dataset.profile
+                        );
+
+
+                    document
+                        .querySelectorAll(
+                            ".profile-button"
+                        )
+                        .forEach(
+                            p =>
+                                p.classList.remove(
+                                    "active"
+                                )
+                        );
+
+
+                    button.classList.add(
+                        "active"
+                    );
+
+
+                    document
+                        .getElementById(
+                            "sidebarProfile"
+                        )
+                        .textContent =
+
+                            `Profile ${currentProfile}`;
+
+
+                    updateHome();
+
+
+                    log(
+
+                        `PROFILE_${currentProfile} loaded`,
+
+                        true
+
+                    );
+
+                };
+
+        }
+    );
+
+
+/* =========================================================
+   PERFORMANCE
+========================================================= */
+
+document
+    .getElementById(
+        "pollingSelect"
+    )
+    .onchange =
+        event => {
+
+            pollingRate =
+
+                Number(
+                    event.target.value
+                );
+
+
+            const interval =
+
+                1000 /
+                pollingRate;
+
+
+            document
+                .getElementById(
+                    "performancePolling"
+                )
+                .textContent =
+
+                    `${pollingRate} Hz`;
+
+
+            document
+                .getElementById(
+                    "reportInterval"
+                )
+                .textContent =
+
+                    `${interval.toFixed(3)} ms`;
+
+
+            document
+                .getElementById(
+                    "sidebarPolling"
+                )
+                .textContent =
+
+                    `${pollingRate} Hz`;
+
+
+            updateHome();
+
+
+            log(
+
+                `polling rate = ${pollingRate} Hz`
+
+            );
+
+        };
+
+
+/* =========================================================
+   HOME READ ONLY
+========================================================= */
+
+function updateHome() {
+
+    const s =
+        settings[
+            selectedKey
+        ];
+
+
+    document
+        .getElementById(
+            "homeProfile"
+        )
+        .textContent =
+
+            `PROFILE_${currentProfile}`;
+
+
+    document
+        .getElementById(
+            "homePolling"
+        )
+        .textContent =
+
+            `${pollingRate} Hz`;
+
+
+    document
+        .getElementById(
+            "homePollingSub"
+        )
+        .textContent =
+
+            `${(
+                1000 /
+                pollingRate
+            ).toFixed(3)} ms report interval`;
+
+
+    document
+        .getElementById(
+            "homeKeyState"
+        )
+        .textContent =
+
+            `${selectedKey} : ${
+                s.pressed
+                ? "PRESSED"
+                : "RELEASED"
+            }`;
+
+
+    document
+        .getElementById(
+            "homeSelectedKey"
+        )
+        .textContent =
+            selectedKey;
+
+
+    document
+        .getElementById(
+            "homeActuation"
+        )
+        .textContent =
+
+            `${s.actuation.toFixed(2)} mm`;
+
+
+    document
+        .getElementById(
+            "homeRT"
+        )
+        .textContent =
+
+            s.rapidTrigger
+            ? "ENABLED"
+            : "DISABLED";
+
+
+    document
+        .getElementById(
+            "homeRTSensitivity"
+        )
+        .textContent =
+
+            `${s.rtSensitivity.toFixed(2)} mm`;
+
+
+    document
+        .getElementById(
+            "homeTopDeadzone"
+        )
+        .textContent =
+
+            `${s.topDeadzone.toFixed(2)} mm`;
+
+
+    document
+        .getElementById(
+            "homeBottomDeadzone"
+        )
+        .textContent =
+
+            `${s.bottomDeadzone.toFixed(2)} mm`;
+
+}
+
+
+/* =========================================================
+   PAGE NAVIGATION
+========================================================= */
+
+document
+    .querySelectorAll(
+        ".nav-button"
+    )
+    .forEach(
+        button => {
+
+            button.onclick =
+                () => {
+
+                    document
+                        .querySelectorAll(
+                            ".nav-button"
+                        )
+                        .forEach(
+                            b =>
+                                b.classList.remove(
+                                    "active"
+                                )
+                        );
+
+
+                    button.classList.add(
+                        "active"
+                    );
+
+
+                    const page =
+                        button.dataset.page;
+
+
+                    document
+                        .querySelectorAll(
+                            ".page"
+                        )
+                        .forEach(
+                            p =>
+                                p.classList.remove(
+                                    "active"
+                                )
+                        );
+
+
+                    document
+                        .getElementById(
+                            `page-${page}`
+                        )
+                        .classList.add(
+                            "active"
+                        );
+
+
+                    document
+                        .getElementById(
+                            "breadcrumb"
+                        )
+                        .textContent =
+                            page;
+
+
+                    if (
+                        page ===
+                        "home"
+                    ) {
+
+                        updateHome();
+
+                    }
+
+                };
+
+        }
+    );
+
+
+/* =========================================================
+   SAVE MOCK
+========================================================= */
+
+document
+    .getElementById(
+        "saveKeyboard"
+    )
+    .onclick =
+        () => {
+
+            log(
+                "writing configuration to mock device..."
+            );
+
+
+            setTimeout(
+
+                () => {
+
+                    log(
+                        "configuration saved",
+                        true
+                    );
+
+                },
+
+                300
+
+            );
+
+        };
+
+
+/* =========================================================
+   START
+========================================================= */
+
+buildHallKeyboard();
+
+buildFunctionRow();
+
+buildNav();
+
+buildNumpad();
+
+loadSelectedKey();
+
+updateHome();
+
+log(
+    "UI ready",
+    true
+);
+
+</script>
+
+</body>
+</html>
