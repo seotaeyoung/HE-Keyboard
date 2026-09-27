@@ -3,6352 +3,2057 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <title>HE Keyboard</title>
 
 <style>
-
 :root {
     --bg: #080b10;
     --panel: #0d1118;
     --panel2: #111722;
     --panel3: #151c28;
-
     --border: #202938;
     --border-light: #2c374a;
-
     --text: #e7eaf0;
     --sub: #818b9d;
-
     --purple: #8b5cf6;
     --purple2: #a78bfa;
-
     --green: #4ade80;
     --orange: #fb923c;
     --red: #fb7185;
     --cyan: #22d3ee;
-
+    --content-max: 1520px;
     --sidebar-open: 224px;
     --sidebar-closed: 64px;
-
-    --content-max: 2100px;
 }
 
-
-/* =========================================================
-   BASE
-========================================================= */
-
-* {
-    box-sizing: border-box;
-}
-
-html,
-body {
+* { box-sizing: border-box; }
+html, body {
     margin: 0;
-
     width: 100%;
-    min-width: 0;
-
     height: 100%;
-
+    min-width: 0;
     background: var(--bg);
-
     color: var(--text);
-
-    font-family:
-        "Cascadia Code",
-        "JetBrains Mono",
-        Consolas,
-        monospace;
+    font-family: "Cascadia Code", "JetBrains Mono", Consolas, monospace;
 }
-
 body {
     overflow: hidden;
-
     background:
-        linear-gradient(
-            rgba(255,255,255,0.014) 1px,
-            transparent 1px
-        ),
-        linear-gradient(
-            90deg,
-            rgba(255,255,255,0.014) 1px,
-            transparent 1px
-        ),
+        linear-gradient(rgba(255,255,255,.014) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,.014) 1px, transparent 1px),
         var(--bg);
-
     background-size: 24px 24px;
 }
-
-button,
-input,
-select {
-    font-family: inherit;
-}
-
-
-/* =========================================================
-   APP
-========================================================= */
+button, input, select { font-family: inherit; }
 
 .app {
     width: 100%;
     height: 100vh;
-
     display: grid;
-
-    grid-template-columns:
-        var(--sidebar-open)
-        minmax(0, 1fr);
-
-    transition:
-        grid-template-columns 0.18s ease;
+    grid-template-columns: var(--sidebar-open) minmax(0, 1fr);
+    transition: grid-template-columns .18s ease;
 }
-
 .app.sidebar-collapsed {
-    grid-template-columns:
-        var(--sidebar-closed)
-        minmax(0, 1fr);
+    grid-template-columns: var(--sidebar-closed) minmax(0, 1fr);
 }
-
-
-/* =========================================================
-   SIDEBAR
-========================================================= */
-
 .sidebar {
     min-width: 0;
-
     padding: 15px;
-
     overflow: hidden;
-
-    background:
-        rgba(9, 13, 20, 0.98);
-
-    border-right:
-        1px solid var(--border);
-
+    background: rgba(9,13,20,.98);
+    border-right: 1px solid var(--border);
     display: flex;
     flex-direction: column;
 }
-
 .sidebar-header {
     height: 38px;
-
     display: flex;
     align-items: center;
-
     margin-bottom: 16px;
 }
-
 .brand {
     font-size: 18px;
-
     font-weight: 700;
-
     letter-spacing: 1px;
-
     white-space: nowrap;
 }
-
-.brand span {
-    color: var(--purple2);
-}
-
+.brand span { color: var(--purple2); }
 .brand-short {
     display: none;
-
-    font-size: 17px;
-
-    font-weight: 800;
-
     color: var(--purple2);
+    font-size: 17px;
+    font-weight: 800;
 }
-
-.sidebar-collapsed .brand {
-    display: none;
-}
-
-.sidebar-collapsed .brand-short {
-    display: block;
-}
-
-
+.sidebar-collapsed .brand { display: none; }
+.sidebar-collapsed .brand-short { display: block; }
 .device-card {
     padding: 11px;
-
     margin-bottom: 18px;
-
     background: var(--panel);
-
-    border:
-        1px solid var(--border);
+    border: 1px solid var(--border);
 }
-
 .device-title {
     display: flex;
-
     align-items: center;
-
     gap: 8px;
-
     font-size: 11px;
-
     white-space: nowrap;
 }
-
 .status-dot {
     width: 8px;
     height: 8px;
-
     min-width: 8px;
-
     border-radius: 50%;
-
     background: var(--green);
-
-    box-shadow:
-        0 0 8px
-        rgba(74,222,128,0.9);
+    box-shadow: 0 0 8px rgba(74,222,128,.9);
 }
-
 .device-small {
     margin-top: 9px;
-
     color: var(--sub);
-
-    font-size: 8px;
-
+    font-size: 10px;
     line-height: 1.8;
-
     white-space: nowrap;
 }
-
 .sidebar-collapsed .device-card {
     padding: 10px;
-
     display: flex;
     justify-content: center;
 }
-
 .sidebar-collapsed .device-title span,
-.sidebar-collapsed .device-small {
-    display: none;
-}
-
-
+.sidebar-collapsed .device-small { display: none; }
 .nav-title {
     margin-bottom: 7px;
-
     color: #556073;
-
-    font-size: 8px;
+    font-size: 10px;
 }
-
-.sidebar-collapsed .nav-title {
-    display: none;
-}
-
-
+.sidebar-collapsed .nav-title { display: none; }
 .nav-button {
     width: 100%;
-    height: 41px;
-
+    height: 42px;
     margin-bottom: 4px;
-
     padding: 0 8px;
-
-    border: none;
-
+    border: 0;
     border-radius: 6px;
-
     background: transparent;
-
     color: #9da7b9;
-
     cursor: pointer;
-
     display: flex;
     align-items: center;
-
     text-align: left;
+    font-size: 12px;
 }
-
-.nav-button:hover {
-    color: white;
-
-    background: #121824;
-}
-
-.nav-button.active {
-    color: #d7ccff;
-
-    background:
-        rgba(139,92,246,0.17);
-}
-
+.nav-button:hover { color: #fff; background: #121824; }
+.nav-button.active { color: #d7ccff; background: rgba(139,92,246,.17); }
 .nav-symbol {
     width: 27px;
-
     min-width: 27px;
-
     color: var(--purple2);
-
     text-align: center;
-
     font-weight: 700;
 }
-
-.nav-name {
-    margin-left: 4px;
-
-    white-space: nowrap;
-}
-
-.sidebar-collapsed .nav-button {
-    padding: 0;
-
-    justify-content: center;
-}
-
-.sidebar-collapsed .nav-symbol {
-    width: auto;
-
-    font-size: 14px;
-}
-
-.sidebar-collapsed .nav-name {
-    display: none;
-}
-
-
-.sidebar-bottom {
-    margin-top: auto;
-}
-
-.sidebar-collapsed .sidebar-bottom {
-    display: none;
-}
-
+.nav-name { margin-left: 4px; white-space: nowrap; }
+.sidebar-collapsed .nav-button { padding: 0; justify-content: center; }
+.sidebar-collapsed .nav-symbol { width: auto; font-size: 15px; }
+.sidebar-collapsed .nav-name { display: none; }
+.sidebar-bottom { margin-top: auto; }
+.sidebar-collapsed .sidebar-bottom { display: none; }
 .sidebar-state {
     padding-top: 10px;
-
-    border-top:
-        1px solid #151c26;
-
-    font-size: 8px;
-
-    line-height: 1.7;
-
+    border-top: 1px solid #151c26;
     color: #647084;
+    font-size: 10px;
+    line-height: 1.7;
 }
-
-.sidebar-state.pending {
-    color: var(--orange);
-}
-
-.sidebar-state.applied {
-    color: var(--cyan);
-}
-
-.sidebar-state.saved {
-    color: var(--green);
-}
-
-
-/* =========================================================
-   MAIN
-========================================================= */
+.sidebar-state.pending { color: var(--orange); }
+.sidebar-state.applied { color: var(--cyan); }
+.sidebar-state.saved { color: var(--green); }
 
 .main {
     min-width: 0;
     min-height: 0;
-
     display: flex;
     flex-direction: column;
 }
-
-
-/* =========================================================
-   TOP BAR
-========================================================= */
-
 .topbar {
     flex: 0 0 58px;
-
     min-width: 0;
-
     padding: 0 18px;
-
-    border-bottom:
-        1px solid var(--border);
-
-    background:
-        rgba(8,11,16,0.95);
-
+    border-bottom: 1px solid var(--border);
+    background: rgba(8,11,16,.95);
     display: flex;
-
     align-items: center;
-
     justify-content: space-between;
-
     gap: 15px;
 }
-
 .topbar-left {
     min-width: 0;
-
     display: flex;
-
     align-items: center;
-
     gap: 12px;
 }
-
 .sidebar-toggle {
     width: 34px;
     height: 32px;
-
     flex: 0 0 auto;
-
-    border:
-        1px solid var(--border);
-
+    border: 1px solid var(--border);
     border-radius: 5px;
-
     background: var(--panel);
-
     color: #b7c0ce;
-
     cursor: pointer;
-
-    font-size: 15px;
+    font-size: 16px;
 }
-
-.sidebar-toggle:hover {
-    border-color: #5f4a82;
-
-    color: white;
-}
-
+.sidebar-toggle:hover { border-color: #5f4a82; color: #fff; }
 .breadcrumb {
     overflow: hidden;
-
     text-overflow: ellipsis;
-
     white-space: nowrap;
-
     color: var(--sub);
-
-    font-size: 9px;
+    font-size: 11px;
 }
-
-.breadcrumb strong {
-    color: #cabdff;
-}
-
-
+.breadcrumb strong { color: #cabdff; }
 .topbar-actions {
     display: flex;
-
     align-items: center;
-
     gap: 8px;
-
     flex: 0 0 auto;
 }
-
 .global-status {
     margin-right: 5px;
-
     color: #6d788a;
-
-    font-size: 8px;
-
+    font-size: 10px;
     white-space: nowrap;
 }
-
-.global-status.pending {
-    color: var(--orange);
-}
-
-.global-status.applied {
-    color: var(--cyan);
-}
-
-.global-status.saved {
-    color: var(--green);
-}
-
+.global-status.pending { color: var(--orange); }
+.global-status.applied { color: var(--cyan); }
+.global-status.saved { color: var(--green); }
 .global-button {
     height: 32px;
-
     padding: 0 12px;
-
-    border:
-        1px solid var(--border);
-
+    border: 1px solid var(--border);
     border-radius: 4px;
-
     background: #111722;
-
     color: #bfc7d4;
-
     cursor: pointer;
-
-    font-size: 8px;
-
+    font-size: 10px;
     white-space: nowrap;
 }
-
-.global-button:hover {
-    border-color: #536076;
-
-    color: white;
-}
-
-.global-button.apply {
-    border-color: #5c4a85;
-
-    color: #c7b8ff;
-}
-
-.global-button.save {
-    border-color: #8257ee;
-
-    background: #6c37dd;
-
-    color: white;
-}
-
-
-/* =========================================================
-   CONTENT
-========================================================= */
-
+.global-button:hover { border-color: #536076; color: white; }
+.global-button.apply { border-color: #5c4a85; color: #c7b8ff; }
+.global-button.save { border-color: #8257ee; background: #6c37dd; color: white; }
 .content {
     flex: 1;
-
     min-height: 0;
     min-width: 0;
-
     overflow-y: auto;
     overflow-x: hidden;
-
-    padding:
-        clamp(14px, 1.2vw, 22px);
+    padding: clamp(14px, 1.2vw, 22px);
 }
-
-.page {
-    display: none;
-
-    width: 100%;
-}
-
-.page.active {
-    display: block;
-}
-
+.page { display: none; width: 100%; }
+.page.active { display: block; }
 .page-shell {
-    width: 100%;
-
-    max-width: var(--content-max);
-
+    width: min(100%, var(--content-max));
     margin: 0 auto;
-
-    padding-bottom: 50px;
+    padding-bottom: 60px;
 }
-
-
-/* =========================================================
-   COMMON
-========================================================= */
 
 .page-header {
     margin-bottom: 16px;
-
     display: flex;
-
     align-items: flex-start;
-
     justify-content: space-between;
-
     gap: 15px;
 }
-
-.page-title {
-    margin-bottom: 5px;
-
-    font-size:
-        clamp(23px, 2vw, 30px);
-
-    font-weight: 700;
-}
-
-.page-description {
-    color: var(--sub);
-
-    font-size: 9px;
-}
-
+.page-title { margin-bottom: 5px; font-size: 30px; font-weight: 700; }
+.page-description { color: var(--sub); font-size: 11px; }
 .terminal-command {
     flex: 0 0 auto;
-
     padding: 8px 10px;
-
-    border:
-        1px solid var(--border);
-
+    border: 1px solid var(--border);
     background: var(--panel);
-
     color: #687487;
-
-    font-size: 8px;
+    font-size: 10px;
 }
-
-.terminal-command span {
-    color: var(--purple2);
-}
-
-
+.terminal-command span { color: var(--purple2); }
 .panel {
     min-width: 0;
-
-    padding:
-        clamp(11px, 0.9vw, 15px);
-
-    background:
-        rgba(13,17,24,0.95);
-
-    border:
-        1px solid var(--border);
-
+    padding: 14px;
+    background: rgba(13,17,24,.95);
+    border: 1px solid var(--border);
     border-radius: 7px;
 }
-
 .panel-title {
     margin-bottom: 11px;
-
     color: #c7cfdb;
-
-    font-size: 9px;
-
+    font-size: 11px;
     font-weight: 600;
 }
-
-.small-text {
-    color: var(--sub);
-
-    font-size: 8px;
-}
-
-
-/* =========================================================
-   HOME
-========================================================= */
+.small-text { color: var(--sub); font-size: 10px; }
 
 .home-primary {
     display: grid;
-
-    grid-template-columns:
-        repeat(
-            auto-fit,
-            minmax(210px, 1fr)
-        );
-
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
     gap: 11px;
-
     margin-bottom: 11px;
 }
-
 .home-card {
-    min-height: 122px;
-
+    min-height: 125px;
     padding: 14px;
-
     background: var(--panel);
-
-    border:
-        1px solid var(--border);
-
+    border: 1px solid var(--border);
     border-radius: 7px;
 }
-
-.home-card-label {
-    margin-bottom: 12px;
-
-    color: #657185;
-
-    font-size: 8px;
-}
-
-.home-card-value {
-    margin-bottom: 8px;
-
-    color: #dce1ea;
-
-    font-size:
-        clamp(17px, 1.5vw, 21px);
-}
-
-.home-card-value.green {
-    color: var(--green);
-}
-
-.home-card-value.purple {
-    color: #c5b5ff;
-}
-
-.home-card-value.orange {
-    color: var(--orange);
-}
-
-.home-card-sub {
-    color: #727d90;
-
-    font-size: 8px;
-
-    line-height: 1.6;
-}
-
-
+.home-card-label { margin-bottom: 12px; color: #657185; font-size: 10px; }
+.home-card-value { margin-bottom: 8px; color: #dce1ea; font-size: 21px; }
+.home-card-value.green { color: var(--green); }
+.home-card-value.purple { color: #c5b5ff; }
+.home-card-value.orange { color: var(--orange); }
+.home-card-sub { color: #727d90; font-size: 10px; line-height: 1.6; }
 .home-specs {
     display: grid;
-
-    grid-template-columns:
-        minmax(0, 1.3fr)
-        minmax(280px, 0.7fr);
-
+    grid-template-columns: minmax(0, 1.3fr) minmax(300px, .7fr);
     gap: 11px;
 }
-
 .spec-list {
     display: grid;
-
-    grid-template-columns:
-        repeat(
-            2,
-            minmax(0,1fr)
-        );
-
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 0 20px;
 }
-
 .spec-row {
     min-width: 0;
-
-    padding: 10px 3px;
-
-    border-bottom:
-        1px solid #161e29;
-
+    padding: 11px 3px;
+    border-bottom: 1px solid #161e29;
     display: flex;
-
     align-items: center;
-
     justify-content: space-between;
-
     gap: 10px;
-
-    font-size: 8px;
+    font-size: 10px;
 }
-
-.spec-row span:first-child {
-    color: #667185;
-}
-
+.spec-row span:first-child { color: #667185; }
 .spec-row span:last-child {
     min-width: 0;
-
     color: #d1d7e2;
-
     text-align: right;
-
     overflow-wrap: anywhere;
 }
-
 .readonly-note {
+    margin-top: 12px;
     padding: 13px;
-
-    border:
-        1px solid #172131;
-
+    border: 1px solid #172131;
     background: #090e14;
-
     color: #6c788b;
-
-    font-size: 8px;
-
+    font-size: 10px;
     line-height: 1.8;
 }
 
-
-/* =========================================================
-   KEYS META
-========================================================= */
-
 .keys-meta {
     margin-bottom: 11px;
-
     display: grid;
-
-    grid-template-columns:
-        minmax(0,1fr)
-        auto;
-
+    grid-template-columns: minmax(0,1fr) auto;
     gap: 10px;
 }
-
 .profile-strip,
 .performance-strip {
     min-width: 0;
-
     padding: 7px;
-
-    border:
-        1px solid var(--border);
-
+    border: 1px solid var(--border);
     border-radius: 6px;
-
     background: var(--panel);
-
     display: flex;
-
     align-items: center;
-
     gap: 6px;
 }
-
-.meta-label {
-    margin-right: 5px;
-
-    color: #667185;
-
-    font-size: 8px;
-}
-
+.meta-label { margin-right: 5px; color: #667185; font-size: 10px; }
 .profile-button {
-    padding: 7px 10px;
-
-    border:
-        1px solid var(--border);
-
+    padding: 8px 12px;
+    border: 1px solid var(--border);
     background: #101621;
-
     color: #788397;
-
     cursor: pointer;
-
-    font-size: 8px;
+    font-size: 10px;
 }
-
 .profile-button.active {
     border-color: var(--purple);
-
-    background:
-        rgba(139,92,246,0.17);
-
+    background: rgba(139,92,246,.17);
     color: white;
 }
-
 .polling-select {
-    padding: 6px 8px;
-
-    border:
-        1px solid var(--border);
-
+    padding: 7px 9px;
+    border: 1px solid var(--border);
     background: #101621;
-
     color: white;
-
-    font-size: 8px;
+    font-size: 10px;
 }
-
-
-/* =========================================================
-   KEYBOARD SECTION
-========================================================= */
-
 .keys-main-grid {
     display: grid;
-
-    grid-template-columns:
-        minmax(0, 1fr)
-        minmax(235px, 270px);
-
+    grid-template-columns: minmax(0, 1fr) 285px;
     gap: 11px;
 }
-
 .keyboard-toolbar {
     margin-bottom: 10px;
-
     display: flex;
-
     align-items: center;
-
     justify-content: space-between;
-
     gap: 10px;
 }
-
-.legend {
-    display: flex;
-
-    flex-wrap: wrap;
-
-    gap: 10px;
-
-    color: #626d80;
-
-    font-size: 7px;
-}
-
-.legend-item {
-    display: flex;
-
-    align-items: center;
-
-    gap: 4px;
-}
-
-.legend-square {
-    width: 7px;
-    height: 7px;
-
-    border:
-        1px solid #3c4657;
-
-    background: #151c27;
-}
-
-.legend-square.hall {
-    border-color: var(--purple);
-}
-
-.legend-square.mechanical {
-    background: #0d1218;
-
-    border-color: #303746;
-}
-
-.segmented {
-    flex: 0 0 auto;
-
-    display: flex;
-
-    border:
-        1px solid var(--border);
-
-    background: #0a0e14;
-}
-
+.legend { display: flex; flex-wrap: wrap; gap: 10px; color: #626d80; font-size: 9px; }
+.legend-item { display: flex; align-items: center; gap: 4px; }
+.legend-square { width: 8px; height: 8px; border: 1px solid #3c4657; background: #151c27; }
+.legend-square.hall { border-color: var(--purple); }
+.legend-square.mechanical { background: #0d1218; border-color: #303746; }
+.segmented { flex: 0 0 auto; display: flex; border: 1px solid var(--border); background: #0a0e14; }
 .segmented button {
-    padding: 7px 11px;
-
-    border: none;
-
+    padding: 8px 12px;
+    border: 0;
     background: transparent;
-
     color: #6c7688;
-
     cursor: pointer;
-
-    font-size: 8px;
+    font-size: 10px;
 }
-
-.segmented button.active {
-    background: #32186a;
-
-    color: white;
-}
-
-
-/* =========================================================
-   KEYBOARD STAGE
-========================================================= */
-
+.segmented button.active { background: #32186a; color: white; }
 .keyboard-stage {
     width: 100%;
     min-width: 0;
-
-    padding:
-        clamp(7px, 0.6vw, 11px);
-
-    border:
-        1px solid #1b2431;
-
+    padding: 10px;
+    border: 1px solid #1b2431;
     border-radius: 5px;
-
     background: #090d13;
 }
-
-
-/* =========================================================
-   FUNCTION ROW
-========================================================= */
-
 .function-row {
     width: 100%;
-
-    margin-bottom:
-        clamp(7px,0.7vw,11px);
-
+    margin-bottom: 9px;
     display: grid;
-
-    grid-template-columns:
-        repeat(19, minmax(0,1fr));
-
-    gap:
-        clamp(2px,0.18vw,4px);
+    grid-template-columns: repeat(19, minmax(0,1fr));
+    gap: 3px;
 }
-
-
-/* =========================================================
-   BOARD BODY
-========================================================= */
-
 .keyboard-body {
     width: 100%;
     min-width: 0;
-
     display: grid;
-
-    grid-template-columns:
-        minmax(0,1fr)
-        minmax(150px, 21%);
-
-    gap:
-        clamp(6px,0.7vw,11px);
-
+    grid-template-columns: minmax(0,1fr) minmax(170px, 22%);
+    gap: 9px;
     align-items: start;
 }
-
-.hall-board {
-    width: 100%;
-
-    min-width: 0;
-}
-
+.hall-board { width: 100%; min-width: 0; }
 .hall-row {
     width: 100%;
-
-    margin-bottom:
-        clamp(2px,0.25vw,4px);
-
+    margin-bottom: 3px;
     display: grid;
-
-    grid-template-columns:
-        repeat(
-            60,
-            minmax(0,1fr)
-        );
-
-    gap:
-        clamp(1px,0.12vw,2px);
+    grid-template-columns: repeat(60, minmax(0,1fr));
+    gap: 2px;
 }
-
-
-/* =========================================================
-   KEYS
-========================================================= */
-
 .key,
 .mech-key {
     min-width: 0;
-
-    height:
-        clamp(
-            27px,
-            2.35vw,
-            42px
-        );
-
-    border-radius:
-        clamp(3px,0.25vw,5px);
-
-    font-size:
-        clamp(
-            5px,
-            0.52vw,
-            9px
-        );
-
+    height: clamp(32px, 2.1vw, 42px);
+    border-radius: 4px;
+    font-size: clamp(8px, .58vw, 10px);
     overflow: hidden;
-
     white-space: nowrap;
-
     text-overflow: ellipsis;
 }
-
 .key {
     padding: 0 2px;
-
-    border:
-        1px solid #394559;
-
-    background:
-        linear-gradient(
-            180deg,
-            #171e29,
-            #101620
-        );
-
+    border: 1px solid #394559;
+    background: linear-gradient(180deg, #171e29, #101620);
     color: #dce1ea;
-
-    box-shadow:
-        inset 0 1px 0
-        rgba(255,255,255,0.05);
-
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.05);
     cursor: pointer;
-
-    transition: 0.1s;
+    transition: .1s;
 }
-
-.key:hover {
-    border-color: #685091;
-}
-
-.key.current {
-    border:
-        2px solid var(--purple);
-
-    box-shadow:
-        0 0 9px
-        rgba(139,92,246,0.38);
-}
-
-.key.multi {
-    border:
-        2px solid var(--orange);
-}
-
-.key.pressed {
-    background: #123622;
-
-    border-color: var(--green);
-
-    color: #bdffd4;
-}
-
+.key:hover { border-color: #685091; }
+.key.current { border: 2px solid var(--purple); box-shadow: 0 0 9px rgba(139,92,246,.38); }
+.key.multi { border: 2px solid var(--orange); }
+.key.pressed { background: #123622; border-color: var(--green); color: #bdffd4; }
 .mech-key {
     padding: 0 1px;
-
-    border:
-        1px solid #2c3441;
-
-    background:
-        linear-gradient(
-            180deg,
-            #111720,
-            #0c1118
-        );
-
-    color: #586376;
-
+    border: 1px solid #2c3441;
+    background: linear-gradient(180deg, #111720, #0c1118);
+    color: #667184;
     cursor: default;
-
-    opacity: 0.8;
+    opacity: .84;
 }
-
-
-/* =========================================================
-   MECHANICAL SIDE
-========================================================= */
-
 .mechanical-side {
     min-width: 0;
-
     display: grid;
-
-    grid-template-columns:
-        minmax(0,0.9fr)
-        minmax(0,1.1fr);
-
-    gap:
-        clamp(4px,0.4vw,8px);
+    grid-template-columns: minmax(0,.9fr) minmax(0,1.1fr);
+    gap: 6px;
 }
-
-.cluster-title {
-    margin-bottom: 4px;
-
-    color: #485265;
-
-    font-size:
-        clamp(
-            5px,
-            0.4vw,
-            7px
-        );
-}
-
+.cluster-title { margin-bottom: 4px; color: #596579; font-size: 8px; }
 .nav-cluster,
-.arrow-cluster {
-    display: grid;
-
-    grid-template-columns:
-        repeat(3,minmax(0,1fr));
-
-    gap:
-        clamp(1px,0.15vw,3px);
-}
-
-.arrow-cluster {
-    margin-top:
-        clamp(7px,0.6vw,12px);
-}
-
+.arrow-cluster { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 2px; }
+.arrow-cluster { margin-top: 9px; }
 .numpad {
     display: grid;
-
-    grid-template-columns:
-        repeat(
-            4,
-            minmax(0,1fr)
-        );
-
-    grid-auto-rows:
-        clamp(
-            27px,
-            2.35vw,
-            42px
-        );
-
-    gap:
-        clamp(1px,0.15vw,3px);
+    grid-template-columns: repeat(4,minmax(0,1fr));
+    grid-auto-rows: clamp(32px, 2.1vw, 42px);
+    gap: 2px;
 }
+.numpad .mech-key { height: auto; }
+.numpad-plus, .numpad-enter { grid-row: span 2; }
+.numpad-zero { grid-column: span 2; }
 
-.numpad .mech-key {
-    height: auto;
-}
-
-.numpad-plus,
-.numpad-enter {
-    grid-row: span 2;
-}
-
-.numpad-zero {
-    grid-column: span 2;
-}
-
-
-/* =========================================================
-   SELECTED KEY SETTINGS
-========================================================= */
-
-.selected-key {
-    margin-bottom: 14px;
-
-    color: #cabaff;
-
-    font-size:
-        clamp(
-            24px,
-            2vw,
-            30px
-        );
-}
-
-.field {
-    margin-bottom: 14px;
-}
-
+.selected-key { margin-bottom: 14px; color: #cabaff; font-size: 30px; }
+.field { margin-bottom: 14px; }
 .field-line {
     margin-bottom: 6px;
-
     display: flex;
-
     align-items: center;
-
     justify-content: space-between;
-
     gap: 8px;
 }
-
-.field-label {
-    color: #afb8c6;
-
-    font-size: 8px;
-}
-
+.field-label { color: #afb8c6; font-size: 10px; }
 .number-input {
-    width: 68px;
-
-    padding: 5px;
-
-    border:
-        1px solid var(--border);
-
+    width: 72px;
+    padding: 6px;
+    border: 1px solid var(--border);
     background: #111722;
-
     color: white;
-
     text-align: right;
-
-    font-size: 8px;
+    font-size: 10px;
 }
-
-input[type="range"] {
-    width: 100%;
-
-    accent-color: var(--purple);
-}
-
+input[type="range"] { width: 100%; accent-color: var(--purple); }
 .toggle {
     appearance: none;
-
     width: 34px;
     height: 18px;
-
     border-radius: 20px;
-
     background: #242c39;
-
     position: relative;
-
     cursor: pointer;
 }
-
 .toggle::before {
     content: "";
-
     position: absolute;
-
     width: 14px;
     height: 14px;
-
     top: 2px;
     left: 2px;
-
     border-radius: 50%;
-
     background: white;
-
-    transition: 0.15s;
+    transition: .15s;
 }
+.toggle:checked { background: var(--purple); }
+.toggle:checked::before { left: 18px; }
+.live-state-box { margin-top: 10px; padding: 10px; border: 1px solid var(--border); background: #090e14; }
+.live-state-value { display: flex; align-items: center; gap: 8px; color: var(--green); font-size: 15px; }
 
-.toggle:checked {
-    background: var(--purple);
-}
-
-.toggle:checked::before {
-    left: 18px;
-}
-
-.live-state-box {
-    margin-top: 10px;
-
-    padding: 10px;
-
-    border:
-        1px solid var(--border);
-
-    background: #090e14;
-}
-
-.live-state-value {
-    display: flex;
-
-    align-items: center;
-
-    gap: 8px;
-
-    color: var(--green);
-
-    font-size: 14px;
-}
-
-
-/* =========================================================
-   TRAVEL VISUALIZER
-========================================================= */
-
-.travel-panel {
-    margin-top: 11px;
-}
-
+.travel-panel { margin-top: 11px; }
 .travel-header {
     margin-bottom: 10px;
-
     display: flex;
-
     align-items: center;
-
     justify-content: space-between;
-
     gap: 15px;
 }
-
-.travel-number {
-    flex: 0 0 auto;
-
-    color: #c8b8ff;
-
-    font-size:
-        clamp(
-            20px,
-            1.8vw,
-            27px
-        );
-}
-
-.travel-visual {
-    height: 87px;
-
-    margin:
-        3px 9px
-        0 9px;
-
-    position: relative;
-}
-
+.travel-number { flex: 0 0 auto; color: #c8b8ff; font-size: 25px; }
+.travel-visual { height: 90px; margin: 3px 9px 0; position: relative; }
 .travel-axis {
     position: absolute;
-
     left: 0;
     right: 0;
-
-    top: 37px;
-
-    height: 12px;
-
+    top: 38px;
+    height: 13px;
     overflow: hidden;
-
-    border:
-        1px solid #2a3443;
-
+    border: 1px solid #2a3443;
     border-radius: 4px;
-
     background: #151c27;
 }
-
-.deadzone {
-    position: absolute;
-
-    top: 0;
-    bottom: 0;
-
-    background:
-        rgba(251,113,133,0.28);
-}
-
-.deadzone.top {
-    left: 0;
-}
-
-.deadzone.bottom {
-    right: 0;
-}
-
-.usable-zone {
-    position: absolute;
-
-    top: 0;
-    bottom: 0;
-
-    background:
-        rgba(74,222,128,0.07);
-}
-
+.deadzone { position: absolute; top: 0; bottom: 0; background: rgba(251,113,133,.28); }
+.deadzone.top { left: 0; }
+.deadzone.bottom { right: 0; }
+.usable-zone { position: absolute; top: 0; bottom: 0; background: rgba(74,222,128,.07); }
 .axis-marker {
     position: absolute;
-
     top: 22px;
-
     width: 2px;
-    height: 43px;
-
-    transform:
-        translateX(-1px);
-
+    height: 45px;
+    transform: translateX(-1px);
     z-index: 5;
 }
-
 .axis-marker::before {
     content: "";
-
     position: absolute;
-
     width: 7px;
     height: 7px;
-
     left: -2.5px;
     top: -2px;
-
     border-radius: 50%;
 }
-
 .marker-label {
     position: absolute;
-
-    top: -15px;
-
-    transform:
-        translateX(-50%);
-
+    top: -16px;
+    transform: translateX(-50%);
     white-space: nowrap;
-
-    font-size: 7px;
+    font-size: 9px;
 }
-
-.marker-actuation {
-    background: var(--purple);
-}
-
-.marker-actuation::before {
-    background: var(--purple);
-}
-
-.marker-actuation .marker-label {
-    color: #bca9ff;
-}
-
-.marker-current {
-    z-index: 7;
-
-    background: var(--cyan);
-}
-
+.marker-actuation { background: var(--purple); }
+.marker-actuation::before { background: var(--purple); }
+.marker-actuation .marker-label { color: #bca9ff; }
+.marker-current { z-index: 7; background: var(--cyan); }
 .marker-current::before {
     width: 10px;
     height: 10px;
-
     left: -4px;
     top: -3.5px;
-
     background: var(--cyan);
-
-    box-shadow:
-        0 0 10px
-        rgba(34,211,238,0.85);
+    box-shadow: 0 0 10px rgba(34,211,238,.85);
 }
-
-.marker-current .marker-label {
-    top: 49px;
-
-    color: var(--cyan);
-}
-
-.marker-rt {
-    background: var(--orange);
-}
-
-.marker-rt::before {
-    background: var(--orange);
-}
-
-.marker-rt .marker-label {
-    color: var(--orange);
-}
-
+.marker-current .marker-label { top: 51px; color: var(--cyan); }
+.marker-rt { background: var(--orange); }
+.marker-rt::before { background: var(--orange); }
+.marker-rt .marker-label { color: var(--orange); }
 .travel-scale {
     position: absolute;
-
     left: 0;
     right: 0;
-
-    top: 61px;
-
+    top: 63px;
     display: flex;
-
     justify-content: space-between;
-
-    color: #536075;
-
-    font-size: 7px;
+    color: #607087;
+    font-size: 9px;
 }
-
-.visual-legend {
-    display: flex;
-
-    flex-wrap: wrap;
-
-    gap: 11px;
-
-    margin-top: 4px;
-
-    color: #697488;
-
-    font-size: 7px;
-}
-
-.visual-legend-item {
-    display: flex;
-
-    align-items: center;
-
-    gap: 4px;
-}
-
-.legend-dot {
-    width: 7px;
-    height: 7px;
-
-    border-radius: 50%;
-}
-
+.visual-legend { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 4px; color: #748096; font-size: 9px; }
+.visual-legend-item { display: flex; align-items: center; gap: 4px; }
+.legend-dot { width: 7px; height: 7px; border-radius: 50%; }
 .mock-slider-row {
     margin-top: 11px;
-
     display: grid;
-
-    grid-template-columns:
-        85px
-        minmax(0,1fr);
-
+    grid-template-columns: 95px minmax(0,1fr);
     align-items: center;
-
     gap: 9px;
 }
-
-.mock-slider-label {
-    color: #697487;
-
-    font-size: 7px;
-}
-
-
-/* =========================================================
-   LOWER SETTINGS
-========================================================= */
-
+.mock-slider-label { color: #748096; font-size: 9px; }
 .keys-lower-grid {
     margin-top: 11px;
-
     display: grid;
-
-    grid-template-columns:
-        repeat(
-            3,
-            minmax(220px,1fr)
-        );
-
+    grid-template-columns: repeat(3, minmax(240px,1fr));
     gap: 11px;
 }
-
-.action-buttons {
-    display: flex;
-
-    flex-wrap: wrap;
-
-    gap: 7px;
-}
-
+.action-buttons { display: flex; flex-wrap: wrap; gap: 7px; }
 .action-button {
-    padding: 8px 10px;
-
-    border:
-        1px solid var(--border);
-
+    padding: 9px 11px;
+    border: 1px solid var(--border);
     background: #111722;
-
     color: #c0c7d3;
-
     cursor: pointer;
-
-    font-size: 8px;
+    font-size: 9px;
 }
-
-.action-button.primary {
-    border-color: #8053ea;
-
-    background: #6935d8;
-
-    color: white;
-}
-
-.selection-count {
-    margin-top: 9px;
-
-    color: var(--orange);
-
-    font-size: 8px;
-}
-
-.calibration-values {
-    margin-bottom: 9px;
-
-    display: grid;
-
-    grid-template-columns:
-        1fr 1fr;
-
-    gap: 7px;
-}
-
-.calibration-value {
-    padding: 8px;
-
-    background: #0a0f15;
-
-    border:
-        1px solid var(--border);
-}
-
-.calibration-value .label {
-    margin-bottom: 5px;
-
-    color: #657084;
-
-    font-size: 7px;
-}
-
-.calibration-value .value {
-    color: #cbd2de;
-
-    font-size: 11px;
-}
-
+.action-button.primary { border-color: #8053ea; background: #6935d8; color: white; }
+.selection-count { margin-top: 9px; color: var(--orange); font-size: 9px; }
+.calibration-values { margin-bottom: 9px; display: grid; grid-template-columns: 1fr 1fr; gap: 7px; }
+.calibration-value { padding: 8px; background: #0a0f15; border: 1px solid var(--border); }
+.calibration-value .label { margin-bottom: 5px; color: #657084; font-size: 9px; }
+.calibration-value .value { color: #cbd2de; font-size: 12px; }
 .performance-row {
-    padding: 7px 0;
-
-    border-bottom:
-        1px solid #161e29;
-
+    padding: 8px 0;
+    border-bottom: 1px solid #161e29;
     display: flex;
-
     align-items: center;
-
     justify-content: space-between;
-
     gap: 10px;
-
-    font-size: 8px;
+    font-size: 10px;
 }
-
-.performance-row span:first-child {
-    color: #667185;
-}
-
-.performance-row span:last-child {
-    color: #cfd5df;
-}
-
-
-/* =========================================================
-   CONSOLE
-========================================================= */
-
+.performance-row span:first-child { color: #667185; }
+.performance-row span:last-child { color: #cfd5df; }
 .console {
-    min-height: 100px;
-    max-height: 170px;
-
+    min-height: 110px;
+    max-height: 180px;
     margin-top: 11px;
-
-    padding: 9px;
-
+    padding: 10px;
     overflow-y: auto;
-
-    border:
-        1px solid var(--border);
-
+    border: 1px solid var(--border);
     background: #06090d;
-
     color: #748094;
-
-    font-size: 8px;
+    font-size: 10px;
 }
+.console-line { line-height: 1.7; }
+.prompt { color: var(--purple2); }
+.good { color: var(--green); }
 
-.console-line {
+/* LIGHTING */
+.lighting-mode-tabs {
+    display: inline-flex;
+    border: 1px solid var(--border);
+    background: #0a0e14;
+    margin-bottom: 12px;
+}
+.lighting-mode-tabs button {
+    padding: 9px 15px;
+    border: 0;
+    background: transparent;
+    color: #7b879b;
+    cursor: pointer;
+    font-size: 10px;
+}
+.lighting-mode-tabs button.active { background: #32186a; color: white; }
+.lighting-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.4fr) minmax(320px, .6fr);
+    gap: 12px;
+}
+.lighting-preview-panel { min-height: 470px; }
+.lighting-keyboard-wrap {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 24px 12px 12px;
+}
+.lighting-keyboard {
+    position: relative;
+    width: min(100%, 920px);
+    aspect-ratio: 2.9 / 1;
+    border: 1px solid #303a4a;
+    border-radius: 12px;
+    background: linear-gradient(180deg, rgba(32,39,52,.65), rgba(10,14,20,.95));
+    box-shadow: inset 0 0 0 3px rgba(255,255,255,.012), 0 20px 60px rgba(0,0,0,.25);
+    overflow: hidden;
+}
+.rear-edge-label {
+    position: absolute;
+    top: 11px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: #5d687b;
+    font-size: 9px;
+    letter-spacing: 1px;
+}
+.rear-led-row {
+    position: absolute;
+    top: 34px;
+    left: 7%;
+    right: 7%;
+    display: grid;
+    grid-template-columns: repeat(10, 1fr);
+    gap: 10px;
+    z-index: 5;
+}
+.rear-led-cell {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+    cursor: pointer;
+}
+.rear-led {
+    width: clamp(14px, 1.6vw, 22px);
+    height: clamp(14px, 1.6vw, 22px);
+    border-radius: 50%;
+    background: #8b5cf6;
+    border: 1px solid rgba(255,255,255,.35);
+    box-shadow: 0 0 14px rgba(139,92,246,.8);
+    transition: transform .12s ease, opacity .08s linear;
+}
+.rear-led-cell:hover .rear-led { transform: scale(1.18); }
+.rear-led-cell.selected .rear-led { outline: 2px solid white; outline-offset: 3px; }
+.rear-led-index { color: #69758a; font-size: 8px; }
+.fake-keyboard {
+    position: absolute;
+    left: 6%;
+    right: 6%;
+    top: 31%;
+    bottom: 10%;
+    display: grid;
+    grid-template-rows: repeat(5, 1fr);
+    gap: 6px;
+}
+.fake-key-row { display: grid; grid-template-columns: repeat(15, 1fr); gap: 5px; }
+.fake-key { border: 1px solid #2b3544; border-radius: 4px; background: #111722; opacity: .78; }
+.lighting-preview-caption { margin-top: 12px; color: #687488; font-size: 9px; text-align: center; }
+.lighting-control-section { display: none; }
+.lighting-control-section.active { display: block; }
+.selected-led-title { color: #c8b8ff; font-size: 24px; margin-bottom: 16px; }
+.color-control {
+    display: grid;
+    grid-template-columns: 56px minmax(0,1fr);
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+.color-swatch {
+    width: 56px;
+    height: 56px;
+    padding: 0;
+    border: 1px solid #435069;
+    border-radius: 7px;
+    background: transparent;
+    cursor: pointer;
+}
+.rgb-grid { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 8px; }
+.rgb-field label { display: block; color: #657084; font-size: 9px; margin-bottom: 5px; }
+.rgb-input {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid var(--border);
+    background: #0b1017;
+    color: white;
+    font-size: 10px;
+}
+.effect-list { display: grid; gap: 8px; margin-bottom: 16px; }
+.effect-card {
+    padding: 12px;
+    border: 1px solid var(--border);
+    background: #0b1017;
+    color: #8994a7;
+    cursor: pointer;
+    text-align: left;
+    border-radius: 5px;
+}
+.effect-card:hover { border-color: #4c5870; }
+.effect-card.active { border-color: var(--purple); background: rgba(139,92,246,.12); color: white; }
+.effect-name { font-size: 11px; margin-bottom: 5px; }
+.effect-description { color: #69758a; font-size: 9px; line-height: 1.5; }
+.lighting-note {
+    padding: 10px;
+    margin-top: 12px;
+    border: 1px solid #172131;
+    background: #090e14;
+    color: #667287;
+    font-size: 9px;
     line-height: 1.7;
 }
-
-.prompt {
-    color: var(--purple2);
-}
-
-.good {
-    color: var(--green);
-}
-
-
-/* =========================================================
-   LIGHTING / DEVICE
-========================================================= */
-
 .placeholder {
     min-height: 420px;
-
-    border:
-        1px dashed var(--border-light);
-
+    border: 1px dashed var(--border-light);
     display: flex;
-
     align-items: center;
-
     justify-content: center;
-
     flex-direction: column;
-
     color: #596476;
 }
+.placeholder strong { margin-bottom: 10px; color: #aeb7c4; }
 
-.placeholder strong {
-    margin-bottom: 10px;
-
-    color: #aeb7c4;
+@media (max-width: 1320px) {
+    .keys-main-grid { grid-template-columns: minmax(0,1fr) 255px; }
+    .keyboard-body { grid-template-columns: minmax(0,1fr) minmax(150px, 22%); }
 }
-
-
-/* =========================================================
-   RESPONSIVE
-========================================================= */
-
-@media (max-width: 1500px) {
-
-    .keys-main-grid {
-        grid-template-columns:
-            minmax(0,1fr)
-            240px;
-    }
-
-    .keyboard-body {
-        grid-template-columns:
-            minmax(0,1fr)
-            minmax(135px,20%);
-    }
-
+@media (max-width: 1120px) {
+    .keys-main-grid { grid-template-columns: 1fr; }
+    .keys-lower-grid { grid-template-columns: repeat(2, minmax(230px,1fr)); }
+    .home-specs { grid-template-columns: 1fr; }
+    .lighting-grid { grid-template-columns: 1fr; }
 }
-
-
-@media (max-width: 1180px) {
-
-    .keys-main-grid {
-        grid-template-columns:
-            1fr;
-    }
-
-    .keys-lower-grid {
-        grid-template-columns:
-            repeat(
-                2,
-                minmax(220px,1fr)
-            );
-    }
-
-    .home-specs {
-        grid-template-columns:
-            1fr;
-    }
-
-}
-
-
 @media (max-width: 850px) {
-
-    .app {
-        grid-template-columns:
-            var(--sidebar-closed)
-            minmax(0,1fr);
-    }
-
-    .sidebar {
-        padding: 14px;
-    }
-
-    .brand,
-    .device-title span,
-    .device-small,
-    .nav-title,
-    .nav-name,
-    .sidebar-bottom {
-        display: none;
-    }
-
-    .brand-short {
-        display: block;
-    }
-
-    .device-card {
-        padding: 10px;
-
-        display: flex;
-
-        justify-content: center;
-    }
-
-    .nav-button {
-        padding: 0;
-
-        justify-content: center;
-    }
-
-    .nav-symbol {
-        width: auto;
-    }
-
-    .topbar {
-        padding:
-            0 10px;
-    }
-
-    .global-status {
-        display: none;
-    }
-
-    .global-button {
-        padding:
-            0 8px;
-    }
-
-    .keys-meta {
-        grid-template-columns:
-            1fr;
-    }
-
-    .keys-lower-grid {
-        grid-template-columns:
-            1fr;
-    }
-
-    .home-primary {
-        grid-template-columns:
-            1fr 1fr;
-    }
-
-    .spec-list {
-        grid-template-columns:
-            1fr;
-    }
-
+    .app { grid-template-columns: var(--sidebar-closed) minmax(0,1fr); }
+    .sidebar { padding: 14px; }
+    .brand, .device-title span, .device-small, .nav-title, .nav-name, .sidebar-bottom { display: none; }
+    .brand-short { display: block; }
+    .device-card { padding: 10px; display: flex; justify-content: center; }
+    .nav-button { padding: 0; justify-content: center; }
+    .nav-symbol { width: auto; }
+    .topbar { padding: 0 10px; }
+    .global-status { display: none; }
+    .global-button { padding: 0 8px; font-size: 9px; }
+    .keys-meta { grid-template-columns: 1fr; }
+    .keys-lower-grid { grid-template-columns: 1fr; }
+    .home-primary { grid-template-columns: 1fr 1fr; }
+    .spec-list { grid-template-columns: 1fr; }
 }
-
-
 @media (max-width: 650px) {
-
-    .home-primary {
-        grid-template-columns:
-            1fr;
-    }
-
-    .page-header {
-        flex-direction: column;
-    }
-
-    .terminal-command {
-        display: none;
-    }
-
-    .topbar-actions .global-button {
-        font-size: 7px;
-    }
-
+    .home-primary { grid-template-columns: 1fr; }
+    .page-header { flex-direction: column; }
+    .terminal-command { display: none; }
+    .topbar-actions .global-button { font-size: 8px; }
+    .lighting-keyboard-wrap { padding-left: 0; padding-right: 0; }
 }
-
 </style>
 </head>
-
-
 <body>
-
-<div
-    class="app"
-    id="app"
->
-
-
-<!-- ======================================================
-     SIDEBAR
-======================================================= -->
+<div class="app" id="app">
 
 <aside class="sidebar">
-
-
     <div class="sidebar-header">
-
-        <div class="brand">
-            HE_<span>KEYBOARD</span>
-        </div>
-
-        <div class="brand-short">
-            HE
-        </div>
-
+        <div class="brand">HE_<span>KEYBOARD</span></div>
+        <div class="brand-short">HE</div>
     </div>
-
 
     <div class="device-card">
-
         <div class="device-title">
-
             <div class="status-dot"></div>
-
-            <span>
-                HE Keyboard
-            </span>
-
+            <span>HE Keyboard</span>
         </div>
-
-
         <div class="device-small">
-
             STATUS&nbsp;&nbsp;&nbsp;CONNECTED [MOCK]<br>
-
             MCU&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;M484KIDAE<br>
-
             USB&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span id="sidebarPolling">8000 Hz</span><br>
-
             PROFILE&nbsp;&nbsp;<span id="sidebarProfile">Profile 1</span>
-
         </div>
-
     </div>
 
+    <div class="nav-title">// NAV</div>
 
-    <div class="nav-title">
-        // NAV
-    </div>
-
-
-    <button
-        class="nav-button"
-        data-page="home"
-    >
-
-        <span class="nav-symbol">
-            H
-        </span>
-
-        <span class="nav-name">
-            $ home
-        </span>
-
+    <button class="nav-button" data-page="home">
+        <span class="nav-symbol">H</span>
+        <span class="nav-name">$ home</span>
     </button>
 
-
-    <button
-        class="nav-button active"
-        data-page="keys"
-    >
-
-        <span class="nav-symbol">
-            K
-        </span>
-
-        <span class="nav-name">
-            $ keys
-        </span>
-
+    <button class="nav-button active" data-page="keys">
+        <span class="nav-symbol">K</span>
+        <span class="nav-name">$ keys</span>
     </button>
 
-
-    <button
-        class="nav-button"
-        data-page="lighting"
-    >
-
-        <span class="nav-symbol">
-            L
-        </span>
-
-        <span class="nav-name">
-            $ lighting
-        </span>
-
+    <button class="nav-button" data-page="lighting">
+        <span class="nav-symbol">L</span>
+        <span class="nav-name">$ lighting</span>
     </button>
 
-
-    <button
-        class="nav-button"
-        data-page="device"
-    >
-
-        <span class="nav-symbol">
-            D
-        </span>
-
-        <span class="nav-name">
-            $ device
-        </span>
-
+    <button class="nav-button" data-page="device">
+        <span class="nav-symbol">D</span>
+        <span class="nav-name">$ device</span>
     </button>
-
 
     <div class="sidebar-bottom">
-
-        <div
-            id="sidebarState"
-            class="sidebar-state saved"
-        >
-            ● configuration saved
-        </div>
-
+        <div id="sidebarState" class="sidebar-state saved">● configuration saved</div>
     </div>
-
 </aside>
 
-
-
-<!-- ======================================================
-     MAIN
-======================================================= -->
-
 <main class="main">
-
-
 <header class="topbar">
-
-
     <div class="topbar-left">
-
-        <button
-            id="sidebarToggle"
-            class="sidebar-toggle"
-            title="Toggle sidebar"
-        >
-            ☰
-        </button>
-
-
-        <div class="breadcrumb">
-
-            root / keyboard /
-
-            <strong id="breadcrumb">
-                keys
-            </strong>
-
-        </div>
-
+        <button id="sidebarToggle" class="sidebar-toggle" title="Toggle sidebar">☰</button>
+        <div class="breadcrumb">root / keyboard / <strong id="breadcrumb">keys</strong></div>
     </div>
-
 
     <div class="topbar-actions">
-
-
-        <div
-            id="globalStatus"
-            class="global-status saved"
-        >
-            ● SAVED
-        </div>
-
-
-        <button
-            id="applyChanges"
-            class="global-button apply"
-        >
-            APPLY_CHANGES
-        </button>
-
-
-        <button
-            id="saveKeyboard"
-            class="global-button save"
-        >
-            SAVE_TO_KEYBOARD
-        </button>
-
+        <div id="globalStatus" class="global-status saved">● SAVED</div>
+        <button id="applyChanges" class="global-button apply">APPLY_CHANGES</button>
+        <button id="saveKeyboard" class="global-button save">SAVE_TO_KEYBOARD</button>
     </div>
-
 </header>
-
-
 
 <div class="content">
 
-
-<!-- ======================================================
-     HOME
-======================================================= -->
-
-<section
-    id="page-home"
-    class="page"
->
-
+<section id="page-home" class="page">
 <div class="page-shell">
-
-
     <div class="page-header">
-
         <div>
-
-            <div class="page-title">
-                /home
-            </div>
-
-            <div class="page-description">
-                keyboard status / installed hardware / active configuration
-            </div>
-
+            <div class="page-title">/home</div>
+            <div class="page-description">keyboard status / installed hardware / active configuration</div>
         </div>
-
-
-        <div class="terminal-command">
-
-            <span>></span>
-
-            device.status --read-only
-
-        </div>
-
+        <div class="terminal-command"><span>&gt;</span> device.status --read-only</div>
     </div>
-
 
     <div class="home-primary">
-
-
-        <!-- CONNECTION -->
-
         <div class="home-card">
-
-            <div class="home-card-label">
-                CONNECTION
-            </div>
-
-            <div class="home-card-value green">
-                CONNECTED
-            </div>
-
-            <div class="home-card-sub">
-
-                USB HID<br>
-
-                Mock device
-
-            </div>
-
+            <div class="home-card-label">CONNECTION</div>
+            <div class="home-card-value green">CONNECTED</div>
+            <div class="home-card-sub">USB HID<br>Mock device</div>
         </div>
-
-
-        <!-- PROFILE -->
-
         <div class="home-card">
-
-            <div class="home-card-label">
-                CURRENT_PROFILE
-            </div>
-
-            <div
-                id="homeProfile"
-                class="home-card-value purple"
-            >
-                PROFILE_1
-            </div>
-
-            <div class="home-card-sub">
-
-                onboard profile<br>
-
-                active configuration
-
-            </div>
-
+            <div class="home-card-label">CURRENT_PROFILE</div>
+            <div id="homeProfile" class="home-card-value purple">PROFILE_1</div>
+            <div class="home-card-sub">applied onboard profile<br>read only</div>
         </div>
-
-
-        <!-- POLLING -->
-
         <div class="home-card">
-
-            <div class="home-card-label">
-                POLLING_RATE
-            </div>
-
-            <div
-                id="homePolling"
-                class="home-card-value"
-            >
-                8000 Hz
-            </div>
-
-            <div
-                id="homePollingSub"
-                class="home-card-sub"
-            >
-                0.125 ms report interval
-            </div>
-
+            <div class="home-card-label">POLLING_RATE</div>
+            <div id="homePolling" class="home-card-value">8000 Hz</div>
+            <div id="homePollingSub" class="home-card-sub">0.125 ms report interval</div>
         </div>
-
-
-        <!-- RAPID TRIGGER -->
-
         <div class="home-card">
-
-            <div class="home-card-label">
-                RAPID_TRIGGER
-            </div>
-
-            <div
-                id="homeRTStatus"
-                class="home-card-value green"
-            >
-                ENABLED
-            </div>
-
-            <div
-                id="homeRTSub"
-                class="home-card-sub"
-            >
-                enabled keys : 61 / 61
-            </div>
-
+            <div class="home-card-label">RAPID_TRIGGER</div>
+            <div id="homeRTStatus" class="home-card-value green">ENABLED</div>
+            <div id="homeRTSub" class="home-card-sub">enabled keys : 61 / 61</div>
         </div>
-
     </div>
-
-
 
     <div class="home-specs">
-
-
-        <!-- INSTALLED SWITCH -->
-
         <div class="panel">
-
-            <div class="panel-title">
-                INSTALLED_SWITCH
-            </div>
-
-
+            <div class="panel-title">INSTALLED_SWITCH</div>
             <div class="spec-list">
-
-
-                <div class="spec-row">
-
-                    <span>
-                        switch_name
-                    </span>
-
-                    <span id="switchName">
-                        TBD - Magnetic Hall Switch
-                    </span>
-
-                </div>
-
-
-                <div class="spec-row">
-
-                    <span>
-                        switch_type
-                    </span>
-
-                    <span>
-                        Magnetic / Hall Effect
-                    </span>
-
-                </div>
-
-
-                <div class="spec-row">
-
-                    <span>
-                        total_stroke
-                    </span>
-
-                    <span id="switchStroke">
-                        4.00 mm
-                    </span>
-
-                </div>
-
-
-                <div class="spec-row">
-
-                    <span>
-                        hall_sensor
-                    </span>
-
-                    <span>
-                        DRV5055A3
-                    </span>
-
-                </div>
-
-
-                <div class="spec-row">
-
-                    <span>
-                        hall_keys
-                    </span>
-
-                    <span>
-                        61
-                    </span>
-
-                </div>
-
-
-                <div class="spec-row">
-
-                    <span>
-                        multiplexer
-                    </span>
-
-                    <span>
-                        TMUX1208 × 8
-                    </span>
-
-                </div>
-
-
-                <div class="spec-row">
-
-                    <span>
-                        MCU
-                    </span>
-
-                    <span>
-                        M484KIDAE
-                    </span>
-
-                </div>
-
-
-                <div class="spec-row">
-
-                    <span>
-                        lighting
-                    </span>
-
-                    <span>
-                        WS2812B × 10
-                    </span>
-
-                </div>
-
+                <div class="spec-row"><span>switch_name</span><span id="switchName">TBD - Magnetic Hall Switch</span></div>
+                <div class="spec-row"><span>switch_type</span><span>Magnetic / Hall Effect</span></div>
+                <div class="spec-row"><span>total_stroke</span><span id="switchStroke">4.00 mm</span></div>
+                <div class="spec-row"><span>hall_sensor</span><span>DRV5055A3</span></div>
+                <div class="spec-row"><span>hall_keys</span><span>61</span></div>
+                <div class="spec-row"><span>multiplexer</span><span>TMUX1208 × 8</span></div>
+                <div class="spec-row"><span>MCU</span><span>M484KIDAE</span></div>
+                <div class="spec-row"><span>rear_lighting</span><span>WS2812B × 10</span></div>
             </div>
-
         </div>
-
-
-        <!-- SYSTEM -->
 
         <div class="panel">
-
-            <div class="panel-title">
-                KEYBOARD_STATUS
-            </div>
-
-
-            <div class="spec-row">
-
-                <span>
-                    connection
-                </span>
-
-                <span style="color:#4ade80;">
-                    ONLINE
-                </span>
-
-            </div>
-
-
-            <div class="spec-row">
-
-                <span>
-                    interface
-                </span>
-
-                <span>
-                    USB HID
-                </span>
-
-            </div>
-
-
-            <div class="spec-row">
-
-                <span>
-                    firmware
-                </span>
-
-                <span>
-                    0.1.0 MOCK
-                </span>
-
-            </div>
-
-
-            <div class="spec-row">
-
-                <span>
-                    config_state
-                </span>
-
-                <span id="homeConfigState">
-                    SAVED
-                </span>
-
-            </div>
-
-
+            <div class="panel-title">KEYBOARD_STATUS</div>
+            <div class="spec-row"><span>connection</span><span style="color:#4ade80">ONLINE</span></div>
+            <div class="spec-row"><span>interface</span><span>USB HID</span></div>
+            <div class="spec-row"><span>firmware</span><span>0.2.0 MOCK</span></div>
+            <div class="spec-row"><span>config_state</span><span id="homeConfigState">SAVED</span></div>
             <div class="readonly-note">
-
                 HOME is status-only.<br><br>
-
-                Keyboard configuration is changed from the
-                <strong>Keys</strong>,
-                <strong>Lighting</strong>
-                and
-                <strong>Device</strong>
-                pages.
-
+                Settings are changed from <strong>Keys</strong>, <strong>Lighting</strong> and <strong>Device</strong>.
             </div>
-
         </div>
-
     </div>
-
 </div>
-
 </section>
 
-
-
-<!-- ======================================================
-     KEYS
-======================================================= -->
-
-<section
-    id="page-keys"
-    class="page active"
->
-
+<section id="page-keys" class="page active">
 <div class="page-shell">
-
-
     <div class="page-header">
-
-
         <div>
-
-            <div class="page-title">
-                /keys
-            </div>
-
-            <div class="page-description">
-                key behaviour / rapid trigger / calibration / profiles / performance
-            </div>
-
+            <div class="page-title">/keys</div>
+            <div class="page-description">key behaviour / rapid trigger / calibration / profiles / performance</div>
         </div>
-
-
-        <div class="terminal-command">
-
-            <span>></span>
-
-            keyboard.configure --hall
-
-        </div>
-
+        <div class="terminal-command"><span>&gt;</span> keyboard.configure --hall</div>
     </div>
-
-
-
-    <!-- ==================================================
-         PROFILE + PERFORMANCE
-    =================================================== -->
 
     <div class="keys-meta">
-
-
         <div class="profile-strip">
-
-            <span class="meta-label">
-                PROFILE
-            </span>
-
-
-            <button
-                class="profile-button active"
-                data-profile="1"
-            >
-                PROFILE_1
-            </button>
-
-
-            <button
-                class="profile-button"
-                data-profile="2"
-            >
-                PROFILE_2
-            </button>
-
-
-            <button
-                class="profile-button"
-                data-profile="3"
-            >
-                PROFILE_3
-            </button>
-
+            <span class="meta-label">EDIT_PROFILE</span>
+            <button class="profile-button active" data-profile="1">PROFILE_1</button>
+            <button class="profile-button" data-profile="2">PROFILE_2</button>
+            <button class="profile-button" data-profile="3">PROFILE_3</button>
         </div>
-
-
         <div class="performance-strip">
-
-            <span class="meta-label">
-                POLLING
-            </span>
-
-
-            <select
-                id="pollingSelect"
-                class="polling-select"
-            >
-
-                <option value="1000">
-                    1000 Hz
-                </option>
-
-                <option value="2000">
-                    2000 Hz
-                </option>
-
-                <option value="4000">
-                    4000 Hz
-                </option>
-
-                <option
-                    value="8000"
-                    selected
-                >
-                    8000 Hz
-                </option>
-
+            <span class="meta-label">POLLING</span>
+            <select id="pollingSelect" class="polling-select">
+                <option value="1000">1000 Hz</option>
+                <option value="2000">2000 Hz</option>
+                <option value="4000">4000 Hz</option>
+                <option value="8000" selected>8000 Hz</option>
             </select>
-
         </div>
-
     </div>
-
-
-
-    <!-- ==================================================
-         KEYBOARD + SELECTED KEY
-    =================================================== -->
 
     <div class="keys-main-grid">
-
-
-        <!-- KEYBOARD -->
-
         <div class="panel">
-
-
             <div class="keyboard-toolbar">
-
-
                 <div>
-
-                    <div class="panel-title">
-                        KEYBOARD_MATRIX
-                    </div>
-
-
+                    <div class="panel-title">KEYBOARD_MATRIX</div>
                     <div class="legend">
-
-                        <div class="legend-item">
-
-                            <div
-                                class="legend-square hall"
-                            ></div>
-
-                            HALL 61
-
-                        </div>
-
-
-                        <div class="legend-item">
-
-                            <div
-                                class="legend-square mechanical"
-                            ></div>
-
-                            MECHANICAL / VISUAL
-
-                        </div>
-
+                        <div class="legend-item"><div class="legend-square hall"></div>HALL 61</div>
+                        <div class="legend-item"><div class="legend-square mechanical"></div>MECHANICAL / VISUAL</div>
                     </div>
-
                 </div>
-
-
                 <div class="segmented">
-
-
-                    <button
-                        id="singleMode"
-                        class="active"
-                    >
-                        SINGLE
-                    </button>
-
-
-                    <button
-                        id="multiMode"
-                    >
-                        MULTI
-                    </button>
-
+                    <button id="singleMode" class="active">SINGLE</button>
+                    <button id="multiMode">MULTI</button>
                 </div>
-
             </div>
-
-
 
             <div class="keyboard-stage">
-
-
-                <div
-                    id="functionRow"
-                    class="function-row"
-                ></div>
-
-
+                <div id="functionRow" class="function-row"></div>
                 <div class="keyboard-body">
-
-
-                    <div
-                        id="keyboard"
-                        class="hall-board"
-                    ></div>
-
-
+                    <div id="keyboard" class="hall-board"></div>
                     <div class="mechanical-side">
-
-
                         <div>
-
-                            <div class="cluster-title">
-                                NAV / ARROWS
-                            </div>
-
-
-                            <div
-                                id="navCluster"
-                                class="nav-cluster"
-                            ></div>
-
-
-                            <div
-                                id="arrowCluster"
-                                class="arrow-cluster"
-                            ></div>
-
+                            <div class="cluster-title">NAV / ARROWS</div>
+                            <div id="navCluster" class="nav-cluster"></div>
+                            <div id="arrowCluster" class="arrow-cluster"></div>
                         </div>
-
-
                         <div>
-
-                            <div class="cluster-title">
-                                NUMPAD
-                            </div>
-
-
-                            <div
-                                id="numpad"
-                                class="numpad"
-                            ></div>
-
+                            <div class="cluster-title">NUMPAD</div>
+                            <div id="numpad" class="numpad"></div>
                         </div>
-
                     </div>
-
                 </div>
-
             </div>
-
         </div>
 
-
-
-        <!-- SELECTED KEY -->
-
         <div class="panel">
-
-
-            <div class="panel-title">
-                SELECTED_KEY
-            </div>
-
-
-            <div
-                id="selectedKey"
-                class="selected-key"
-            >
-                W
-            </div>
-
-
-            <!-- Actuation -->
+            <div class="panel-title">SELECTED_KEY</div>
+            <div id="selectedKey" class="selected-key">W</div>
 
             <div class="field">
-
-                <div class="field-line">
-
-                    <span class="field-label">
-                        actuation
-                    </span>
-
-
-                    <input
-                        id="actuationNumber"
-                        class="number-input"
-                        type="number"
-                        min="0.10"
-                        max="4.00"
-                        step="0.05"
-                        value="1.50"
-                    >
-
-                </div>
-
-
-                <input
-                    id="actuation"
-                    type="range"
-                    min="10"
-                    max="400"
-                    value="150"
-                >
-
+                <div class="field-line"><span class="field-label">actuation</span><input id="actuationNumber" class="number-input" type="number" min="0.10" max="4.00" step="0.05" value="1.50"></div>
+                <input id="actuation" type="range" min="10" max="400" value="150">
             </div>
-
-
-            <!-- Rapid Trigger -->
 
             <div class="field">
-
-                <div class="field-line">
-
-                    <span class="field-label">
-                        rapid_trigger
-                    </span>
-
-
-                    <input
-                        id="rtToggle"
-                        class="toggle"
-                        type="checkbox"
-                        checked
-                    >
-
-                </div>
-
+                <div class="field-line"><span class="field-label">rapid_trigger</span><input id="rtToggle" class="toggle" type="checkbox" checked></div>
             </div>
-
-
-            <!-- RT Sensitivity -->
 
             <div class="field">
-
-                <div class="field-line">
-
-                    <span class="field-label">
-                        rt_sensitivity
-                    </span>
-
-
-                    <input
-                        id="rtNumber"
-                        class="number-input"
-                        type="number"
-                        min="0.05"
-                        max="2.00"
-                        step="0.05"
-                        value="0.20"
-                    >
-
-                </div>
-
-
-                <input
-                    id="rtSensitivity"
-                    type="range"
-                    min="5"
-                    max="200"
-                    value="20"
-                >
-
+                <div class="field-line"><span class="field-label">rt_sensitivity</span><input id="rtNumber" class="number-input" type="number" min="0.05" max="2.00" step="0.05" value="0.20"></div>
+                <input id="rtSensitivity" type="range" min="5" max="200" value="20">
             </div>
-
-
-            <!-- Top Deadzone -->
 
             <div class="field">
-
-                <div class="field-line">
-
-                    <span class="field-label">
-                        top_deadzone
-                    </span>
-
-
-                    <input
-                        id="topDeadzoneNumber"
-                        class="number-input"
-                        type="number"
-                        min="0"
-                        max="1"
-                        step="0.05"
-                        value="0.10"
-                    >
-
-                </div>
-
-
-                <input
-                    id="topDeadzone"
-                    type="range"
-                    min="0"
-                    max="100"
-                    value="10"
-                >
-
+                <div class="field-line"><span class="field-label">top_deadzone</span><input id="topDeadzoneNumber" class="number-input" type="number" min="0" max="1" step="0.05" value="0.10"></div>
+                <input id="topDeadzone" type="range" min="0" max="100" value="10">
             </div>
-
-
-            <!-- Bottom Deadzone -->
 
             <div class="field">
-
-                <div class="field-line">
-
-                    <span class="field-label">
-                        bottom_deadzone
-                    </span>
-
-
-                    <input
-                        id="bottomDeadzoneNumber"
-                        class="number-input"
-                        type="number"
-                        min="0"
-                        max="1"
-                        step="0.05"
-                        value="0.10"
-                    >
-
-                </div>
-
-
-                <input
-                    id="bottomDeadzone"
-                    type="range"
-                    min="0"
-                    max="100"
-                    value="10"
-                >
-
+                <div class="field-line"><span class="field-label">bottom_deadzone</span><input id="bottomDeadzoneNumber" class="number-input" type="number" min="0" max="1" step="0.05" value="0.10"></div>
+                <input id="bottomDeadzone" type="range" min="0" max="100" value="10">
             </div>
-
 
             <div class="live-state-box">
-
-                <div class="panel-title">
-                    LIVE_STATE
-                </div>
-
-
-                <div class="live-state-value">
-
-                    <div class="status-dot"></div>
-
-                    <span id="keyState">
-                        RELEASED
-                    </span>
-
-                </div>
-
+                <div class="panel-title">LIVE_STATE</div>
+                <div class="live-state-value"><div class="status-dot"></div><span id="keyState">RELEASED</span></div>
             </div>
-
         </div>
-
     </div>
-
-
-
-    <!-- ==================================================
-         TRAVEL
-    =================================================== -->
 
     <div class="panel travel-panel">
-
-
         <div class="travel-header">
-
-
             <div>
-
-                <div class="panel-title">
-                    SWITCH_TRAVEL_VISUALIZER
-                </div>
-
-
-                <div class="small-text">
-                    travel / deadzone / actuation / rapid trigger
-                </div>
-
+                <div class="panel-title">SWITCH_TRAVEL_VISUALIZER</div>
+                <div class="small-text">travel / deadzone / actuation / rapid trigger</div>
             </div>
-
-
-            <div
-                id="travelValue"
-                class="travel-number"
-            >
-                0.00 mm
-            </div>
-
+            <div id="travelValue" class="travel-number">0.00 mm</div>
         </div>
-
-
 
         <div class="travel-visual">
-
-
             <div class="travel-axis">
-
-
-                <div
-                    id="topDeadzoneVisual"
-                    class="deadzone top"
-                ></div>
-
-
-                <div
-                    id="usableZoneVisual"
-                    class="usable-zone"
-                ></div>
-
-
-                <div
-                    id="bottomDeadzoneVisual"
-                    class="deadzone bottom"
-                ></div>
-
+                <div id="topDeadzoneVisual" class="deadzone top"></div>
+                <div id="usableZoneVisual" class="usable-zone"></div>
+                <div id="bottomDeadzoneVisual" class="deadzone bottom"></div>
             </div>
-
-
-
-            <div
-                id="actuationMarker"
-                class="
-                    axis-marker
-                    marker-actuation
-                "
-            >
-
-                <div class="marker-label">
-                    AP
-                </div>
-
-            </div>
-
-
-
-            <div
-                id="rtMarker"
-                class="
-                    axis-marker
-                    marker-rt
-                "
-            >
-
-                <div
-                    id="rtMarkerLabel"
-                    class="marker-label"
-                >
-                    RT
-                </div>
-
-            </div>
-
-
-
-            <div
-                id="currentMarker"
-                class="
-                    axis-marker
-                    marker-current
-                "
-            >
-
-                <div class="marker-label">
-                    CURRENT
-                </div>
-
-            </div>
-
-
-
-            <div class="travel-scale">
-
-                <span>
-                    0.00 mm
-                </span>
-
-                <span>
-                    1.00
-                </span>
-
-                <span>
-                    2.00
-                </span>
-
-                <span>
-                    3.00
-                </span>
-
-                <span>
-                    4.00 mm
-                </span>
-
-            </div>
-
+            <div id="actuationMarker" class="axis-marker marker-actuation"><div class="marker-label">AP</div></div>
+            <div id="rtMarker" class="axis-marker marker-rt"><div id="rtMarkerLabel" class="marker-label">RT</div></div>
+            <div id="currentMarker" class="axis-marker marker-current"><div class="marker-label">CURRENT</div></div>
+            <div class="travel-scale"><span>0.00 mm</span><span>1.00</span><span>2.00</span><span>3.00</span><span>4.00 mm</span></div>
         </div>
-
-
 
         <div class="visual-legend">
-
-
-            <div class="visual-legend-item">
-
-                <div
-                    class="legend-dot"
-                    style="background:#fb7185;"
-                ></div>
-
-                Deadzone
-
-            </div>
-
-
-            <div class="visual-legend-item">
-
-                <div
-                    class="legend-dot"
-                    style="background:#8b5cf6;"
-                ></div>
-
-                Actuation
-
-            </div>
-
-
-            <div class="visual-legend-item">
-
-                <div
-                    class="legend-dot"
-                    style="background:#fb923c;"
-                ></div>
-
-                RT Dynamic Point
-
-            </div>
-
-
-            <div class="visual-legend-item">
-
-                <div
-                    class="legend-dot"
-                    style="background:#22d3ee;"
-                ></div>
-
-                Current Travel
-
-            </div>
-
+            <div class="visual-legend-item"><div class="legend-dot" style="background:#fb7185"></div>Deadzone</div>
+            <div class="visual-legend-item"><div class="legend-dot" style="background:#8b5cf6"></div>Actuation</div>
+            <div class="visual-legend-item"><div class="legend-dot" style="background:#fb923c"></div>RT Dynamic Point</div>
+            <div class="visual-legend-item"><div class="legend-dot" style="background:#22d3ee"></div>Current Travel</div>
         </div>
-
-
 
         <div class="mock-slider-row">
-
-            <div class="mock-slider-label">
-                MOCK_SENSOR
-            </div>
-
-
-            <input
-                id="travel"
-                type="range"
-                min="0"
-                max="400"
-                value="0"
-            >
-
+            <div class="mock-slider-label">MOCK_SENSOR</div>
+            <input id="travel" type="range" min="0" max="400" value="0">
         </div>
-
     </div>
-
-
-
-    <!-- ==================================================
-         LOWER SETTINGS
-    =================================================== -->
 
     <div class="keys-lower-grid">
-
-
-        <!-- Copy settings -->
-
         <div class="panel">
-
-            <div class="panel-title">
-                COPY_KEY_SETTINGS
-            </div>
-
-
+            <div class="panel-title">COPY_KEY_SETTINGS</div>
             <div class="action-buttons">
-
-
-                <button
-                    id="applyAll"
-                    class="
-                        action-button
-                        primary
-                    "
-                >
-                    COPY_TO_ALL_61
-                </button>
-
-
-                <button
-                    id="applySelected"
-                    class="action-button"
-                >
-                    COPY_TO_SELECTED
-                </button>
-
-
-                <button
-                    id="clearSelection"
-                    class="action-button"
-                >
-                    CLEAR_SELECTION
-                </button>
-
+                <button id="copyAll" class="action-button primary">COPY_TO_ALL_61</button>
+                <button id="copySelected" class="action-button">COPY_TO_SELECTED</button>
+                <button id="clearSelection" class="action-button">CLEAR_SELECTION</button>
             </div>
-
-
-            <div
-                id="selectionCount"
-                class="selection-count"
-            >
-                selected_for_batch = 0
-            </div>
-
+            <div id="selectionCount" class="selection-count">selected_for_batch = 0</div>
         </div>
 
-
-
-        <!-- Calibration -->
-
         <div class="panel">
-
-            <div class="panel-title">
-                CALIBRATION
-            </div>
-
-
+            <div class="panel-title">CALIBRATION</div>
             <div class="calibration-values">
-
-
-                <div class="calibration-value">
-
-                    <div class="label">
-                        REST_RAW
-                    </div>
-
-                    <div
-                        id="restRaw"
-                        class="value"
-                    >
-                        512
-                    </div>
-
-                </div>
-
-
-                <div class="calibration-value">
-
-                    <div class="label">
-                        BOTTOM_RAW
-                    </div>
-
-                    <div
-                        id="bottomRaw"
-                        class="value"
-                    >
-                        3500
-                    </div>
-
-                </div>
-
+                <div class="calibration-value"><div class="label">REST_RAW</div><div id="restRaw" class="value">512</div></div>
+                <div class="calibration-value"><div class="label">BOTTOM_RAW</div><div id="bottomRaw" class="value">3500</div></div>
             </div>
-
-
             <div class="action-buttons">
-
-
-                <button
-                    id="setRest"
-                    class="action-button"
-                >
-                    SET_REST
-                </button>
-
-
-                <button
-                    id="setBottom"
-                    class="action-button"
-                >
-                    SET_BOTTOM
-                </button>
-
+                <button id="setRest" class="action-button">SET_REST</button>
+                <button id="setBottom" class="action-button">SET_BOTTOM</button>
             </div>
-
         </div>
-
-
-
-        <!-- Performance -->
 
         <div class="panel">
-
-            <div class="panel-title">
-                PERFORMANCE
-            </div>
-
-
-            <div class="performance-row">
-
-                <span>
-                    USB Polling
-                </span>
-
-                <span id="performancePolling">
-                    8000 Hz
-                </span>
-
-            </div>
-
-
-            <div class="performance-row">
-
-                <span>
-                    Report Interval
-                </span>
-
-                <span id="reportInterval">
-                    0.125 ms
-                </span>
-
-            </div>
-
-
-            <div class="performance-row">
-
-                <span>
-                    Hall Scan
-                </span>
-
-                <span>
-                    ~40 kHz MOCK
-                </span>
-
-            </div>
-
-
-            <div class="performance-row">
-
-                <span>
-                    USB Mode
-                </span>
-
-                <span>
-                    HID HS
-                </span>
-
-            </div>
-
+            <div class="panel-title">PERFORMANCE</div>
+            <div class="performance-row"><span>USB Polling</span><span id="performancePolling">8000 Hz</span></div>
+            <div class="performance-row"><span>Report Interval</span><span id="reportInterval">0.125 ms</span></div>
+            <div class="performance-row"><span>Hall Scan</span><span>~40 kHz MOCK</span></div>
+            <div class="performance-row"><span>USB Mode</span><span>HID HS</span></div>
         </div>
-
     </div>
 
-
-
-    <div
-        id="console"
-        class="console"
-    >
-
-        <div class="console-line">
-
-            <span class="prompt">
-                HE>
-            </span>
-
-            mock keyboard initialized
-
-        </div>
-
-
-        <div class="console-line">
-
-            <span class="prompt">
-                HE>
-            </span>
-
-            hall matrix:
-
-            <span class="good">
-                61 keys
-            </span>
-
-        </div>
-
-
-        <div class="console-line">
-
-            <span class="prompt">
-                HE>
-            </span>
-
-            ready_
-
-        </div>
-
+    <div id="console" class="console">
+        <div class="console-line"><span class="prompt">HE&gt;</span> mock keyboard initialized</div>
+        <div class="console-line"><span class="prompt">HE&gt;</span> hall matrix: <span class="good">61 keys</span></div>
+        <div class="console-line"><span class="prompt">HE&gt;</span> ready_</div>
     </div>
-
 </div>
-
 </section>
 
-
-
-<!-- ======================================================
-     LIGHTING
-======================================================= -->
-
-<section
-    id="page-lighting"
-    class="page"
->
-
+<section id="page-lighting" class="page">
 <div class="page-shell">
-
-
     <div class="page-header">
-
         <div>
+            <div class="page-title">/lighting</div>
+            <div class="page-description">rear 10-LED underglow / individual control / effect library</div>
+        </div>
+        <div class="terminal-command"><span>&gt;</span> lighting.configure --rear-led=10</div>
+    </div>
 
-            <div class="page-title">
-                /lighting
+    <div class="lighting-mode-tabs">
+        <button id="lightingIndividualTab" class="active" data-lighting-mode="individual">INDIVIDUAL</button>
+        <button id="lightingLibraryTab" data-lighting-mode="library">LIBRARY</button>
+    </div>
+
+    <div class="lighting-grid">
+        <div class="panel lighting-preview-panel">
+            <div class="panel-title">KEYBOARD_REAR_LIGHTING_PREVIEW</div>
+            <div class="lighting-keyboard-wrap">
+                <div class="lighting-keyboard">
+                    <div class="rear-edge-label">REAR EDGE / 10 LEDs</div>
+                    <div id="rearLedRow" class="rear-led-row"></div>
+                    <div id="fakeKeyboard" class="fake-keyboard"></div>
+                </div>
             </div>
-
-            <div class="page-description">
-                WS2812B lighting configuration
-            </div>
-
+            <div id="lightingPreviewCaption" class="lighting-preview-caption">INDIVIDUAL MODE — click an LED to edit its RGB value</div>
         </div>
 
+        <div class="panel">
+            <div id="individualLightingControls" class="lighting-control-section active">
+                <div class="panel-title">INDIVIDUAL_LED</div>
+                <div id="selectedLedTitle" class="selected-led-title">LED_1</div>
+
+                <div class="color-control">
+                    <input id="individualColor" class="color-swatch" type="color" value="#8b5cf6">
+                    <div>
+                        <div class="small-text">Selected LED color</div>
+                        <div id="individualHex" style="margin-top:6px;color:#d7dce7;font-size:13px">#8B5CF6</div>
+                    </div>
+                </div>
+
+                <div class="rgb-grid">
+                    <div class="rgb-field"><label>R</label><input id="individualR" class="rgb-input" type="number" min="0" max="255" value="139"></div>
+                    <div class="rgb-field"><label>G</label><input id="individualG" class="rgb-input" type="number" min="0" max="255" value="92"></div>
+                    <div class="rgb-field"><label>B</label><input id="individualB" class="rgb-input" type="number" min="0" max="255" value="246"></div>
+                </div>
+
+                <div class="lighting-note">
+                    Each of the 10 rear LEDs stores its own RGB value. Click LED 1–10 on the keyboard preview and set its color.
+                </div>
+            </div>
+
+            <div id="libraryLightingControls" class="lighting-control-section">
+                <div class="panel-title">EFFECT_LIBRARY</div>
+
+                <div class="effect-list">
+                    <button class="effect-card active" data-effect="normal">
+                        <div class="effect-name">NORMAL / 일반</div>
+                        <div class="effect-description">All 10 rear LEDs stay continuously lit.</div>
+                    </button>
+
+                    <button class="effect-card" data-effect="breathing">
+                        <div class="effect-name">BREATHING / 호흡</div>
+                        <div class="effect-description">Brightness repeatedly rises and falls.</div>
+                    </button>
+
+                    <button class="effect-card" data-effect="reactive">
+                        <div class="effect-name">REACTIVE / 반응</div>
+                        <div class="effect-description">A key press starts from the two center LEDs and spreads toward both ends.</div>
+                    </button>
+                </div>
+
+                <div class="panel-title">EFFECT_COLOR</div>
+
+                <div class="color-control">
+                    <input id="libraryColor" class="color-swatch" type="color" value="#8b5cf6">
+                    <div>
+                        <div class="small-text">Library effect color</div>
+                        <div id="libraryHex" style="margin-top:6px;color:#d7dce7;font-size:13px">#8B5CF6</div>
+                    </div>
+                </div>
+
+                <div class="rgb-grid">
+                    <div class="rgb-field"><label>R</label><input id="libraryR" class="rgb-input" type="number" min="0" max="255" value="139"></div>
+                    <div class="rgb-field"><label>G</label><input id="libraryG" class="rgb-input" type="number" min="0" max="255" value="92"></div>
+                    <div class="rgb-field"><label>B</label><input id="libraryB" class="rgb-input" type="number" min="0" max="255" value="246"></div>
+                </div>
+
+                <div class="lighting-note">
+                    The library keeps the animation pattern fixed. You only choose the color. In REACTIVE mode, click a Hall key in the Keys page to preview the center-to-edge wave.
+                </div>
+            </div>
+        </div>
     </div>
-
-
-    <div class="placeholder">
-
-        <strong>
-            WS2812B LIGHTING
-        </strong>
-
-        next implementation
-
-    </div>
-
 </div>
-
 </section>
 
-
-
-<!-- ======================================================
-     DEVICE
-======================================================= -->
-
-<section
-    id="page-device"
-    class="page"
->
-
+<section id="page-device" class="page">
 <div class="page-shell">
-
-
     <div class="page-header">
-
         <div>
-
-            <div class="page-title">
-                /device
-            </div>
-
-            <div class="page-description">
-                firmware / device information
-            </div>
-
+            <div class="page-title">/device</div>
+            <div class="page-description">firmware / device information</div>
         </div>
-
     </div>
-
-
-    <div class="placeholder">
-
-        <strong>
-            DEVICE / FIRMWARE
-        </strong>
-
-        next implementation
-
-    </div>
-
+    <div class="placeholder"><strong>DEVICE / FIRMWARE</strong>next implementation</div>
 </div>
-
 </section>
 
-
 </div>
-
 </main>
-
 </div>
-
-
 
 <script>
-
-/* =========================================================
-   DEVICE INFORMATION
-========================================================= */
+const STORE_KEY = "he_keyboard_mock_flash_v4";
 
 const DEVICE_INFO = {
-
-    switchName:
-        "TBD - Magnetic Hall Switch",
-
-    switchStroke:
-        4.00,
-
-    mcu:
-        "M484KIDAE",
-
-    hallSensor:
-        "DRV5055A3",
-
-    mux:
-        "TMUX1208 × 8",
-
-    hallKeys:
-        61
-
+    switchName: "TBD - Magnetic Hall Switch",
+    switchStroke: 4.00,
+    mcu: "M484KIDAE",
+    hallSensor: "DRV5055A3",
+    mux: "TMUX1208 × 8",
+    hallKeys: 61,
+    rearLedCount: 10
 };
 
-
-/* =========================================================
-   HALL LAYOUT
-========================================================= */
-
 const hallRows = [
-
-    [
-        ["`",4],
-        ["1",4],
-        ["2",4],
-        ["3",4],
-        ["4",4],
-        ["5",4],
-        ["6",4],
-        ["7",4],
-        ["8",4],
-        ["9",4],
-        ["0",4],
-        ["-",4],
-        ["=",4],
-        ["Backspace",8]
-    ],
-
-    [
-        ["Tab",6],
-
-        ["Q",4],
-        ["W",4],
-        ["E",4],
-        ["R",4],
-        ["T",4],
-        ["Y",4],
-        ["U",4],
-        ["I",4],
-        ["O",4],
-        ["P",4],
-        ["[",4],
-        ["]",4],
-
-        ["\\",6]
-    ],
-
-    [
-        ["Caps",7],
-
-        ["A",4],
-        ["S",4],
-        ["D",4],
-        ["F",4],
-        ["G",4],
-        ["H",4],
-        ["J",4],
-        ["K",4],
-        ["L",4],
-        [";",4],
-        ["'",4],
-
-        ["Enter",9]
-    ],
-
-    [
-        ["LShift",9],
-
-        ["Z",4],
-        ["X",4],
-        ["C",4],
-        ["V",4],
-        ["B",4],
-        ["N",4],
-        ["M",4],
-        [",",4],
-        [".",4],
-        ["/",4],
-
-        ["RShift",11]
-    ],
-
-    [
-        ["LCtrl",5],
-        ["LWin",5],
-        ["LAlt",5],
-
-        ["Space",25],
-
-        ["RAlt",5],
-        ["Fn",5],
-        ["Menu",5],
-        ["RCtrl",5]
-    ]
-
+    [["`",4],["1",4],["2",4],["3",4],["4",4],["5",4],["6",4],["7",4],["8",4],["9",4],["0",4],["-",4],["=",4],["Backspace",8]],
+    [["Tab",6],["Q",4],["W",4],["E",4],["R",4],["T",4],["Y",4],["U",4],["I",4],["O",4],["P",4],["[",4],["]",4],["\\",6]],
+    [["Caps",7],["A",4],["S",4],["D",4],["F",4],["G",4],["H",4],["J",4],["K",4],["L",4],[";",4],["'",4],["Enter",9]],
+    [["LShift",9],["Z",4],["X",4],["C",4],["V",4],["B",4],["N",4],["M",4],[",",4],[".",4],["/",4],["RShift",11]],
+    [["LCtrl",5],["LWin",5],["LAlt",5],["Space",25],["RAlt",5],["Fn",5],["Menu",5],["RCtrl",5]]
 ];
 
-
-/* =========================================================
-   MECHANICAL VISUAL
-========================================================= */
-
-const functionKeys = [
-
-    "Esc",
-
-    null,
-
-    "F1",
-    "F2",
-    "F3",
-    "F4",
-
-    null,
-
-    "F5",
-    "F6",
-    "F7",
-    "F8",
-
-    null,
-
-    "F9",
-    "F10",
-    "F11",
-    "F12",
-
-    "PrtSc",
-    "ScrLk",
-    "Pause"
-
-];
-
-
-const navigationKeys = [
-
-    "Ins",
-    "Home",
-    "PgUp",
-
-    "Del",
-    "End",
-    "PgDn"
-
-];
-
-
-const arrowKeys = [
-
-    null,
-    "↑",
-    null,
-
-    "←",
-    "↓",
-    "→"
-
-];
-
-
+const functionKeys = ["Esc",null,"F1","F2","F3","F4",null,"F5","F6","F7","F8",null,"F9","F10","F11","F12","PrtSc","ScrLk","Pause"];
+const navigationKeys = ["Ins","Home","PgUp","Del","End","PgDn"];
+const arrowKeys = [null,"↑",null,"←","↓","→"];
 const numpadKeys = [
-
-    { key:"Num" },
-
-    { key:"/" },
-
-    { key:"*" },
-
-    { key:"-" },
-
-
-    { key:"7" },
-
-    { key:"8" },
-
-    { key:"9" },
-
-    {
-        key:"+",
-        className:
-            "numpad-plus"
-    },
-
-
-    { key:"4" },
-
-    { key:"5" },
-
-    { key:"6" },
-
-
-    { key:"1" },
-
-    { key:"2" },
-
-    { key:"3" },
-
-    {
-        key:"Enter",
-        className:
-            "numpad-enter"
-    },
-
-
-    {
-        key:"0",
-        className:
-            "numpad-zero"
-    },
-
-    { key:"." }
-
+    {key:"Num"},{key:"/"},{key:"*"},{key:"-"},
+    {key:"7"},{key:"8"},{key:"9"},{key:"+",className:"numpad-plus"},
+    {key:"4"},{key:"5"},{key:"6"},
+    {key:"1"},{key:"2"},{key:"3"},{key:"Enter",className:"numpad-enter"},
+    {key:"0",className:"numpad-zero"},{key:"."}
 ];
 
-
-/* =========================================================
-   DEFAULT SETTINGS
-========================================================= */
-
-function makeDefaultSettings() {
-
+function makeDefaultKeySettings() {
     const result = {};
-
-
-    hallRows
-        .flat()
-        .forEach(
-            ([key]) => {
-
-                result[key] = {
-
-                    actuation:
-                        1.50,
-
-                    rapidTrigger:
-                        true,
-
-                    rtSensitivity:
-                        0.20,
-
-                    topDeadzone:
-                        0.10,
-
-                    bottomDeadzone:
-                        0.10,
-
-                    depth:
-                        0.00,
-
-                    pressed:
-                        false,
-
-                    rtArmed:
-                        false,
-
-                    maxDepth:
-                        0.00,
-
-                    minDepth:
-                        0.00,
-
-                    restRaw:
-                        512,
-
-                    bottomRaw:
-                        3500
-
-                };
-
-            }
-        );
-
-
-    return result;
-
-}
-
-
-/* =========================================================
-   APP STATE
-========================================================= */
-
-let settings =
-    makeDefaultSettings();
-
-
-let selectedKey =
-    "W";
-
-
-let mode =
-    "single";
-
-
-let batchSelection =
-    new Set();
-
-
-let currentProfile =
-    1;
-
-
-let pollingRate =
-    8000;
-
-
-let configState =
-    "saved";
-
-
-let appliedSnapshot =
-    null;
-
-
-/* =========================================================
-   DOM
-========================================================= */
-
-const app =
-    document.getElementById(
-        "app"
-    );
-
-
-const keyboard =
-    document.getElementById(
-        "keyboard"
-    );
-
-
-const selectedKeyLabel =
-    document.getElementById(
-        "selectedKey"
-    );
-
-
-const travel =
-    document.getElementById(
-        "travel"
-    );
-
-
-const travelValue =
-    document.getElementById(
-        "travelValue"
-    );
-
-
-const actuation =
-    document.getElementById(
-        "actuation"
-    );
-
-
-const actuationNumber =
-    document.getElementById(
-        "actuationNumber"
-    );
-
-
-const rtToggle =
-    document.getElementById(
-        "rtToggle"
-    );
-
-
-const rtSensitivity =
-    document.getElementById(
-        "rtSensitivity"
-    );
-
-
-const rtNumber =
-    document.getElementById(
-        "rtNumber"
-    );
-
-
-const topDeadzone =
-    document.getElementById(
-        "topDeadzone"
-    );
-
-
-const topDeadzoneNumber =
-    document.getElementById(
-        "topDeadzoneNumber"
-    );
-
-
-const bottomDeadzone =
-    document.getElementById(
-        "bottomDeadzone"
-    );
-
-
-const bottomDeadzoneNumber =
-    document.getElementById(
-        "bottomDeadzoneNumber"
-    );
-
-
-const keyState =
-    document.getElementById(
-        "keyState"
-    );
-
-
-const selectionCount =
-    document.getElementById(
-        "selectionCount"
-    );
-
-
-const consoleBox =
-    document.getElementById(
-        "console"
-    );
-
-
-/* =========================================================
-   CLONE
-========================================================= */
-
-function deepClone(
-    object
-) {
-
-    return JSON.parse(
-        JSON.stringify(
-            object
-        )
-    );
-
-}
-
-
-/* =========================================================
-   SERIALIZE CONFIGURATION
-========================================================= */
-
-function createSnapshot() {
-
-    return {
-
-        settings:
-            deepClone(
-                settings
-            ),
-
-        profile:
-            currentProfile,
-
-        pollingRate:
-            pollingRate
-
-    };
-
-}
-
-
-/* =========================================================
-   CONFIG STATE
-========================================================= */
-
-function setConfigState(
-    state
-) {
-
-    configState =
-        state;
-
-
-    const globalStatus =
-        document.getElementById(
-            "globalStatus"
-        );
-
-
-    const sidebarState =
-        document.getElementById(
-            "sidebarState"
-        );
-
-
-    globalStatus.className =
-        "global-status " +
-        state;
-
-
-    sidebarState.className =
-        "sidebar-state " +
-        state;
-
-
-    if (
-        state ===
-        "pending"
-    ) {
-
-        globalStatus.textContent =
-            "● PENDING CHANGES";
-
-
-        sidebarState.textContent =
-            "● pending changes";
-
-    }
-
-
-    else if (
-        state ===
-        "applied"
-    ) {
-
-        globalStatus.textContent =
-            "● APPLIED / NOT SAVED";
-
-
-        sidebarState.textContent =
-            "● applied / not saved";
-
-    }
-
-
-    else {
-
-        globalStatus.textContent =
-            "● SAVED";
-
-
-        sidebarState.textContent =
-            "● configuration saved";
-
-    }
-
-
-    updateHome();
-
-}
-
-
-/* =========================================================
-   MARK CHANGED
-========================================================= */
-
-function markChanged() {
-
-    setConfigState(
-        "pending"
-    );
-
-}
-
-
-/* =========================================================
-   CONSOLE
-========================================================= */
-
-function log(
-    text,
-    good = false
-) {
-
-    const line =
-        document.createElement(
-            "div"
-        );
-
-
-    line.className =
-        "console-line";
-
-
-    line.innerHTML =
-
-        `<span class="prompt">HE></span> ` +
-
-        (
-            good
-
-            ? `<span class="good">${text}</span>`
-
-            : text
-        );
-
-
-    consoleBox.appendChild(
-        line
-    );
-
-
-    consoleBox.scrollTop =
-        consoleBox.scrollHeight;
-
-}
-
-
-/* =========================================================
-   SIDEBAR
-========================================================= */
-
-document
-    .getElementById(
-        "sidebarToggle"
-    )
-    .onclick =
-        () => {
-
-            app.classList.toggle(
-                "sidebar-collapsed"
-            );
-
+    hallRows.flat().forEach(([key]) => {
+        result[key] = {
+            actuation: 1.50,
+            rapidTrigger: true,
+            rtSensitivity: 0.20,
+            topDeadzone: 0.10,
+            bottomDeadzone: 0.10,
+            depth: 0.00,
+            pressed: false,
+            rtArmed: false,
+            maxDepth: 0.00,
+            minDepth: 0.00,
+            restRaw: 512,
+            bottomRaw: 3500
         };
+    });
+    return result;
+}
 
+function makeDefaultLighting() {
+    return {
+        mode: "individual",
+        individualColors: Array(10).fill("#8b5cf6"),
+        libraryEffect: "normal",
+        libraryColor: "#8b5cf6"
+    };
+}
 
-/* =========================================================
-   BUILD HALL KEYBOARD
-========================================================= */
+function makeDefaultProfile() {
+    return {
+        pollingRate: 8000,
+        keys: makeDefaultKeySettings(),
+        lighting: makeDefaultLighting()
+    };
+}
+
+function makeDefaultProfiles() {
+    return {1:makeDefaultProfile(),2:makeDefaultProfile(),3:makeDefaultProfile()};
+}
+
+let profiles = makeDefaultProfiles();
+let currentProfile = 1;
+let selectedKey = "W";
+let mode = "single";
+let batchSelection = new Set();
+let selectedLed = 0;
+let configState = "saved";
+let appliedSnapshot = null;
+let breathPhase = 0;
+let reactiveStep = -1;
+let reactiveTimers = [];
+
+function deepClone(object) { return JSON.parse(JSON.stringify(object)); }
+function currentProfileData() { return profiles[currentProfile]; }
+function currentKeySettings() { return currentProfileData().keys[selectedKey]; }
+function currentLighting() { return currentProfileData().lighting; }
+function clamp(value,min,max) { return Math.max(min,Math.min(max,value)); }
+function hexToRgb(hex) {
+    let value = hex.replace("#","");
+    if (value.length === 3) value = value.split("").map(c=>c+c).join("");
+    const number = parseInt(value,16);
+    return {r:(number>>16)&255,g:(number>>8)&255,b:number&255};
+}
+function rgbToHex(r,g,b) {
+    return "#" + [r,g,b]
+        .map(value => clamp(Number(value)||0,0,255))
+        .map(value => Math.round(value).toString(16).padStart(2,"0"))
+        .join("");
+}
+function createSnapshot() { return {profiles:deepClone(profiles),currentProfile}; }
+
+const app = document.getElementById("app");
+const keyboard = document.getElementById("keyboard");
+const selectedKeyLabel = document.getElementById("selectedKey");
+const travel = document.getElementById("travel");
+const travelValue = document.getElementById("travelValue");
+const actuation = document.getElementById("actuation");
+const actuationNumber = document.getElementById("actuationNumber");
+const rtToggle = document.getElementById("rtToggle");
+const rtSensitivity = document.getElementById("rtSensitivity");
+const rtNumber = document.getElementById("rtNumber");
+const topDeadzone = document.getElementById("topDeadzone");
+const topDeadzoneNumber = document.getElementById("topDeadzoneNumber");
+const bottomDeadzone = document.getElementById("bottomDeadzone");
+const bottomDeadzoneNumber = document.getElementById("bottomDeadzoneNumber");
+const keyState = document.getElementById("keyState");
+const selectionCount = document.getElementById("selectionCount");
+const consoleBox = document.getElementById("console");
+
+function setConfigState(state) {
+    configState = state;
+    const globalStatus = document.getElementById("globalStatus");
+    const sidebarState = document.getElementById("sidebarState");
+    globalStatus.className = "global-status " + state;
+    sidebarState.className = "sidebar-state " + state;
+    if (state === "pending") {
+        globalStatus.textContent = "● PENDING CHANGES";
+        sidebarState.textContent = "● pending changes";
+    } else if (state === "applied") {
+        globalStatus.textContent = "● APPLIED / NOT SAVED";
+        sidebarState.textContent = "● applied / not saved";
+    } else {
+        globalStatus.textContent = "● SAVED";
+        sidebarState.textContent = "● configuration saved";
+    }
+    updateHome();
+}
+function markChanged() { setConfigState("pending"); }
+
+function log(text,good=false) {
+    const line = document.createElement("div");
+    line.className = "console-line";
+    line.innerHTML = `<span class="prompt">HE&gt;</span> ` + (good ? `<span class="good">${text}</span>` : text);
+    consoleBox.appendChild(line);
+    consoleBox.scrollTop = consoleBox.scrollHeight;
+}
+
+document.getElementById("sidebarToggle").onclick = () => app.classList.toggle("sidebar-collapsed");
 
 function buildHallKeyboard() {
-
-    keyboard.innerHTML =
-        "";
-
-
-    hallRows.forEach(
-        row => {
-
-            const rowElement =
-                document.createElement(
-                    "div"
-                );
-
-
-            rowElement.className =
-                "hall-row";
-
-
-            row.forEach(
-                ([key, span]) => {
-
-                    const button =
-                        document.createElement(
-                            "button"
-                        );
-
-
-                    button.className =
-                        "key";
-
-
-                    button.dataset.key =
-                        key;
-
-
-                    button.textContent =
-                        key;
-
-
-                    button.style.gridColumn =
-                        `span ${span}`;
-
-
-                    button.onclick =
-                        () =>
-                            keyClicked(
-                                key
-                            );
-
-
-                    rowElement.appendChild(
-                        button
-                    );
-
-                }
-            );
-
-
-            keyboard.appendChild(
-                rowElement
-            );
-
-        }
-    );
-
-
+    keyboard.innerHTML = "";
+    hallRows.forEach(row => {
+        const rowElement = document.createElement("div");
+        rowElement.className = "hall-row";
+        row.forEach(([key,span]) => {
+            const button = document.createElement("button");
+            button.className = "key";
+            button.dataset.key = key;
+            button.textContent = key;
+            button.style.gridColumn = `span ${span}`;
+            button.onclick = () => keyClicked(key);
+            rowElement.appendChild(button);
+        });
+        keyboard.appendChild(rowElement);
+    });
     updateKeyboardVisual();
-
 }
-
-
-/* =========================================================
-   BUILD FUNCTION ROW
-========================================================= */
 
 function buildFunctionRow() {
-
-    const row =
-        document.getElementById(
-            "functionRow"
-        );
-
-
-    functionKeys.forEach(
-        key => {
-
-            if (
-                key === null
-            ) {
-
-                row.appendChild(
-                    document.createElement(
-                        "div"
-                    )
-                );
-
-
-                return;
-
-            }
-
-
-            const button =
-                document.createElement(
-                    "button"
-                );
-
-
-            button.className =
-                "mech-key";
-
-
-            button.textContent =
-                key;
-
-
-            button.disabled =
-                true;
-
-
-            row.appendChild(
-                button
-            );
-
-        }
-    );
-
+    const row = document.getElementById("functionRow");
+    functionKeys.forEach(key => {
+        if (key === null) { row.appendChild(document.createElement("div")); return; }
+        const button = document.createElement("button");
+        button.className = "mech-key";
+        button.textContent = key;
+        button.disabled = true;
+        row.appendChild(button);
+    });
 }
-
-
-/* =========================================================
-   BUILD NAVIGATION
-========================================================= */
 
 function buildNavigation() {
-
-    const nav =
-        document.getElementById(
-            "navCluster"
-        );
-
-
-    navigationKeys.forEach(
-        key => {
-
-            const button =
-                document.createElement(
-                    "button"
-                );
-
-
-            button.className =
-                "mech-key";
-
-
-            button.textContent =
-                key;
-
-
-            button.disabled =
-                true;
-
-
-            nav.appendChild(
-                button
-            );
-
-        }
-    );
-
-
-    const arrows =
-        document.getElementById(
-            "arrowCluster"
-        );
-
-
-    arrowKeys.forEach(
-        key => {
-
-            if (
-                key === null
-            ) {
-
-                arrows.appendChild(
-                    document.createElement(
-                        "div"
-                    )
-                );
-
-
-                return;
-
-            }
-
-
-            const button =
-                document.createElement(
-                    "button"
-                );
-
-
-            button.className =
-                "mech-key";
-
-
-            button.textContent =
-                key;
-
-
-            button.disabled =
-                true;
-
-
-            arrows.appendChild(
-                button
-            );
-
-        }
-    );
-
+    const nav = document.getElementById("navCluster");
+    navigationKeys.forEach(key => {
+        const button = document.createElement("button");
+        button.className = "mech-key";
+        button.textContent = key;
+        button.disabled = true;
+        nav.appendChild(button);
+    });
+    const arrows = document.getElementById("arrowCluster");
+    arrowKeys.forEach(key => {
+        if (key === null) { arrows.appendChild(document.createElement("div")); return; }
+        const button = document.createElement("button");
+        button.className = "mech-key";
+        button.textContent = key;
+        button.disabled = true;
+        arrows.appendChild(button);
+    });
 }
-
-
-/* =========================================================
-   BUILD NUMPAD
-========================================================= */
 
 function buildNumpad() {
-
-    const pad =
-        document.getElementById(
-            "numpad"
-        );
-
-
-    numpadKeys.forEach(
-        item => {
-
-            const button =
-                document.createElement(
-                    "button"
-                );
-
-
-            button.className =
-                "mech-key";
-
-
-            if (
-                item.className
-            ) {
-
-                button.classList.add(
-                    item.className
-                );
-
-            }
-
-
-            button.textContent =
-                item.key;
-
-
-            button.disabled =
-                true;
-
-
-            pad.appendChild(
-                button
-            );
-
-        }
-    );
-
+    const pad = document.getElementById("numpad");
+    numpadKeys.forEach(item => {
+        const button = document.createElement("button");
+        button.className = "mech-key";
+        if (item.className) button.classList.add(item.className);
+        button.textContent = item.key;
+        button.disabled = true;
+        pad.appendChild(button);
+    });
 }
 
-
-/* =========================================================
-   KEY CLICK
-========================================================= */
-
-function keyClicked(
-    key
-) {
-
-    if (
-        mode ===
-        "multi"
-    ) {
-
-        if (
-            batchSelection.has(
-                key
-            )
-        ) {
-
-            batchSelection.delete(
-                key
-            );
-
-        }
-
-        else {
-
-            batchSelection.add(
-                key
-            );
-
-        }
-
-
+function keyClicked(key) {
+    if (mode === "multi") {
+        if (batchSelection.has(key)) batchSelection.delete(key);
+        else batchSelection.add(key);
         updateSelectionCount();
-
         updateKeyboardVisual();
-
         return;
-
     }
-
-
-    selectedKey =
-        key;
-
-
+    selectedKey = key;
     loadSelectedKey();
-
-
-    log(
-        `selected key = ${key}`
-    );
-
+    log(`selected key = ${key}`);
+    triggerReactiveLighting();
 }
-
-
-/* =========================================================
-   LOAD KEY
-========================================================= */
 
 function loadSelectedKey() {
-
-    const s =
-        settings[
-            selectedKey
-        ];
-
-
-    selectedKeyLabel.textContent =
-        selectedKey;
-
-
-    actuation.value =
-        Math.round(
-            s.actuation * 100
-        );
-
-
-    actuationNumber.value =
-        s.actuation.toFixed(2);
-
-
-    rtToggle.checked =
-        s.rapidTrigger;
-
-
-    rtSensitivity.value =
-        Math.round(
-            s.rtSensitivity * 100
-        );
-
-
-    rtNumber.value =
-        s.rtSensitivity.toFixed(2);
-
-
-    topDeadzone.value =
-        Math.round(
-            s.topDeadzone * 100
-        );
-
-
-    topDeadzoneNumber.value =
-        s.topDeadzone.toFixed(2);
-
-
-    bottomDeadzone.value =
-        Math.round(
-            s.bottomDeadzone * 100
-        );
-
-
-    bottomDeadzoneNumber.value =
-        s.bottomDeadzone.toFixed(2);
-
-
-    travel.value =
-        Math.round(
-            s.depth * 100
-        );
-
-
-    document
-        .getElementById(
-            "restRaw"
-        )
-        .textContent =
-            s.restRaw;
-
-
-    document
-        .getElementById(
-            "bottomRaw"
-        )
-        .textContent =
-            s.bottomRaw;
-
-
+    const s = currentKeySettings();
+    selectedKeyLabel.textContent = selectedKey;
+    actuation.value = Math.round(s.actuation*100);
+    actuationNumber.value = s.actuation.toFixed(2);
+    rtToggle.checked = s.rapidTrigger;
+    rtSensitivity.value = Math.round(s.rtSensitivity*100);
+    rtNumber.value = s.rtSensitivity.toFixed(2);
+    topDeadzone.value = Math.round(s.topDeadzone*100);
+    topDeadzoneNumber.value = s.topDeadzone.toFixed(2);
+    bottomDeadzone.value = Math.round(s.bottomDeadzone*100);
+    bottomDeadzoneNumber.value = s.bottomDeadzone.toFixed(2);
+    travel.value = Math.round(s.depth*100);
+    document.getElementById("restRaw").textContent = s.restRaw;
+    document.getElementById("bottomRaw").textContent = s.bottomRaw;
     updateTravelUI();
-
     updateKeyboardVisual();
-
 }
 
-
-/* =========================================================
-   RAPID TRIGGER LOGIC
-========================================================= */
-
-function processRapidTrigger(
-    s
-) {
-
-    if (
-        !s.rapidTrigger
-    ) {
-
-        s.pressed =
-            s.depth >=
-            s.actuation;
-
-
-        s.rtArmed =
-            false;
-
-
+function processRapidTrigger(s) {
+    if (!s.rapidTrigger) {
+        s.pressed = s.depth >= s.actuation;
+        s.rtArmed = false;
         return;
-
     }
-
-
-    if (
-        !s.rtArmed
-    ) {
-
-        if (
-            s.depth >=
-            s.actuation
-        ) {
-
-            s.pressed =
-                true;
-
-
-            s.rtArmed =
-                true;
-
-
-            s.maxDepth =
-                s.depth;
-
-
-            s.minDepth =
-                s.depth;
-
+    if (!s.rtArmed) {
+        if (s.depth >= s.actuation) {
+            s.pressed = true;
+            s.rtArmed = true;
+            s.maxDepth = s.depth;
+            s.minDepth = s.depth;
+        } else {
+            s.pressed = false;
+            s.maxDepth = s.depth;
+            s.minDepth = s.depth;
         }
-
-        else {
-
-            s.pressed =
-                false;
-
-
-            s.maxDepth =
-                s.depth;
-
-
-            s.minDepth =
-                s.depth;
-
-        }
-
-
         return;
-
     }
-
-
-    if (
-        s.pressed
-    ) {
-
-        if (
-            s.depth >
-            s.maxDepth
-        ) {
-
-            s.maxDepth =
-                s.depth;
-
+    if (s.pressed) {
+        if (s.depth > s.maxDepth) s.maxDepth = s.depth;
+        const releasePoint = s.maxDepth - s.rtSensitivity;
+        if (s.depth <= releasePoint) {
+            s.pressed = false;
+            s.minDepth = s.depth;
+            log(`${selectedKey} RELEASE @ ${s.depth.toFixed(2)} mm`);
         }
-
-
-        const releasePoint =
-
-            s.maxDepth -
-
-            s.rtSensitivity;
-
-
-        if (
-            s.depth <=
-            releasePoint
-        ) {
-
-            s.pressed =
-                false;
-
-
-            s.minDepth =
-                s.depth;
-
-
-            log(
-
-                `${selectedKey} RELEASE @ ${s.depth.toFixed(2)} mm`
-
-            );
-
+    } else {
+        if (s.depth < s.minDepth) s.minDepth = s.depth;
+        const pressPoint = s.minDepth + s.rtSensitivity;
+        if (s.depth >= pressPoint) {
+            s.pressed = true;
+            s.maxDepth = s.depth;
+            log(`${selectedKey} PRESS @ ${s.depth.toFixed(2)} mm`,true);
+            triggerReactiveLighting();
         }
-
     }
-
-    else {
-
-        if (
-            s.depth <
-            s.minDepth
-        ) {
-
-            s.minDepth =
-                s.depth;
-
-        }
-
-
-        const pressPoint =
-
-            s.minDepth +
-
-            s.rtSensitivity;
-
-
-        if (
-            s.depth >=
-            pressPoint
-        ) {
-
-            s.pressed =
-                true;
-
-
-            s.maxDepth =
-                s.depth;
-
-
-            log(
-
-                `${selectedKey} PRESS @ ${s.depth.toFixed(2)} mm`,
-
-                true
-
-            );
-
-        }
-
-    }
-
 }
 
-
-/* =========================================================
-   DYNAMIC RT POINT
-========================================================= */
-
-function getRTPoint(
-    s
-) {
-
-    if (
-        !s.rapidTrigger ||
-        !s.rtArmed
-    ) {
-
-        return null;
-
-    }
-
-
-    if (
-        s.pressed
-    ) {
-
-        return {
-
-            value:
-                Math.max(
-                    0,
-                    s.maxDepth -
-                    s.rtSensitivity
-                ),
-
-            label:
-                "RT RELEASE"
-
-        };
-
-    }
-
-
-    return {
-
-        value:
-            Math.min(
-                DEVICE_INFO.switchStroke,
-                s.minDepth +
-                s.rtSensitivity
-            ),
-
-        label:
-            "RT PRESS"
-
-    };
-
+function getRTPoint(s) {
+    if (!s.rapidTrigger || !s.rtArmed) return null;
+    if (s.pressed) return {value:Math.max(0,s.maxDepth-s.rtSensitivity),label:"RT RELEASE"};
+    return {value:Math.min(DEVICE_INFO.switchStroke,s.minDepth+s.rtSensitivity),label:"RT PRESS"};
 }
 
-
-/* =========================================================
-   TRAVEL
-========================================================= */
-
-travel.addEventListener(
-
-    "input",
-
-    () => {
-
-        const s =
-            settings[
-                selectedKey
-            ];
-
-
-        s.depth =
-
-            Number(
-                travel.value
-            ) / 100;
-
-
-        processRapidTrigger(
-            s
-        );
-
-
-        updateTravelUI();
-
-        updateKeyboardVisual();
-
-    }
-
-);
-
+travel.addEventListener("input",() => {
+    const s = currentKeySettings();
+    s.depth = Number(travel.value)/100;
+    processRapidTrigger(s);
+    updateTravelUI();
+    updateKeyboardVisual();
+});
 
 function updateTravelUI() {
-
-    const s =
-        settings[
-            selectedKey
-        ];
-
-
-    travelValue.textContent =
-
-        `${s.depth.toFixed(2)} mm`;
-
-
-    keyState.textContent =
-
-        s.pressed
-
-        ? "PRESSED"
-
-        : "RELEASED";
-
-
-    const pct =
-        value =>
-
-            Math.max(
-                0,
-                Math.min(
-                    100,
-                    value /
-                    DEVICE_INFO.switchStroke *
-                    100
-                )
-            );
-
-
-    document
-        .getElementById(
-            "topDeadzoneVisual"
-        )
-        .style.width =
-
-            `${pct(
-                s.topDeadzone
-            )}%`;
-
-
-    document
-        .getElementById(
-            "bottomDeadzoneVisual"
-        )
-        .style.width =
-
-            `${pct(
-                s.bottomDeadzone
-            )}%`;
-
-
-    document
-        .getElementById(
-            "usableZoneVisual"
-        )
-        .style.left =
-
-            `${pct(
-                s.topDeadzone
-            )}%`;
-
-
-    document
-        .getElementById(
-            "usableZoneVisual"
-        )
-        .style.right =
-
-            `${pct(
-                s.bottomDeadzone
-            )}%`;
-
-
-    document
-        .getElementById(
-            "actuationMarker"
-        )
-        .style.left =
-
-            `${pct(
-                s.actuation
-            )}%`;
-
-
-    document
-        .getElementById(
-            "currentMarker"
-        )
-        .style.left =
-
-            `${pct(
-                s.depth
-            )}%`;
-
-
-    const rt =
-        getRTPoint(
-            s
-        );
-
-
-    const rtMarker =
-        document.getElementById(
-            "rtMarker"
-        );
-
-
-    if (
-        rt === null
-    ) {
-
-        rtMarker.style.display =
-            "none";
-
-    }
-
+    const s = currentKeySettings();
+    travelValue.textContent = `${s.depth.toFixed(2)} mm`;
+    keyState.textContent = s.pressed ? "PRESSED" : "RELEASED";
+    const pct = value => Math.max(0,Math.min(100,value/DEVICE_INFO.switchStroke*100));
+    document.getElementById("topDeadzoneVisual").style.width = `${pct(s.topDeadzone)}%`;
+    document.getElementById("bottomDeadzoneVisual").style.width = `${pct(s.bottomDeadzone)}%`;
+    document.getElementById("usableZoneVisual").style.left = `${pct(s.topDeadzone)}%`;
+    document.getElementById("usableZoneVisual").style.right = `${pct(s.bottomDeadzone)}%`;
+    document.getElementById("actuationMarker").style.left = `${pct(s.actuation)}%`;
+    document.getElementById("currentMarker").style.left = `${pct(s.depth)}%`;
+    const rt = getRTPoint(s);
+    const rtMarker = document.getElementById("rtMarker");
+    if (rt === null) rtMarker.style.display = "none";
     else {
-
-        rtMarker.style.display =
-            "block";
-
-
-        rtMarker.style.left =
-
-            `${pct(
-                rt.value
-            )}%`;
-
-
-        document
-            .getElementById(
-                "rtMarkerLabel"
-            )
-            .textContent =
-                rt.label;
-
+        rtMarker.style.display = "block";
+        rtMarker.style.left = `${pct(rt.value)}%`;
+        document.getElementById("rtMarkerLabel").textContent = rt.label;
     }
-
 }
 
-
-/* =========================================================
-   ACTUATION
-========================================================= */
-
-actuation.addEventListener(
-
-    "input",
-
-    () => {
-
-        const value =
-
-            Number(
-                actuation.value
-            ) / 100;
-
-
-        settings[
-            selectedKey
-        ].actuation =
-            value;
-
-
-        actuationNumber.value =
-            value.toFixed(2);
-
-
-        markChanged();
-
-        updateTravelUI();
-
-    }
-
-);
-
-
-actuationNumber.addEventListener(
-
-    "change",
-
-    () => {
-
-        let value =
-
-            Number(
-                actuationNumber.value
-            );
-
-
-        value =
-            Math.max(
-                0.10,
-                Math.min(
-                    DEVICE_INFO.switchStroke,
-                    value
-                )
-            );
-
-
-        settings[
-            selectedKey
-        ].actuation =
-            value;
-
-
-        actuation.value =
-            Math.round(
-                value * 100
-            );
-
-
-        actuationNumber.value =
-            value.toFixed(2);
-
-
-        markChanged();
-
-        updateTravelUI();
-
-    }
-
-);
-
-
-/* =========================================================
-   RAPID TRIGGER
-========================================================= */
-
-rtToggle.addEventListener(
-
-    "change",
-
-    () => {
-
-        const s =
-            settings[
-                selectedKey
-            ];
-
-
-        s.rapidTrigger =
-            rtToggle.checked;
-
-
-        s.rtArmed =
-            false;
-
-
-        processRapidTrigger(
-            s
-        );
-
-
-        markChanged();
-
-        updateTravelUI();
-
-        updateKeyboardVisual();
-
-    }
-
-);
-
-
-rtSensitivity.addEventListener(
-
-    "input",
-
-    () => {
-
-        const value =
-
-            Number(
-                rtSensitivity.value
-            ) / 100;
-
-
-        settings[
-            selectedKey
-        ].rtSensitivity =
-            value;
-
-
-        rtNumber.value =
-            value.toFixed(2);
-
-
-        markChanged();
-
-        updateTravelUI();
-
-    }
-
-);
-
-
-rtNumber.addEventListener(
-
-    "change",
-
-    () => {
-
-        let value =
-
-            Number(
-                rtNumber.value
-            );
-
-
-        value =
-            Math.max(
-                0.05,
-                Math.min(
-                    2,
-                    value
-                )
-            );
-
-
-        settings[
-            selectedKey
-        ].rtSensitivity =
-            value;
-
-
-        rtSensitivity.value =
-            Math.round(
-                value * 100
-            );
-
-
-        rtNumber.value =
-            value.toFixed(2);
-
-
-        markChanged();
-
-        updateTravelUI();
-
-    }
-
-);
-
-
-/* =========================================================
-   DEADZONE
-========================================================= */
-
-topDeadzone.addEventListener(
-
-    "input",
-
-    () => {
-
-        const value =
-
-            Number(
-                topDeadzone.value
-            ) / 100;
-
-
-        settings[
-            selectedKey
-        ].topDeadzone =
-            value;
-
-
-        topDeadzoneNumber.value =
-            value.toFixed(2);
-
-
-        markChanged();
-
-        updateTravelUI();
-
-    }
-
-);
-
-
-topDeadzoneNumber.addEventListener(
-
-    "change",
-
-    () => {
-
-        let value =
-
-            Number(
-                topDeadzoneNumber.value
-            );
-
-
-        value =
-            Math.max(
-                0,
-                Math.min(
-                    1,
-                    value
-                )
-            );
-
-
-        settings[
-            selectedKey
-        ].topDeadzone =
-            value;
-
-
-        topDeadzone.value =
-            Math.round(
-                value * 100
-            );
-
-
-        topDeadzoneNumber.value =
-            value.toFixed(2);
-
-
-        markChanged();
-
-        updateTravelUI();
-
-    }
-
-);
-
-
-bottomDeadzone.addEventListener(
-
-    "input",
-
-    () => {
-
-        const value =
-
-            Number(
-                bottomDeadzone.value
-            ) / 100;
-
-
-        settings[
-            selectedKey
-        ].bottomDeadzone =
-            value;
-
-
-        bottomDeadzoneNumber.value =
-            value.toFixed(2);
-
-
-        markChanged();
-
-        updateTravelUI();
-
-    }
-
-);
-
-
-bottomDeadzoneNumber.addEventListener(
-
-    "change",
-
-    () => {
-
-        let value =
-
-            Number(
-                bottomDeadzoneNumber.value
-            );
-
-
-        value =
-            Math.max(
-                0,
-                Math.min(
-                    1,
-                    value
-                )
-            );
-
-
-        settings[
-            selectedKey
-        ].bottomDeadzone =
-            value;
-
-
-        bottomDeadzone.value =
-            Math.round(
-                value * 100
-            );
-
-
-        bottomDeadzoneNumber.value =
-            value.toFixed(2);
-
-
-        markChanged();
-
-        updateTravelUI();
-
-    }
-
-);
-
-
-/* =========================================================
-   UPDATE KEYBOARD
-========================================================= */
+actuation.addEventListener("input",() => {
+    const value = Number(actuation.value)/100;
+    currentKeySettings().actuation = value;
+    actuationNumber.value = value.toFixed(2);
+    markChanged();
+    updateTravelUI();
+});
+actuationNumber.addEventListener("change",() => {
+    let value = Number(actuationNumber.value);
+    value = Math.max(.10,Math.min(DEVICE_INFO.switchStroke,value));
+    currentKeySettings().actuation = value;
+    actuation.value = Math.round(value*100);
+    actuationNumber.value = value.toFixed(2);
+    markChanged();
+    updateTravelUI();
+});
+rtToggle.addEventListener("change",() => {
+    const s = currentKeySettings();
+    s.rapidTrigger = rtToggle.checked;
+    s.rtArmed = false;
+    processRapidTrigger(s);
+    markChanged();
+    updateTravelUI();
+    updateKeyboardVisual();
+});
+rtSensitivity.addEventListener("input",() => {
+    const value = Number(rtSensitivity.value)/100;
+    currentKeySettings().rtSensitivity = value;
+    rtNumber.value = value.toFixed(2);
+    markChanged();
+    updateTravelUI();
+});
+rtNumber.addEventListener("change",() => {
+    let value = Number(rtNumber.value);
+    value = Math.max(.05,Math.min(2,value));
+    currentKeySettings().rtSensitivity = value;
+    rtSensitivity.value = Math.round(value*100);
+    rtNumber.value = value.toFixed(2);
+    markChanged();
+    updateTravelUI();
+});
+topDeadzone.addEventListener("input",() => {
+    const value = Number(topDeadzone.value)/100;
+    currentKeySettings().topDeadzone = value;
+    topDeadzoneNumber.value = value.toFixed(2);
+    markChanged();
+    updateTravelUI();
+});
+topDeadzoneNumber.addEventListener("change",() => {
+    let value = Number(topDeadzoneNumber.value);
+    value = Math.max(0,Math.min(1,value));
+    currentKeySettings().topDeadzone = value;
+    topDeadzone.value = Math.round(value*100);
+    topDeadzoneNumber.value = value.toFixed(2);
+    markChanged();
+    updateTravelUI();
+});
+bottomDeadzone.addEventListener("input",() => {
+    const value = Number(bottomDeadzone.value)/100;
+    currentKeySettings().bottomDeadzone = value;
+    bottomDeadzoneNumber.value = value.toFixed(2);
+    markChanged();
+    updateTravelUI();
+});
+bottomDeadzoneNumber.addEventListener("change",() => {
+    let value = Number(bottomDeadzoneNumber.value);
+    value = Math.max(0,Math.min(1,value));
+    currentKeySettings().bottomDeadzone = value;
+    bottomDeadzone.value = Math.round(value*100);
+    bottomDeadzoneNumber.value = value.toFixed(2);
+    markChanged();
+    updateTravelUI();
+});
 
 function updateKeyboardVisual() {
-
-    document
-        .querySelectorAll(
-            ".key"
-        )
-        .forEach(
-            button => {
-
-                const key =
-                    button.dataset.key;
-
-
-                const s =
-                    settings[
-                        key
-                    ];
-
-
-                button.classList.toggle(
-
-                    "current",
-
-                    mode ===
-                    "single" &&
-
-                    selectedKey ===
-                    key
-
-                );
-
-
-                button.classList.toggle(
-
-                    "multi",
-
-                    batchSelection.has(
-                        key
-                    )
-
-                );
-
-
-                button.classList.toggle(
-
-                    "pressed",
-
-                    s.pressed
-
-                );
-
-            }
-        );
-
+    const keys = currentProfileData().keys;
+    document.querySelectorAll(".key").forEach(button => {
+        const key = button.dataset.key;
+        const s = keys[key];
+        button.classList.toggle("current",mode === "single" && selectedKey === key);
+        button.classList.toggle("multi",batchSelection.has(key));
+        button.classList.toggle("pressed",s.pressed);
+    });
 }
 
+document.getElementById("singleMode").onclick = () => {
+    mode = "single";
+    document.getElementById("singleMode").classList.add("active");
+    document.getElementById("multiMode").classList.remove("active");
+    updateKeyboardVisual();
+};
+document.getElementById("multiMode").onclick = () => {
+    mode = "multi";
+    document.getElementById("multiMode").classList.add("active");
+    document.getElementById("singleMode").classList.remove("active");
+    updateKeyboardVisual();
+};
 
-/* =========================================================
-   SINGLE / MULTI
-========================================================= */
+function copySettings(targetKey) {
+    const keys = currentProfileData().keys;
+    const source = keys[selectedKey];
+    const target = keys[targetKey];
+    target.actuation = source.actuation;
+    target.rapidTrigger = source.rapidTrigger;
+    target.rtSensitivity = source.rtSensitivity;
+    target.topDeadzone = source.topDeadzone;
+    target.bottomDeadzone = source.bottomDeadzone;
+}
+document.getElementById("copyAll").onclick = () => {
+    Object.keys(currentProfileData().keys).forEach(copySettings);
+    markChanged();
+    log(`PROFILE_${currentProfile}: key settings copied to all 61 keys`,true);
+};
+document.getElementById("copySelected").onclick = () => {
+    if (batchSelection.size === 0) { log("ERROR: no selected keys"); return; }
+    batchSelection.forEach(copySettings);
+    markChanged();
+    log(`PROFILE_${currentProfile}: settings copied to ${batchSelection.size} keys`,true);
+};
+document.getElementById("clearSelection").onclick = () => {
+    batchSelection.clear();
+    updateSelectionCount();
+    updateKeyboardVisual();
+    log("selection cleared");
+};
+function updateSelectionCount() { selectionCount.textContent = `selected_for_batch = ${batchSelection.size}`; }
 
-document
-    .getElementById(
-        "singleMode"
-    )
-    .onclick =
-        () => {
+document.getElementById("setRest").onclick = () => {
+    const s = currentKeySettings();
+    s.restRaw = Math.round(500+s.depth*40);
+    document.getElementById("restRaw").textContent = s.restRaw;
+    markChanged();
+    log(`${selectedKey} rest calibration = ${s.restRaw}`,true);
+};
+document.getElementById("setBottom").onclick = () => {
+    const s = currentKeySettings();
+    s.bottomRaw = Math.round(3400+s.depth*40);
+    document.getElementById("bottomRaw").textContent = s.bottomRaw;
+    markChanged();
+    log(`${selectedKey} bottom calibration = ${s.bottomRaw}`,true);
+};
 
-            mode =
-                "single";
-
-
-            document
-                .getElementById(
-                    "singleMode"
-                )
-                .classList.add(
-                    "active"
-                );
-
-
-            document
-                .getElementById(
-                    "multiMode"
-                )
-                .classList.remove(
-                    "active"
-                );
-
-
-            updateKeyboardVisual();
-
-        };
-
-
-document
-    .getElementById(
-        "multiMode"
-    )
-    .onclick =
-        () => {
-
-            mode =
-                "multi";
-
-
-            document
-                .getElementById(
-                    "multiMode"
-                )
-                .classList.add(
-                    "active"
-                );
-
-
-            document
-                .getElementById(
-                    "singleMode"
-                )
-                .classList.remove(
-                    "active"
-                );
-
-
-            updateKeyboardVisual();
-
-        };
-
-
-/* =========================================================
-   COPY SETTINGS
-========================================================= */
-
-function copySettings(
-    key
-) {
-
-    const source =
-        settings[
-            selectedKey
-        ];
-
-
-    const target =
-        settings[
-            key
-        ];
-
-
-    target.actuation =
-        source.actuation;
-
-
-    target.rapidTrigger =
-        source.rapidTrigger;
-
-
-    target.rtSensitivity =
-        source.rtSensitivity;
-
-
-    target.topDeadzone =
-        source.topDeadzone;
-
-
-    target.bottomDeadzone =
-        source.bottomDeadzone;
-
+function loadProfileUI() {
+    const profile = currentProfileData();
+    document.querySelectorAll(".profile-button").forEach(button => {
+        button.classList.toggle("active",Number(button.dataset.profile) === currentProfile);
+    });
+    document.getElementById("pollingSelect").value = profile.pollingRate;
+    updatePerformanceUI();
+    selectedKey = "W";
+    batchSelection.clear();
+    updateSelectionCount();
+    loadSelectedKey();
+    loadLightingUI();
+    log(`PROFILE_${currentProfile} loaded`,true);
 }
 
+document.querySelectorAll(".profile-button").forEach(button => {
+    button.onclick = () => {
+        currentProfile = Number(button.dataset.profile);
+        markChanged();
+        loadProfileUI();
+    };
+});
 
-/* =========================================================
-   COPY ALL
-========================================================= */
-
-document
-    .getElementById(
-        "applyAll"
-    )
-    .onclick =
-        () => {
-
-            Object
-                .keys(
-                    settings
-                )
-                .forEach(
-                    copySettings
-                );
-
-
-            markChanged();
-
-
-            log(
-                "key settings copied to all 61 keys",
-                true
-            );
-
-        };
-
-
-/* =========================================================
-   COPY SELECTED
-========================================================= */
-
-document
-    .getElementById(
-        "applySelected"
-    )
-    .onclick =
-        () => {
-
-            if (
-                batchSelection.size ===
-                0
-            ) {
-
-                log(
-                    "ERROR: no selected keys"
-                );
-
-
-                return;
-
-            }
-
-
-            batchSelection
-                .forEach(
-                    copySettings
-                );
-
-
-            markChanged();
-
-
-            log(
-
-                `key settings copied to ${batchSelection.size} keys`,
-
-                true
-
-            );
-
-        };
-
-
-/* =========================================================
-   CLEAR SELECTION
-========================================================= */
-
-document
-    .getElementById(
-        "clearSelection"
-    )
-    .onclick =
-        () => {
-
-            batchSelection.clear();
-
-
-            updateSelectionCount();
-
-            updateKeyboardVisual();
-
-
-            log(
-                "selection cleared"
-            );
-
-        };
-
-
-function updateSelectionCount() {
-
-    selectionCount.textContent =
-
-        `selected_for_batch = ${batchSelection.size}`;
-
+function updatePerformanceUI() {
+    const polling = currentProfileData().pollingRate;
+    document.getElementById("performancePolling").textContent = `${polling} Hz`;
+    document.getElementById("reportInterval").textContent = `${(1000/polling).toFixed(3)} ms`;
 }
+document.getElementById("pollingSelect").onchange = event => {
+    currentProfileData().pollingRate = Number(event.target.value);
+    updatePerformanceUI();
+    markChanged();
+    log(`PROFILE_${currentProfile}: polling draft = ${currentProfileData().pollingRate} Hz`);
+};
 
-
-/* =========================================================
-   CALIBRATION
-========================================================= */
-
-document
-    .getElementById(
-        "setRest"
-    )
-    .onclick =
-        () => {
-
-            const s =
-                settings[
-                    selectedKey
-                ];
-
-
-            s.restRaw =
-
-                Math.round(
-                    500 +
-                    s.depth * 40
-                );
-
-
-            document
-                .getElementById(
-                    "restRaw"
-                )
-                .textContent =
-                    s.restRaw;
-
-
-            markChanged();
-
-
-            log(
-
-                `${selectedKey} rest calibration = ${s.restRaw}`,
-
-                true
-
-            );
-
+function buildLightingKeyboard() {
+    const ledRow = document.getElementById("rearLedRow");
+    ledRow.innerHTML = "";
+    for (let index=0; index<DEVICE_INFO.rearLedCount; index++) {
+        const cell = document.createElement("div");
+        cell.className = "rear-led-cell";
+        cell.dataset.ledIndex = String(index);
+        cell.onclick = () => {
+            if (currentLighting().mode !== "individual") return;
+            selectedLed = index;
+            loadIndividualColorControls();
+            renderLightingPreview();
         };
-
-
-document
-    .getElementById(
-        "setBottom"
-    )
-    .onclick =
-        () => {
-
-            const s =
-                settings[
-                    selectedKey
-                ];
-
-
-            s.bottomRaw =
-
-                Math.round(
-                    3400 +
-                    s.depth * 40
-                );
-
-
-            document
-                .getElementById(
-                    "bottomRaw"
-                )
-                .textContent =
-                    s.bottomRaw;
-
-
-            markChanged();
-
-
-            log(
-
-                `${selectedKey} bottom calibration = ${s.bottomRaw}`,
-
-                true
-
-            );
-
-        };
-
-
-/* =========================================================
-   PROFILE
-========================================================= */
-
-document
-    .querySelectorAll(
-        ".profile-button"
-    )
-    .forEach(
-        button => {
-
-            button.onclick =
-                () => {
-
-                    currentProfile =
-
-                        Number(
-                            button.dataset.profile
-                        );
-
-
-                    document
-                        .querySelectorAll(
-                            ".profile-button"
-                        )
-                        .forEach(
-                            profile =>
-                                profile.classList.remove(
-                                    "active"
-                                )
-                        );
-
-
-                    button.classList.add(
-                        "active"
-                    );
-
-
-                    markChanged();
-
-
-                    log(
-
-                        `editing PROFILE_${currentProfile}`
-
-                    );
-
-                };
-
+        const led = document.createElement("div");
+        led.className = "rear-led";
+        const label = document.createElement("div");
+        label.className = "rear-led-index";
+        label.textContent = String(index+1);
+        cell.appendChild(led);
+        cell.appendChild(label);
+        ledRow.appendChild(cell);
+    }
+    const fake = document.getElementById("fakeKeyboard");
+    fake.innerHTML = "";
+    for (let rowIndex=0; rowIndex<5; rowIndex++) {
+        const row = document.createElement("div");
+        row.className = "fake-key-row";
+        for (let keyIndex=0; keyIndex<15; keyIndex++) {
+            const key = document.createElement("div");
+            key.className = "fake-key";
+            row.appendChild(key);
         }
-    );
+        fake.appendChild(row);
+    }
+}
 
+function setIndividualColorFromRGB() {
+    const r = Number(document.getElementById("individualR").value);
+    const g = Number(document.getElementById("individualG").value);
+    const b = Number(document.getElementById("individualB").value);
+    const hex = rgbToHex(r,g,b);
+    currentLighting().individualColors[selectedLed] = hex;
+    document.getElementById("individualColor").value = hex;
+    document.getElementById("individualHex").textContent = hex.toUpperCase();
+    markChanged();
+    renderLightingPreview();
+}
+function loadIndividualColorControls() {
+    const color = currentLighting().individualColors[selectedLed];
+    const rgb = hexToRgb(color);
+    document.getElementById("selectedLedTitle").textContent = `LED_${selectedLed+1}`;
+    document.getElementById("individualColor").value = color;
+    document.getElementById("individualHex").textContent = color.toUpperCase();
+    document.getElementById("individualR").value = rgb.r;
+    document.getElementById("individualG").value = rgb.g;
+    document.getElementById("individualB").value = rgb.b;
+}
+function setLibraryColorFromRGB() {
+    const r = Number(document.getElementById("libraryR").value);
+    const g = Number(document.getElementById("libraryG").value);
+    const b = Number(document.getElementById("libraryB").value);
+    const hex = rgbToHex(r,g,b);
+    currentLighting().libraryColor = hex;
+    document.getElementById("libraryColor").value = hex;
+    document.getElementById("libraryHex").textContent = hex.toUpperCase();
+    markChanged();
+    renderLightingPreview();
+}
+function loadLibraryColorControls() {
+    const color = currentLighting().libraryColor;
+    const rgb = hexToRgb(color);
+    document.getElementById("libraryColor").value = color;
+    document.getElementById("libraryHex").textContent = color.toUpperCase();
+    document.getElementById("libraryR").value = rgb.r;
+    document.getElementById("libraryG").value = rgb.g;
+    document.getElementById("libraryB").value = rgb.b;
+}
 
-/* =========================================================
-   POLLING
-========================================================= */
+function loadLightingUI() {
+    const lighting = currentLighting();
+    document.querySelectorAll("[data-lighting-mode]").forEach(button => {
+        button.classList.toggle("active",button.dataset.lightingMode === lighting.mode);
+    });
+    document.getElementById("individualLightingControls").classList.toggle("active",lighting.mode === "individual");
+    document.getElementById("libraryLightingControls").classList.toggle("active",lighting.mode === "library");
+    document.querySelectorAll(".effect-card").forEach(button => {
+        button.classList.toggle("active",button.dataset.effect === lighting.libraryEffect);
+    });
+    selectedLed = clamp(selectedLed,0,DEVICE_INFO.rearLedCount-1);
+    loadIndividualColorControls();
+    loadLibraryColorControls();
+    renderLightingPreview();
+}
 
-document
-    .getElementById(
-        "pollingSelect"
-    )
-    .onchange =
-        event => {
+document.querySelectorAll("[data-lighting-mode]").forEach(button => {
+    button.onclick = () => {
+        currentLighting().mode = button.dataset.lightingMode;
+        markChanged();
+        loadLightingUI();
+    };
+});
 
-            pollingRate =
+document.getElementById("individualColor").addEventListener("input",event => {
+    const color = event.target.value;
+    currentLighting().individualColors[selectedLed] = color;
+    loadIndividualColorControls();
+    markChanged();
+    renderLightingPreview();
+});
+["individualR","individualG","individualB"].forEach(id => {
+    document.getElementById(id).addEventListener("input",setIndividualColorFromRGB);
+});
 
-                Number(
-                    event.target.value
-                );
+document.querySelectorAll(".effect-card").forEach(button => {
+    button.onclick = () => {
+        currentLighting().libraryEffect = button.dataset.effect;
+        markChanged();
+        loadLightingUI();
+        if (currentLighting().libraryEffect === "reactive") triggerReactiveLighting();
+    };
+});
 
+document.getElementById("libraryColor").addEventListener("input",event => {
+    currentLighting().libraryColor = event.target.value;
+    loadLibraryColorControls();
+    markChanged();
+    renderLightingPreview();
+});
+["libraryR","libraryG","libraryB"].forEach(id => {
+    document.getElementById(id).addEventListener("input",setLibraryColorFromRGB);
+});
 
-            const interval =
+function applyLedStyle(element,color,intensity=1) {
+    const rgb = hexToRgb(color);
+    const level = clamp(intensity,0,1);
+    element.style.background = `rgb(${rgb.r}, ${rgb.g}, ${rgb.b})`;
+    element.style.opacity = String(.12+.88*level);
+    element.style.boxShadow = `0 0 ${4+18*level}px rgba(${rgb.r},${rgb.g},${rgb.b},${.18+.72*level})`;
+}
 
-                1000 /
-                pollingRate;
-
-
-            document
-                .getElementById(
-                    "performancePolling"
-                )
-                .textContent =
-
-                    `${pollingRate} Hz`;
-
-
-            document
-                .getElementById(
-                    "reportInterval"
-                )
-                .textContent =
-
-                    `${interval.toFixed(3)} ms`;
-
-
-            markChanged();
-
-
-            log(
-
-                `polling draft = ${pollingRate} Hz`
-
-            );
-
-        };
-
-
-/* =========================================================
-   APPLY CHANGES
-========================================================= */
-
-document
-    .getElementById(
-        "applyChanges"
-    )
-    .onclick =
-        () => {
-
-            appliedSnapshot =
-                createSnapshot();
-
-
-            setConfigState(
-                "applied"
-            );
-
-
-            updateHome();
-
-
-            log(
-
-                "configuration applied to mock keyboard RAM",
-
-                true
-
-            );
-
-        };
-
-
-/* =========================================================
-   SAVE TO KEYBOARD
-========================================================= */
-
-document
-    .getElementById(
-        "saveKeyboard"
-    )
-    .onclick =
-        () => {
-
-            if (
-                configState ===
-                "pending"
-            ) {
-
-                appliedSnapshot =
-                    createSnapshot();
-
+function renderLightingPreview() {
+    const lighting = currentLighting();
+    const cells = document.querySelectorAll(".rear-led-cell");
+    cells.forEach((cell,index) => {
+        const led = cell.querySelector(".rear-led");
+        cell.classList.toggle("selected",lighting.mode === "individual" && index === selectedLed);
+        if (lighting.mode === "individual") {
+            applyLedStyle(led,lighting.individualColors[index],1);
+            return;
+        }
+        if (lighting.libraryEffect === "normal") {
+            applyLedStyle(led,lighting.libraryColor,1);
+            return;
+        }
+        if (lighting.libraryEffect === "breathing") {
+            const intensity = .15+.85*((Math.sin(breathPhase)+1)/2);
+            applyLedStyle(led,lighting.libraryColor,intensity);
+            return;
+        }
+        if (lighting.libraryEffect === "reactive") {
+            const groups = [[4,5],[3,6],[2,7],[1,8],[0,9]];
+            let lit = false;
+            for (let step=0; step<=reactiveStep; step++) {
+                if (groups[step] && groups[step].includes(index)) lit = true;
             }
+            applyLedStyle(led,lighting.libraryColor,lit ? 1 : .05);
+        }
+    });
 
+    const caption = document.getElementById("lightingPreviewCaption");
+    if (lighting.mode === "individual") caption.textContent = "INDIVIDUAL MODE — click an LED to edit its RGB value";
+    else if (lighting.libraryEffect === "normal") caption.textContent = "LIBRARY / NORMAL — all 10 rear LEDs stay on";
+    else if (lighting.libraryEffect === "breathing") caption.textContent = "LIBRARY / BREATHING — brightness rises and falls repeatedly";
+    else caption.textContent = "LIBRARY / REACTIVE — key input spreads from the center pair toward both ends";
+}
 
-            if (
-                appliedSnapshot ===
-                null
-            ) {
+function triggerReactiveLighting() {
+    const lighting = currentLighting();
+    if (lighting.mode !== "library" || lighting.libraryEffect !== "reactive") return;
+    reactiveTimers.forEach(timer => clearTimeout(timer));
+    reactiveTimers = [];
+    reactiveStep = -1;
+    renderLightingPreview();
+    for (let step=0; step<5; step++) {
+        reactiveTimers.push(setTimeout(() => {
+            reactiveStep = step;
+            renderLightingPreview();
+        },step*90));
+    }
+    reactiveTimers.push(setTimeout(() => {
+        reactiveStep = -1;
+        renderLightingPreview();
+    },620));
+}
 
-                appliedSnapshot =
-                    createSnapshot();
+setInterval(() => {
+    breathPhase += .11;
+    const lighting = currentLighting();
+    if (lighting.mode === "library" && lighting.libraryEffect === "breathing") renderLightingPreview();
+},45);
 
-            }
+document.getElementById("applyChanges").onclick = () => {
+    appliedSnapshot = createSnapshot();
+    setConfigState("applied");
+    updateHome();
+    log("configuration applied to mock keyboard RAM",true);
+};
 
-
-            localStorage.setItem(
-
-                "he_keyboard_mock_flash",
-
-                JSON.stringify(
-                    appliedSnapshot
-                )
-
-            );
-
-
-            setConfigState(
-                "saved"
-            );
-
-
-            updateHome();
-
-
-            log(
-
-                "configuration saved to mock keyboard flash",
-
-                true
-
-            );
-
-        };
-
-
-/* =========================================================
-   HOME
-========================================================= */
+document.getElementById("saveKeyboard").onclick = () => {
+    if (configState === "pending") appliedSnapshot = createSnapshot();
+    if (appliedSnapshot === null) appliedSnapshot = createSnapshot();
+    localStorage.setItem(STORE_KEY,JSON.stringify(appliedSnapshot));
+    setConfigState("saved");
+    updateHome();
+    log("all 3 profiles saved to mock keyboard flash",true);
+};
 
 function updateHome() {
-
-    const snapshot =
-
-        appliedSnapshot !== null
-
-        ? appliedSnapshot
-
-        : createSnapshot();
-
-
-    document
-        .getElementById(
-            "homeProfile"
-        )
-        .textContent =
-
-            `PROFILE_${snapshot.profile}`;
-
-
-    document
-        .getElementById(
-            "homePolling"
-        )
-        .textContent =
-
-            `${snapshot.pollingRate} Hz`;
-
-
-    document
-        .getElementById(
-            "homePollingSub"
-        )
-        .textContent =
-
-            `${(
-                1000 /
-                snapshot.pollingRate
-            ).toFixed(3)} ms report interval`;
-
-
-    let rtCount =
-        0;
-
-
-    Object
-        .values(
-            snapshot.settings
-        )
-        .forEach(
-            s => {
-
-                if (
-                    s.rapidTrigger
-                ) {
-
-                    rtCount++;
-
-                }
-
-            }
-        );
-
-
-    const rtEnabled =
-        rtCount > 0;
-
-
-    const rtStatus =
-        document.getElementById(
-            "homeRTStatus"
-        );
-
-
-    rtStatus.textContent =
-
-        rtEnabled
-
-        ? "ENABLED"
-
-        : "DISABLED";
-
-
-    rtStatus.className =
-
-        "home-card-value " +
-
-        (
-            rtEnabled
-
-            ? "green"
-
-            : "orange"
-        );
-
-
-    document
-        .getElementById(
-            "homeRTSub"
-        )
-        .textContent =
-
-            `enabled keys : ${rtCount} / 61`;
-
-
-    document
-        .getElementById(
-            "homeConfigState"
-        )
-        .textContent =
-
-            configState.toUpperCase();
-
-
-    document
-        .getElementById(
-            "switchName"
-        )
-        .textContent =
-
-            DEVICE_INFO.switchName;
-
-
-    document
-        .getElementById(
-            "switchStroke"
-        )
-        .textContent =
-
-            `${DEVICE_INFO.switchStroke.toFixed(2)} mm`;
-
-
-    document
-        .getElementById(
-            "sidebarProfile"
-        )
-        .textContent =
-
-            `Profile ${snapshot.profile}`;
-
-
-    document
-        .getElementById(
-            "sidebarPolling"
-        )
-        .textContent =
-
-            `${snapshot.pollingRate} Hz`;
-
+    const snapshot = appliedSnapshot !== null ? appliedSnapshot : createSnapshot();
+    const activeProfile = snapshot.currentProfile;
+    const profile = snapshot.profiles[activeProfile];
+    document.getElementById("homeProfile").textContent = `PROFILE_${activeProfile}`;
+    document.getElementById("homePolling").textContent = `${profile.pollingRate} Hz`;
+    document.getElementById("homePollingSub").textContent = `${(1000/profile.pollingRate).toFixed(3)} ms report interval`;
+    let rtCount = 0;
+    Object.values(profile.keys).forEach(s => { if (s.rapidTrigger) rtCount++; });
+    const rtEnabled = rtCount > 0;
+    const rtStatus = document.getElementById("homeRTStatus");
+    rtStatus.textContent = rtEnabled ? "ENABLED" : "DISABLED";
+    rtStatus.className = "home-card-value " + (rtEnabled ? "green" : "orange");
+    document.getElementById("homeRTSub").textContent = `enabled keys : ${rtCount} / 61`;
+    document.getElementById("homeConfigState").textContent = configState.toUpperCase();
+    document.getElementById("switchName").textContent = DEVICE_INFO.switchName;
+    document.getElementById("switchStroke").textContent = `${DEVICE_INFO.switchStroke.toFixed(2)} mm`;
+    document.getElementById("sidebarProfile").textContent = `Profile ${activeProfile}`;
+    document.getElementById("sidebarPolling").textContent = `${profile.pollingRate} Hz`;
 }
 
-
-/* =========================================================
-   PAGE NAVIGATION
-========================================================= */
-
-document
-    .querySelectorAll(
-        ".nav-button"
-    )
-    .forEach(
-        button => {
-
-            button.onclick =
-                () => {
-
-                    document
-                        .querySelectorAll(
-                            ".nav-button"
-                        )
-                        .forEach(
-                            nav =>
-                                nav.classList.remove(
-                                    "active"
-                                )
-                        );
-
-
-                    button.classList.add(
-                        "active"
-                    );
-
-
-                    const page =
-                        button.dataset.page;
-
-
-                    document
-                        .querySelectorAll(
-                            ".page"
-                        )
-                        .forEach(
-                            section =>
-                                section.classList.remove(
-                                    "active"
-                                )
-                        );
-
-
-                    document
-                        .getElementById(
-                            `page-${page}`
-                        )
-                        .classList.add(
-                            "active"
-                        );
-
-
-                    document
-                        .getElementById(
-                            "breadcrumb"
-                        )
-                        .textContent =
-                            page;
-
-
-                    if (
-                        page ===
-                        "home"
-                    ) {
-
-                        updateHome();
-
-                    }
-
-
-                    document
-                        .querySelector(
-                            ".content"
-                        )
-                        .scrollTo(
-                            0,
-                            0
-                        );
-
-                };
-
-        }
-    );
-
-
-/* =========================================================
-   LOAD MOCK FLASH
-========================================================= */
+document.querySelectorAll(".nav-button").forEach(button => {
+    button.onclick = () => {
+        document.querySelectorAll(".nav-button").forEach(nav => nav.classList.remove("active"));
+        button.classList.add("active");
+        const page = button.dataset.page;
+        document.querySelectorAll(".page").forEach(section => section.classList.remove("active"));
+        document.getElementById(`page-${page}`).classList.add("active");
+        document.getElementById("breadcrumb").textContent = page;
+        if (page === "home") updateHome();
+        if (page === "lighting") loadLightingUI();
+        document.querySelector(".content").scrollTo(0,0);
+    };
+});
 
 function loadSavedConfiguration() {
-
-    const saved =
-        localStorage.getItem(
-            "he_keyboard_mock_flash"
-        );
-
-
-    if (
-        !saved
-    ) {
-
-        appliedSnapshot =
-            createSnapshot();
-
-
+    const saved = localStorage.getItem(STORE_KEY);
+    if (!saved) {
+        appliedSnapshot = createSnapshot();
         return;
-
     }
-
-
     try {
-
-        const parsed =
-            JSON.parse(
-                saved
-            );
-
-
-        if (
-            parsed.settings &&
-            parsed.profile &&
-            parsed.pollingRate
-        ) {
-
-            settings =
-                parsed.settings;
-
-
-            currentProfile =
-                parsed.profile;
-
-
-            pollingRate =
-                parsed.pollingRate;
-
-
-            appliedSnapshot =
-                deepClone(
-                    parsed
-                );
-
-
-            document
-                .getElementById(
-                    "pollingSelect"
-                )
-                .value =
-                    pollingRate;
-
-
-            document
-                .querySelectorAll(
-                    ".profile-button"
-                )
-                .forEach(
-                    button => {
-
-                        button.classList.toggle(
-
-                            "active",
-
-                            Number(
-                                button.dataset.profile
-                            ) ===
-                            currentProfile
-
-                        );
-
-                    }
-                );
-
-
-            document
-                .getElementById(
-                    "performancePolling"
-                )
-                .textContent =
-
-                    `${pollingRate} Hz`;
-
-
-            document
-                .getElementById(
-                    "reportInterval"
-                )
-                .textContent =
-
-                    `${(
-                        1000 /
-                        pollingRate
-                    ).toFixed(3)} ms`;
-
-
-            log(
-                "mock flash configuration loaded",
-                true
-            );
-
+        const parsed = JSON.parse(saved);
+        if (parsed.profiles && parsed.currentProfile) {
+            profiles = parsed.profiles;
+            currentProfile = parsed.currentProfile;
+            appliedSnapshot = deepClone(parsed);
+            log("mock flash configuration loaded",true);
         }
-
+    } catch (error) {
+        console.error(error);
+        profiles = makeDefaultProfiles();
+        currentProfile = 1;
+        appliedSnapshot = createSnapshot();
     }
-
-    catch (
-        error
-    ) {
-
-        console.error(
-            error
-        );
-
-    }
-
 }
 
-
-/* =========================================================
-   START
-========================================================= */
-
 buildHallKeyboard();
-
 buildFunctionRow();
-
 buildNavigation();
-
 buildNumpad();
-
+buildLightingKeyboard();
 loadSavedConfiguration();
-
-loadSelectedKey();
-
-setConfigState(
-    "saved"
-);
-
+loadProfileUI();
+setConfigState("saved");
 updateHome();
-
-
-log(
-    "UI ready",
-    true
-);
-
+log("UI ready",true);
 </script>
-
 </body>
 </html>
