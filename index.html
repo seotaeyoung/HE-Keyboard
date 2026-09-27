@@ -7,6 +7,7 @@
 <title>HE Keyboard</title>
 
 <style>
+
 :root {
     --bg: #080b10;
     --panel: #0d1118;
@@ -27,9 +28,16 @@
     --red: #fb7185;
     --cyan: #22d3ee;
 
-    --sidebar-open: 230px;
+    --sidebar-open: 224px;
     --sidebar-closed: 64px;
+
+    --content-max: 2100px;
 }
+
+
+/* =========================================================
+   BASE
+========================================================= */
 
 * {
     box-sizing: border-box;
@@ -38,16 +46,20 @@
 html,
 body {
     margin: 0;
+
     width: 100%;
+    min-width: 0;
+
     height: 100%;
 
     background: var(--bg);
+
     color: var(--text);
 
     font-family:
         "Cascadia Code",
         "JetBrains Mono",
-        "Consolas",
+        Consolas,
         monospace;
 }
 
@@ -56,12 +68,12 @@ body {
 
     background:
         linear-gradient(
-            rgba(255,255,255,0.015) 1px,
+            rgba(255,255,255,0.014) 1px,
             transparent 1px
         ),
         linear-gradient(
             90deg,
-            rgba(255,255,255,0.015) 1px,
+            rgba(255,255,255,0.014) 1px,
             transparent 1px
         ),
         var(--bg);
@@ -81,6 +93,7 @@ select {
 ========================================================= */
 
 .app {
+    width: 100%;
     height: 100vh;
 
     display: grid;
@@ -90,7 +103,7 @@ select {
         minmax(0, 1fr);
 
     transition:
-        grid-template-columns 0.2s ease;
+        grid-template-columns 0.18s ease;
 }
 
 .app.sidebar-collapsed {
@@ -105,9 +118,11 @@ select {
 ========================================================= */
 
 .sidebar {
-    position: relative;
-
     min-width: 0;
+
+    padding: 15px;
+
+    overflow: hidden;
 
     background:
         rgba(9, 13, 20, 0.98);
@@ -117,28 +132,25 @@ select {
 
     display: flex;
     flex-direction: column;
-
-    padding: 16px;
-
-    overflow: hidden;
 }
 
 .sidebar-header {
+    height: 38px;
+
     display: flex;
     align-items: center;
 
-    height: 36px;
-
-    margin-bottom: 18px;
+    margin-bottom: 16px;
 }
 
 .brand {
-    white-space: nowrap;
-
     font-size: 18px;
+
     font-weight: 700;
 
     letter-spacing: 1px;
+
+    white-space: nowrap;
 }
 
 .brand span {
@@ -148,11 +160,11 @@ select {
 .brand-short {
     display: none;
 
-    color: var(--purple2);
-
     font-size: 17px;
 
     font-weight: 800;
+
+    color: var(--purple2);
 }
 
 .sidebar-collapsed .brand {
@@ -163,26 +175,28 @@ select {
     display: block;
 }
 
+
 .device-card {
+    padding: 11px;
+
+    margin-bottom: 18px;
+
     background: var(--panel);
 
     border:
         1px solid var(--border);
-
-    padding: 12px;
-
-    margin-bottom: 18px;
 }
 
 .device-title {
     display: flex;
+
     align-items: center;
 
     gap: 8px;
 
-    white-space: nowrap;
+    font-size: 11px;
 
-    font-size: 12px;
+    white-space: nowrap;
 }
 
 .status-dot {
@@ -196,17 +210,18 @@ select {
     background: var(--green);
 
     box-shadow:
-        0 0 8px var(--green);
+        0 0 8px
+        rgba(74,222,128,0.9);
 }
 
 .device-small {
+    margin-top: 9px;
+
     color: var(--sub);
 
-    font-size: 9px;
+    font-size: 8px;
 
     line-height: 1.8;
-
-    margin-top: 9px;
 
     white-space: nowrap;
 }
@@ -223,21 +238,27 @@ select {
     display: none;
 }
 
+
 .nav-title {
+    margin-bottom: 7px;
+
     color: #556073;
 
-    font-size: 9px;
-
-    margin-bottom: 7px;
+    font-size: 8px;
 }
 
 .sidebar-collapsed .nav-title {
     display: none;
 }
 
+
 .nav-button {
     width: 100%;
-    height: 42px;
+    height: 41px;
+
+    margin-bottom: 4px;
+
+    padding: 0 8px;
 
     border: none;
 
@@ -252,10 +273,6 @@ select {
     display: flex;
     align-items: center;
 
-    padding: 0 10px;
-
-    margin-bottom: 4px;
-
     text-align: left;
 }
 
@@ -266,22 +283,22 @@ select {
 }
 
 .nav-button.active {
-    color: #d4c8ff;
+    color: #d7ccff;
 
     background:
-        rgba(139,92,246,0.18);
+        rgba(139,92,246,0.17);
 }
 
 .nav-symbol {
-    width: 28px;
+    width: 27px;
 
-    min-width: 28px;
+    min-width: 27px;
 
     color: var(--purple2);
 
-    font-weight: bold;
-
     text-align: center;
+
+    font-weight: 700;
 }
 
 .nav-name {
@@ -299,12 +316,13 @@ select {
 .sidebar-collapsed .nav-symbol {
     width: auto;
 
-    font-size: 15px;
+    font-size: 14px;
 }
 
 .sidebar-collapsed .nav-name {
     display: none;
 }
+
 
 .sidebar-bottom {
     margin-top: auto;
@@ -314,29 +332,29 @@ select {
     display: none;
 }
 
-.unsaved {
+.sidebar-state {
+    padding-top: 10px;
+
+    border-top:
+        1px solid #151c26;
+
+    font-size: 8px;
+
+    line-height: 1.7;
+
     color: #647084;
-
-    font-size: 9px;
-
-    margin-bottom: 8px;
 }
 
-.save-button {
-    width: 100%;
+.sidebar-state.pending {
+    color: var(--orange);
+}
 
-    border:
-        1px solid #7948e2;
+.sidebar-state.applied {
+    color: var(--cyan);
+}
 
-    background: #7037e9;
-
-    color: white;
-
-    padding: 10px;
-
-    border-radius: 5px;
-
-    cursor: pointer;
+.sidebar-state.saved {
+    color: var(--green);
 }
 
 
@@ -346,42 +364,59 @@ select {
 
 .main {
     min-width: 0;
+    min-height: 0;
 
     display: flex;
     flex-direction: column;
 }
 
-.topbar {
-    height: 56px;
 
-    flex: 0 0 56px;
+/* =========================================================
+   TOP BAR
+========================================================= */
+
+.topbar {
+    flex: 0 0 58px;
+
+    min-width: 0;
+
+    padding: 0 18px;
 
     border-bottom:
         1px solid var(--border);
 
     background:
-        rgba(8, 11, 16, 0.93);
+        rgba(8,11,16,0.95);
 
     display: flex;
+
     align-items: center;
+
     justify-content: space-between;
 
-    padding: 0 20px;
+    gap: 15px;
 }
 
 .topbar-left {
+    min-width: 0;
+
     display: flex;
+
     align-items: center;
 
-    gap: 13px;
+    gap: 12px;
 }
 
 .sidebar-toggle {
     width: 34px;
     height: 32px;
 
+    flex: 0 0 auto;
+
     border:
         1px solid var(--border);
+
+    border-radius: 5px;
 
     background: var(--panel);
 
@@ -389,54 +424,141 @@ select {
 
     cursor: pointer;
 
-    border-radius: 5px;
-
-    font-size: 16px;
+    font-size: 15px;
 }
 
 .sidebar-toggle:hover {
-    border-color: #5e477e;
+    border-color: #5f4a82;
 
     color: white;
 }
 
 .breadcrumb {
+    overflow: hidden;
+
+    text-overflow: ellipsis;
+
+    white-space: nowrap;
+
     color: var(--sub);
 
-    font-size: 11px;
+    font-size: 9px;
 }
 
 .breadcrumb strong {
     color: #cabdff;
 }
 
-.top-status {
+
+.topbar-actions {
     display: flex;
+
     align-items: center;
 
     gap: 8px;
 
-    color: #778196;
-
-    font-size: 10px;
+    flex: 0 0 auto;
 }
 
-.content {
-    min-height: 0;
+.global-status {
+    margin-right: 5px;
 
+    color: #6d788a;
+
+    font-size: 8px;
+
+    white-space: nowrap;
+}
+
+.global-status.pending {
+    color: var(--orange);
+}
+
+.global-status.applied {
+    color: var(--cyan);
+}
+
+.global-status.saved {
+    color: var(--green);
+}
+
+.global-button {
+    height: 32px;
+
+    padding: 0 12px;
+
+    border:
+        1px solid var(--border);
+
+    border-radius: 4px;
+
+    background: #111722;
+
+    color: #bfc7d4;
+
+    cursor: pointer;
+
+    font-size: 8px;
+
+    white-space: nowrap;
+}
+
+.global-button:hover {
+    border-color: #536076;
+
+    color: white;
+}
+
+.global-button.apply {
+    border-color: #5c4a85;
+
+    color: #c7b8ff;
+}
+
+.global-button.save {
+    border-color: #8257ee;
+
+    background: #6c37dd;
+
+    color: white;
+}
+
+
+/* =========================================================
+   CONTENT
+========================================================= */
+
+.content {
     flex: 1;
 
-    overflow-y: auto;
+    min-height: 0;
+    min-width: 0;
 
-    padding: 20px;
+    overflow-y: auto;
+    overflow-x: hidden;
+
+    padding:
+        clamp(14px, 1.2vw, 22px);
 }
 
 .page {
     display: none;
+
+    width: 100%;
 }
 
 .page.active {
     display: block;
+}
+
+.page-shell {
+    width: 100%;
+
+    max-width: var(--content-max);
+
+    margin: 0 auto;
+
+    padding-bottom: 50px;
 }
 
 
@@ -445,28 +567,37 @@ select {
 ========================================================= */
 
 .page-header {
+    margin-bottom: 16px;
+
     display: flex;
+
     align-items: flex-start;
+
     justify-content: space-between;
 
-    margin-bottom: 17px;
+    gap: 15px;
 }
 
 .page-title {
-    font-size: 29px;
+    margin-bottom: 5px;
+
+    font-size:
+        clamp(23px, 2vw, 30px);
 
     font-weight: 700;
-
-    margin-bottom: 5px;
 }
 
 .page-description {
-    font-size: 11px;
-
     color: var(--sub);
+
+    font-size: 9px;
 }
 
 .terminal-command {
+    flex: 0 0 auto;
+
+    padding: 8px 10px;
+
     border:
         1px solid var(--border);
 
@@ -474,35 +605,35 @@ select {
 
     color: #687487;
 
-    padding: 8px 11px;
-
-    font-size: 10px;
+    font-size: 8px;
 }
 
 .terminal-command span {
     color: var(--purple2);
 }
 
+
 .panel {
+    min-width: 0;
+
+    padding:
+        clamp(11px, 0.9vw, 15px);
+
     background:
-        rgba(13, 17, 24, 0.95);
+        rgba(13,17,24,0.95);
 
     border:
         1px solid var(--border);
 
     border-radius: 7px;
-
-    padding: 14px;
-
-    min-width: 0;
 }
 
 .panel-title {
+    margin-bottom: 11px;
+
     color: #c7cfdb;
 
-    font-size: 11px;
-
-    margin-bottom: 12px;
+    font-size: 9px;
 
     font-weight: 600;
 }
@@ -510,7 +641,7 @@ select {
 .small-text {
     color: var(--sub);
 
-    font-size: 9px;
+    font-size: 8px;
 }
 
 
@@ -518,19 +649,24 @@ select {
    HOME
 ========================================================= */
 
-.home-grid {
+.home-primary {
     display: grid;
 
     grid-template-columns:
-        repeat(4, minmax(0, 1fr));
+        repeat(
+            auto-fit,
+            minmax(210px, 1fr)
+        );
 
-    gap: 12px;
+    gap: 11px;
 
-    margin-bottom: 12px;
+    margin-bottom: 11px;
 }
 
-.info-card {
-    min-height: 125px;
+.home-card {
+    min-height: 122px;
+
+    padding: 14px;
 
     background: var(--panel);
 
@@ -538,122 +674,164 @@ select {
         1px solid var(--border);
 
     border-radius: 7px;
-
-    padding: 14px;
 }
 
-.info-label {
-    color: #687387;
+.home-card-label {
+    margin-bottom: 12px;
 
-    font-size: 9px;
+    color: #657185;
 
-    margin-bottom: 11px;
+    font-size: 8px;
 }
 
-.info-value {
-    font-size: 20px;
+.home-card-value {
+    margin-bottom: 8px;
 
-    color: #d9deea;
+    color: #dce1ea;
 
-    margin-bottom: 7px;
+    font-size:
+        clamp(17px, 1.5vw, 21px);
 }
 
-.info-value.good {
+.home-card-value.green {
     color: var(--green);
 }
 
-.info-value.purple {
-    color: #c7b7ff;
+.home-card-value.purple {
+    color: #c5b5ff;
 }
 
-.info-sub {
-    color: #717b8d;
+.home-card-value.orange {
+    color: var(--orange);
+}
 
-    font-size: 9px;
+.home-card-sub {
+    color: #727d90;
+
+    font-size: 8px;
 
     line-height: 1.6;
 }
 
-.home-wide-grid {
+
+.home-specs {
     display: grid;
 
     grid-template-columns:
-        minmax(0, 1.5fr)
-        minmax(300px, 1fr);
+        minmax(0, 1.3fr)
+        minmax(280px, 0.7fr);
 
-    gap: 12px;
+    gap: 11px;
 }
 
-.readonly-table {
-    width: 100%;
+.spec-list {
+    display: grid;
 
-    border-collapse: collapse;
+    grid-template-columns:
+        repeat(
+            2,
+            minmax(0,1fr)
+        );
 
-    font-size: 10px;
+    gap: 0 20px;
 }
 
-.readonly-table td {
-    padding: 9px 4px;
+.spec-row {
+    min-width: 0;
+
+    padding: 10px 3px;
 
     border-bottom:
-        1px solid #161e2a;
+        1px solid #161e29;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    gap: 10px;
+
+    font-size: 8px;
 }
 
-.readonly-table td:first-child {
-    color: #687387;
+.spec-row span:first-child {
+    color: #667185;
 }
 
-.readonly-table td:last-child {
+.spec-row span:last-child {
+    min-width: 0;
+
+    color: #d1d7e2;
+
     text-align: right;
 
-    color: #d7dce7;
+    overflow-wrap: anywhere;
+}
+
+.readonly-note {
+    padding: 13px;
+
+    border:
+        1px solid #172131;
+
+    background: #090e14;
+
+    color: #6c788b;
+
+    font-size: 8px;
+
+    line-height: 1.8;
 }
 
 
 /* =========================================================
-   KEYS HEADER CONTROLS
+   KEYS META
 ========================================================= */
 
 .keys-meta {
+    margin-bottom: 11px;
+
     display: grid;
 
     grid-template-columns:
-        minmax(0, 1fr)
-        auto
+        minmax(0,1fr)
         auto;
 
     gap: 10px;
-
-    margin-bottom: 12px;
 }
 
 .profile-strip,
 .performance-strip {
+    min-width: 0;
+
+    padding: 7px;
+
+    border:
+        1px solid var(--border);
+
+    border-radius: 6px;
+
+    background: var(--panel);
+
     display: flex;
 
     align-items: center;
 
     gap: 6px;
-
-    background: var(--panel);
-
-    border:
-        1px solid var(--border);
-
-    padding: 8px;
-
-    border-radius: 6px;
 }
 
 .meta-label {
+    margin-right: 5px;
+
     color: #667185;
 
-    font-size: 9px;
-
-    margin-right: 5px;
+    font-size: 8px;
 }
 
 .profile-button {
+    padding: 7px 10px;
+
     border:
         1px solid var(--border);
 
@@ -661,87 +839,83 @@ select {
 
     color: #788397;
 
-    padding: 7px 11px;
-
     cursor: pointer;
 
-    font-size: 9px;
+    font-size: 8px;
 }
 
 .profile-button.active {
     border-color: var(--purple);
 
-    color: white;
-
     background:
         rgba(139,92,246,0.17);
+
+    color: white;
 }
 
 .polling-select {
-    background: #101621;
+    padding: 6px 8px;
 
     border:
         1px solid var(--border);
 
+    background: #101621;
+
     color: white;
 
-    padding: 6px 8px;
-
-    font-size: 9px;
+    font-size: 8px;
 }
 
 
 /* =========================================================
-   KEYS LAYOUT
+   KEYBOARD SECTION
 ========================================================= */
 
-.keys-grid {
+.keys-main-grid {
     display: grid;
 
     grid-template-columns:
         minmax(0, 1fr)
-        270px;
+        minmax(235px, 270px);
 
-    gap: 12px;
-}
-
-
-/* =========================================================
-   KEYBOARD
-========================================================= */
-
-.keyboard-panel {
-    min-width: 0;
+    gap: 11px;
 }
 
 .keyboard-toolbar {
+    margin-bottom: 10px;
+
     display: flex;
+
     align-items: center;
+
     justify-content: space-between;
 
-    margin-bottom: 11px;
+    gap: 10px;
 }
 
 .legend {
     display: flex;
 
-    gap: 12px;
+    flex-wrap: wrap;
+
+    gap: 10px;
 
     color: #626d80;
 
-    font-size: 8px;
+    font-size: 7px;
 }
 
 .legend-item {
     display: flex;
+
     align-items: center;
 
-    gap: 5px;
+    gap: 4px;
 }
 
 .legend-square {
-    width: 8px;
-    height: 8px;
+    width: 7px;
+    height: 7px;
 
     border:
         1px solid #3c4657;
@@ -760,6 +934,8 @@ select {
 }
 
 .segmented {
+    flex: 0 0 auto;
+
     display: flex;
 
     border:
@@ -769,17 +945,17 @@ select {
 }
 
 .segmented button {
+    padding: 7px 11px;
+
     border: none;
 
     background: transparent;
 
     color: #6c7688;
 
-    padding: 7px 12px;
-
     cursor: pointer;
 
-    font-size: 9px;
+    font-size: 8px;
 }
 
 .segmented button.active {
@@ -788,17 +964,24 @@ select {
     color: white;
 }
 
+
+/* =========================================================
+   KEYBOARD STAGE
+========================================================= */
+
 .keyboard-stage {
     width: 100%;
+    min-width: 0;
 
-    background: #090d13;
+    padding:
+        clamp(7px, 0.6vw, 11px);
 
     border:
         1px solid #1b2431;
 
     border-radius: 5px;
 
-    padding: 10px;
+    background: #090d13;
 }
 
 
@@ -807,63 +990,103 @@ select {
 ========================================================= */
 
 .function-row {
+    width: 100%;
+
+    margin-bottom:
+        clamp(7px,0.7vw,11px);
+
     display: grid;
 
     grid-template-columns:
-        repeat(19, minmax(0, 1fr));
+        repeat(19, minmax(0,1fr));
 
-    gap: 3px;
-
-    margin-bottom: 10px;
-}
-
-.function-space {
-    min-width: 0;
+    gap:
+        clamp(2px,0.18vw,4px);
 }
 
 
 /* =========================================================
-   KEYBOARD BODY
+   BOARD BODY
 ========================================================= */
 
 .keyboard-body {
+    width: 100%;
+    min-width: 0;
+
     display: grid;
 
     grid-template-columns:
-        minmax(0, 1fr)
-        230px;
+        minmax(0,1fr)
+        minmax(150px, 21%);
 
-    gap: 10px;
+    gap:
+        clamp(6px,0.7vw,11px);
 
     align-items: start;
 }
 
 .hall-board {
+    width: 100%;
+
     min-width: 0;
 }
 
 .hall-row {
+    width: 100%;
+
+    margin-bottom:
+        clamp(2px,0.25vw,4px);
+
     display: grid;
 
     grid-template-columns:
-        repeat(60, minmax(0, 1fr));
+        repeat(
+            60,
+            minmax(0,1fr)
+        );
 
-    gap: 2px;
+    gap:
+        clamp(1px,0.12vw,2px);
+}
 
-    margin-bottom: 4px;
+
+/* =========================================================
+   KEYS
+========================================================= */
+
+.key,
+.mech-key {
+    min-width: 0;
+
+    height:
+        clamp(
+            27px,
+            2.35vw,
+            42px
+        );
+
+    border-radius:
+        clamp(3px,0.25vw,5px);
+
+    font-size:
+        clamp(
+            5px,
+            0.52vw,
+            9px
+        );
+
+    overflow: hidden;
+
+    white-space: nowrap;
+
+    text-overflow: ellipsis;
 }
 
 .key {
-    min-width: 0;
-
-    height: 39px;
-
-    padding: 0 3px;
+    padding: 0 2px;
 
     border:
         1px solid #394559;
-
-    border-radius: 4px;
 
     background:
         linear-gradient(
@@ -877,8 +1100,6 @@ select {
     box-shadow:
         inset 0 1px 0
         rgba(255,255,255,0.05);
-
-    font-size: 9px;
 
     cursor: pointer;
 
@@ -894,8 +1115,8 @@ select {
         2px solid var(--purple);
 
     box-shadow:
-        0 0 10px
-        rgba(139,92,246,0.4);
+        0 0 9px
+        rgba(139,92,246,0.38);
 }
 
 .key.multi {
@@ -912,14 +1133,10 @@ select {
 }
 
 .mech-key {
-    min-width: 0;
-
-    height: 39px;
+    padding: 0 1px;
 
     border:
         1px solid #2c3441;
-
-    border-radius: 4px;
 
     background:
         linear-gradient(
@@ -930,60 +1147,76 @@ select {
 
     color: #586376;
 
-    font-size: 8px;
-
     cursor: default;
 
     opacity: 0.8;
 }
 
+
+/* =========================================================
+   MECHANICAL SIDE
+========================================================= */
+
 .mechanical-side {
+    min-width: 0;
+
     display: grid;
 
     grid-template-columns:
-        1fr 1.25fr;
+        minmax(0,0.9fr)
+        minmax(0,1.1fr);
 
-    gap: 8px;
+    gap:
+        clamp(4px,0.4vw,8px);
 }
 
 .cluster-title {
+    margin-bottom: 4px;
+
     color: #485265;
 
-    font-size: 7px;
-
-    margin-bottom: 4px;
+    font-size:
+        clamp(
+            5px,
+            0.4vw,
+            7px
+        );
 }
 
-.nav-cluster {
-    display: grid;
-
-    grid-template-columns:
-        repeat(3, minmax(0, 1fr));
-
-    gap: 3px;
-}
-
+.nav-cluster,
 .arrow-cluster {
     display: grid;
 
     grid-template-columns:
-        repeat(3, minmax(0, 1fr));
+        repeat(3,minmax(0,1fr));
 
-    gap: 3px;
+    gap:
+        clamp(1px,0.15vw,3px);
+}
 
-    margin-top: 12px;
+.arrow-cluster {
+    margin-top:
+        clamp(7px,0.6vw,12px);
 }
 
 .numpad {
     display: grid;
 
     grid-template-columns:
-        repeat(4, minmax(0, 1fr));
+        repeat(
+            4,
+            minmax(0,1fr)
+        );
 
-    grid-template-rows:
-        repeat(5, 39px);
+    grid-auto-rows:
+        clamp(
+            27px,
+            2.35vw,
+            42px
+        );
 
-    gap: 3px;
+    gap:
+        clamp(1px,0.15vw,3px);
 }
 
 .numpad .mech-key {
@@ -1001,39 +1234,48 @@ select {
 
 
 /* =========================================================
-   SETTINGS
+   SELECTED KEY SETTINGS
 ========================================================= */
 
 .selected-key {
+    margin-bottom: 14px;
+
     color: #cabaff;
 
-    font-size: 30px;
-
-    margin-bottom: 14px;
+    font-size:
+        clamp(
+            24px,
+            2vw,
+            30px
+        );
 }
 
 .field {
-    margin-bottom: 15px;
+    margin-bottom: 14px;
 }
 
 .field-line {
+    margin-bottom: 6px;
+
     display: flex;
+
     align-items: center;
+
     justify-content: space-between;
 
     gap: 8px;
-
-    margin-bottom: 6px;
 }
 
 .field-label {
     color: #afb8c6;
 
-    font-size: 9px;
+    font-size: 8px;
 }
 
 .number-input {
-    width: 70px;
+    width: 68px;
+
+    padding: 5px;
 
     border:
         1px solid var(--border);
@@ -1042,11 +1284,9 @@ select {
 
     color: white;
 
-    padding: 5px;
-
     text-align: right;
 
-    font-size: 9px;
+    font-size: 8px;
 }
 
 input[type="range"] {
@@ -1061,9 +1301,9 @@ input[type="range"] {
     width: 34px;
     height: 18px;
 
-    background: #242c39;
-
     border-radius: 20px;
+
+    background: #242c39;
 
     position: relative;
 
@@ -1078,12 +1318,12 @@ input[type="range"] {
     width: 14px;
     height: 14px;
 
+    top: 2px;
+    left: 2px;
+
     border-radius: 50%;
 
     background: white;
-
-    top: 2px;
-    left: 2px;
 
     transition: 0.15s;
 }
@@ -1097,57 +1337,70 @@ input[type="range"] {
 }
 
 .live-state-box {
+    margin-top: 10px;
+
+    padding: 10px;
+
     border:
         1px solid var(--border);
 
     background: #090e14;
-
-    padding: 11px;
-
-    margin-top: 10px;
 }
 
 .live-state-value {
     display: flex;
+
     align-items: center;
 
     gap: 8px;
 
     color: var(--green);
 
-    font-size: 16px;
+    font-size: 14px;
 }
 
 
 /* =========================================================
-   TRAVEL VISUALIZATION
+   TRAVEL VISUALIZER
 ========================================================= */
 
 .travel-panel {
-    margin-top: 12px;
+    margin-top: 11px;
 }
 
 .travel-header {
+    margin-bottom: 10px;
+
     display: flex;
+
     align-items: center;
+
     justify-content: space-between;
 
-    margin-bottom: 12px;
+    gap: 15px;
 }
 
 .travel-number {
-    font-size: 25px;
+    flex: 0 0 auto;
 
     color: #c8b8ff;
+
+    font-size:
+        clamp(
+            20px,
+            1.8vw,
+            27px
+        );
 }
 
 .travel-visual {
-    position: relative;
-
-    height: 88px;
+    height: 87px;
 
     margin:
-        4px 8px 0 8px;
+        3px 9px
+        0 9px;
+
+    position: relative;
 }
 
 .travel-axis {
@@ -1156,18 +1409,18 @@ input[type="range"] {
     left: 0;
     right: 0;
 
-    top: 38px;
+    top: 37px;
 
     height: 12px;
 
-    background: #151c27;
+    overflow: hidden;
 
     border:
         1px solid #2a3443;
 
-    overflow: hidden;
-
     border-radius: 4px;
+
+    background: #151c27;
 }
 
 .deadzone {
@@ -1177,7 +1430,7 @@ input[type="range"] {
     bottom: 0;
 
     background:
-        rgba(251,113,133,0.27);
+        rgba(251,113,133,0.28);
 }
 
 .deadzone.top {
@@ -1195,7 +1448,7 @@ input[type="range"] {
     bottom: 0;
 
     background:
-        rgba(74,222,128,0.08);
+        rgba(74,222,128,0.07);
 }
 
 .axis-marker {
@@ -1204,13 +1457,12 @@ input[type="range"] {
     top: 22px;
 
     width: 2px;
-
-    height: 44px;
+    height: 43px;
 
     transform:
         translateX(-1px);
 
-    z-index: 4;
+    z-index: 5;
 }
 
 .axis-marker::before {
@@ -1221,24 +1473,23 @@ input[type="range"] {
     width: 7px;
     height: 7px;
 
-    border-radius: 50%;
-
     left: -2.5px;
-
     top: -2px;
+
+    border-radius: 50%;
 }
 
-.axis-marker .marker-label {
+.marker-label {
     position: absolute;
-
-    white-space: nowrap;
-
-    font-size: 8px;
 
     top: -15px;
 
     transform:
         translateX(-50%);
+
+    white-space: nowrap;
+
+    font-size: 7px;
 }
 
 .marker-actuation {
@@ -1254,9 +1505,9 @@ input[type="range"] {
 }
 
 .marker-current {
-    background: var(--cyan);
-
     z-index: 7;
+
+    background: var(--cyan);
 }
 
 .marker-current::before {
@@ -1269,12 +1520,12 @@ input[type="range"] {
     background: var(--cyan);
 
     box-shadow:
-        0 0 11px
+        0 0 10px
         rgba(34,211,238,0.85);
 }
 
 .marker-current .marker-label {
-    top: 50px;
+    top: 49px;
 
     color: var(--cyan);
 }
@@ -1294,37 +1545,40 @@ input[type="range"] {
 .travel-scale {
     position: absolute;
 
-    top: 61px;
-
     left: 0;
     right: 0;
 
+    top: 61px;
+
     display: flex;
+
     justify-content: space-between;
 
     color: #536075;
 
-    font-size: 8px;
+    font-size: 7px;
 }
 
 .visual-legend {
     display: flex;
+
     flex-wrap: wrap;
 
-    gap: 12px;
+    gap: 11px;
+
+    margin-top: 4px;
 
     color: #697488;
 
-    font-size: 8px;
-
-    margin-top: 6px;
+    font-size: 7px;
 }
 
 .visual-legend-item {
     display: flex;
+
     align-items: center;
 
-    gap: 5px;
+    gap: 4px;
 }
 
 .legend-dot {
@@ -1335,56 +1589,61 @@ input[type="range"] {
 }
 
 .mock-slider-row {
+    margin-top: 11px;
+
     display: grid;
 
     grid-template-columns:
-        90px minmax(0, 1fr);
+        85px
+        minmax(0,1fr);
 
     align-items: center;
 
-    gap: 10px;
-
-    margin-top: 12px;
+    gap: 9px;
 }
 
 .mock-slider-label {
     color: #697487;
 
-    font-size: 8px;
+    font-size: 7px;
 }
 
 
 /* =========================================================
-   KEYS LOWER GRID
+   LOWER SETTINGS
 ========================================================= */
 
 .keys-lower-grid {
+    margin-top: 11px;
+
     display: grid;
 
     grid-template-columns:
-        1.2fr 1fr 1fr;
+        repeat(
+            3,
+            minmax(220px,1fr)
+        );
 
-    gap: 12px;
-
-    margin-top: 12px;
+    gap: 11px;
 }
 
-.apply-buttons {
+.action-buttons {
     display: flex;
+
     flex-wrap: wrap;
 
     gap: 7px;
 }
 
 .action-button {
+    padding: 8px 10px;
+
     border:
         1px solid var(--border);
 
     background: #111722;
 
     color: #c0c7d3;
-
-    padding: 8px 10px;
 
     cursor: pointer;
 
@@ -1400,39 +1659,39 @@ input[type="range"] {
 }
 
 .selection-count {
-    color: var(--orange);
-
     margin-top: 9px;
+
+    color: var(--orange);
 
     font-size: 8px;
 }
 
 .calibration-values {
+    margin-bottom: 9px;
+
     display: grid;
 
     grid-template-columns:
         1fr 1fr;
 
     gap: 7px;
-
-    margin-bottom: 9px;
 }
 
 .calibration-value {
+    padding: 8px;
+
     background: #0a0f15;
 
     border:
         1px solid var(--border);
-
-    padding: 8px;
 }
 
 .calibration-value .label {
+    margin-bottom: 5px;
+
     color: #657084;
 
     font-size: 7px;
-
-    margin-bottom: 5px;
 }
 
 .calibration-value .value {
@@ -1441,25 +1700,28 @@ input[type="range"] {
     font-size: 11px;
 }
 
-.performance-value {
-    display: flex;
-
-    align-items: center;
-    justify-content: space-between;
+.performance-row {
+    padding: 7px 0;
 
     border-bottom:
         1px solid #161e29;
 
-    padding: 7px 0;
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    gap: 10px;
 
     font-size: 8px;
 }
 
-.performance-value span:first-child {
+.performance-row span:first-child {
     color: #667185;
 }
 
-.performance-value span:last-child {
+.performance-row span:last-child {
     color: #cfd5df;
 }
 
@@ -1469,18 +1731,19 @@ input[type="range"] {
 ========================================================= */
 
 .console {
-    height: 105px;
+    min-height: 100px;
+    max-height: 170px;
 
-    margin-top: 12px;
+    margin-top: 11px;
+
+    padding: 9px;
+
+    overflow-y: auto;
 
     border:
         1px solid var(--border);
 
     background: #06090d;
-
-    overflow-y: auto;
-
-    padding: 9px;
 
     color: #748094;
 
@@ -1513,6 +1776,7 @@ input[type="range"] {
     display: flex;
 
     align-items: center;
+
     justify-content: center;
 
     flex-direction: column;
@@ -1521,9 +1785,9 @@ input[type="range"] {
 }
 
 .placeholder strong {
-    color: #aeb7c4;
-
     margin-bottom: 10px;
+
+    color: #aeb7c4;
 }
 
 
@@ -1531,16 +1795,143 @@ input[type="range"] {
    RESPONSIVE
 ========================================================= */
 
-@media (max-width: 1250px) {
+@media (max-width: 1500px) {
 
-    .keys-grid {
+    .keys-main-grid {
         grid-template-columns:
-            minmax(0, 1fr);
+            minmax(0,1fr)
+            240px;
     }
 
-    .home-grid {
+    .keyboard-body {
         grid-template-columns:
-            repeat(2, minmax(0, 1fr));
+            minmax(0,1fr)
+            minmax(135px,20%);
+    }
+
+}
+
+
+@media (max-width: 1180px) {
+
+    .keys-main-grid {
+        grid-template-columns:
+            1fr;
+    }
+
+    .keys-lower-grid {
+        grid-template-columns:
+            repeat(
+                2,
+                minmax(220px,1fr)
+            );
+    }
+
+    .home-specs {
+        grid-template-columns:
+            1fr;
+    }
+
+}
+
+
+@media (max-width: 850px) {
+
+    .app {
+        grid-template-columns:
+            var(--sidebar-closed)
+            minmax(0,1fr);
+    }
+
+    .sidebar {
+        padding: 14px;
+    }
+
+    .brand,
+    .device-title span,
+    .device-small,
+    .nav-title,
+    .nav-name,
+    .sidebar-bottom {
+        display: none;
+    }
+
+    .brand-short {
+        display: block;
+    }
+
+    .device-card {
+        padding: 10px;
+
+        display: flex;
+
+        justify-content: center;
+    }
+
+    .nav-button {
+        padding: 0;
+
+        justify-content: center;
+    }
+
+    .nav-symbol {
+        width: auto;
+    }
+
+    .topbar {
+        padding:
+            0 10px;
+    }
+
+    .global-status {
+        display: none;
+    }
+
+    .global-button {
+        padding:
+            0 8px;
+    }
+
+    .keys-meta {
+        grid-template-columns:
+            1fr;
+    }
+
+    .keys-lower-grid {
+        grid-template-columns:
+            1fr;
+    }
+
+    .home-primary {
+        grid-template-columns:
+            1fr 1fr;
+    }
+
+    .spec-list {
+        grid-template-columns:
+            1fr;
+    }
+
+}
+
+
+@media (max-width: 650px) {
+
+    .home-primary {
+        grid-template-columns:
+            1fr;
+    }
+
+    .page-header {
+        flex-direction: column;
+    }
+
+    .terminal-command {
+        display: none;
+    }
+
+    .topbar-actions .global-button {
+        font-size: 7px;
     }
 
 }
@@ -1556,973 +1947,719 @@ input[type="range"] {
     id="app"
 >
 
-    <!-- =====================================================
-         SIDEBAR
-    ====================================================== -->
 
-    <aside class="sidebar">
+<!-- ======================================================
+     SIDEBAR
+======================================================= -->
 
-        <div class="sidebar-header">
+<aside class="sidebar">
 
-            <div class="brand">
-                HE_<span>KEYBOARD</span>
+
+    <div class="sidebar-header">
+
+        <div class="brand">
+            HE_<span>KEYBOARD</span>
+        </div>
+
+        <div class="brand-short">
+            HE
+        </div>
+
+    </div>
+
+
+    <div class="device-card">
+
+        <div class="device-title">
+
+            <div class="status-dot"></div>
+
+            <span>
+                HE Keyboard
+            </span>
+
+        </div>
+
+
+        <div class="device-small">
+
+            STATUS&nbsp;&nbsp;&nbsp;CONNECTED [MOCK]<br>
+
+            MCU&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;M484KIDAE<br>
+
+            USB&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span id="sidebarPolling">8000 Hz</span><br>
+
+            PROFILE&nbsp;&nbsp;<span id="sidebarProfile">Profile 1</span>
+
+        </div>
+
+    </div>
+
+
+    <div class="nav-title">
+        // NAV
+    </div>
+
+
+    <button
+        class="nav-button"
+        data-page="home"
+    >
+
+        <span class="nav-symbol">
+            H
+        </span>
+
+        <span class="nav-name">
+            $ home
+        </span>
+
+    </button>
+
+
+    <button
+        class="nav-button active"
+        data-page="keys"
+    >
+
+        <span class="nav-symbol">
+            K
+        </span>
+
+        <span class="nav-name">
+            $ keys
+        </span>
+
+    </button>
+
+
+    <button
+        class="nav-button"
+        data-page="lighting"
+    >
+
+        <span class="nav-symbol">
+            L
+        </span>
+
+        <span class="nav-name">
+            $ lighting
+        </span>
+
+    </button>
+
+
+    <button
+        class="nav-button"
+        data-page="device"
+    >
+
+        <span class="nav-symbol">
+            D
+        </span>
+
+        <span class="nav-name">
+            $ device
+        </span>
+
+    </button>
+
+
+    <div class="sidebar-bottom">
+
+        <div
+            id="sidebarState"
+            class="sidebar-state saved"
+        >
+            ● configuration saved
+        </div>
+
+    </div>
+
+</aside>
+
+
+
+<!-- ======================================================
+     MAIN
+======================================================= -->
+
+<main class="main">
+
+
+<header class="topbar">
+
+
+    <div class="topbar-left">
+
+        <button
+            id="sidebarToggle"
+            class="sidebar-toggle"
+            title="Toggle sidebar"
+        >
+            ☰
+        </button>
+
+
+        <div class="breadcrumb">
+
+            root / keyboard /
+
+            <strong id="breadcrumb">
+                keys
+            </strong>
+
+        </div>
+
+    </div>
+
+
+    <div class="topbar-actions">
+
+
+        <div
+            id="globalStatus"
+            class="global-status saved"
+        >
+            ● SAVED
+        </div>
+
+
+        <button
+            id="applyChanges"
+            class="global-button apply"
+        >
+            APPLY_CHANGES
+        </button>
+
+
+        <button
+            id="saveKeyboard"
+            class="global-button save"
+        >
+            SAVE_TO_KEYBOARD
+        </button>
+
+    </div>
+
+</header>
+
+
+
+<div class="content">
+
+
+<!-- ======================================================
+     HOME
+======================================================= -->
+
+<section
+    id="page-home"
+    class="page"
+>
+
+<div class="page-shell">
+
+
+    <div class="page-header">
+
+        <div>
+
+            <div class="page-title">
+                /home
             </div>
 
-            <div class="brand-short">
-                HE
+            <div class="page-description">
+                keyboard status / installed hardware / active configuration
             </div>
 
         </div>
 
 
-        <div class="device-card">
+        <div class="terminal-command">
 
-            <div class="device-title">
+            <span>></span>
 
-                <div class="status-dot"></div>
+            device.status --read-only
+
+        </div>
+
+    </div>
+
+
+    <div class="home-primary">
+
+
+        <!-- CONNECTION -->
+
+        <div class="home-card">
+
+            <div class="home-card-label">
+                CONNECTION
+            </div>
+
+            <div class="home-card-value green">
+                CONNECTED
+            </div>
+
+            <div class="home-card-sub">
+
+                USB HID<br>
+
+                Mock device
+
+            </div>
+
+        </div>
+
+
+        <!-- PROFILE -->
+
+        <div class="home-card">
+
+            <div class="home-card-label">
+                CURRENT_PROFILE
+            </div>
+
+            <div
+                id="homeProfile"
+                class="home-card-value purple"
+            >
+                PROFILE_1
+            </div>
+
+            <div class="home-card-sub">
+
+                onboard profile<br>
+
+                active configuration
+
+            </div>
+
+        </div>
+
+
+        <!-- POLLING -->
+
+        <div class="home-card">
+
+            <div class="home-card-label">
+                POLLING_RATE
+            </div>
+
+            <div
+                id="homePolling"
+                class="home-card-value"
+            >
+                8000 Hz
+            </div>
+
+            <div
+                id="homePollingSub"
+                class="home-card-sub"
+            >
+                0.125 ms report interval
+            </div>
+
+        </div>
+
+
+        <!-- RAPID TRIGGER -->
+
+        <div class="home-card">
+
+            <div class="home-card-label">
+                RAPID_TRIGGER
+            </div>
+
+            <div
+                id="homeRTStatus"
+                class="home-card-value green"
+            >
+                ENABLED
+            </div>
+
+            <div
+                id="homeRTSub"
+                class="home-card-sub"
+            >
+                enabled keys : 61 / 61
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+    <div class="home-specs">
+
+
+        <!-- INSTALLED SWITCH -->
+
+        <div class="panel">
+
+            <div class="panel-title">
+                INSTALLED_SWITCH
+            </div>
+
+
+            <div class="spec-list">
+
+
+                <div class="spec-row">
+
+                    <span>
+                        switch_name
+                    </span>
+
+                    <span id="switchName">
+                        TBD - Magnetic Hall Switch
+                    </span>
+
+                </div>
+
+
+                <div class="spec-row">
+
+                    <span>
+                        switch_type
+                    </span>
+
+                    <span>
+                        Magnetic / Hall Effect
+                    </span>
+
+                </div>
+
+
+                <div class="spec-row">
+
+                    <span>
+                        total_stroke
+                    </span>
+
+                    <span id="switchStroke">
+                        4.00 mm
+                    </span>
+
+                </div>
+
+
+                <div class="spec-row">
+
+                    <span>
+                        hall_sensor
+                    </span>
+
+                    <span>
+                        DRV5055A3
+                    </span>
+
+                </div>
+
+
+                <div class="spec-row">
+
+                    <span>
+                        hall_keys
+                    </span>
+
+                    <span>
+                        61
+                    </span>
+
+                </div>
+
+
+                <div class="spec-row">
+
+                    <span>
+                        multiplexer
+                    </span>
+
+                    <span>
+                        TMUX1208 × 8
+                    </span>
+
+                </div>
+
+
+                <div class="spec-row">
+
+                    <span>
+                        MCU
+                    </span>
+
+                    <span>
+                        M484KIDAE
+                    </span>
+
+                </div>
+
+
+                <div class="spec-row">
+
+                    <span>
+                        lighting
+                    </span>
+
+                    <span>
+                        WS2812B × 10
+                    </span>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- SYSTEM -->
+
+        <div class="panel">
+
+            <div class="panel-title">
+                KEYBOARD_STATUS
+            </div>
+
+
+            <div class="spec-row">
 
                 <span>
-                    HE Keyboard
+                    connection
+                </span>
+
+                <span style="color:#4ade80;">
+                    ONLINE
                 </span>
 
             </div>
 
 
-            <div class="device-small">
+            <div class="spec-row">
 
-                STATUS&nbsp;&nbsp;&nbsp;CONNECTED [MOCK]<br>
+                <span>
+                    interface
+                </span>
 
-                MCU&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;M484KIDAE<br>
+                <span>
+                    USB HID
+                </span>
 
-                USB&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span id="sidebarPolling">8000 Hz</span><br>
+            </div>
 
-                PROFILE&nbsp;&nbsp;<span id="sidebarProfile">Profile 1</span>
+
+            <div class="spec-row">
+
+                <span>
+                    firmware
+                </span>
+
+                <span>
+                    0.1.0 MOCK
+                </span>
+
+            </div>
+
+
+            <div class="spec-row">
+
+                <span>
+                    config_state
+                </span>
+
+                <span id="homeConfigState">
+                    SAVED
+                </span>
+
+            </div>
+
+
+            <div class="readonly-note">
+
+                HOME is status-only.<br><br>
+
+                Keyboard configuration is changed from the
+                <strong>Keys</strong>,
+                <strong>Lighting</strong>
+                and
+                <strong>Device</strong>
+                pages.
 
             </div>
 
         </div>
 
+    </div>
 
-        <div class="nav-title">
-            // NAV
+</div>
+
+</section>
+
+
+
+<!-- ======================================================
+     KEYS
+======================================================= -->
+
+<section
+    id="page-keys"
+    class="page active"
+>
+
+<div class="page-shell">
+
+
+    <div class="page-header">
+
+
+        <div>
+
+            <div class="page-title">
+                /keys
+            </div>
+
+            <div class="page-description">
+                key behaviour / rapid trigger / calibration / profiles / performance
+            </div>
+
         </div>
 
 
-        <button
-            class="nav-button"
-            data-page="home"
-        >
+        <div class="terminal-command">
 
-            <span class="nav-symbol">
-                H
+            <span>></span>
+
+            keyboard.configure --hall
+
+        </div>
+
+    </div>
+
+
+
+    <!-- ==================================================
+         PROFILE + PERFORMANCE
+    =================================================== -->
+
+    <div class="keys-meta">
+
+
+        <div class="profile-strip">
+
+            <span class="meta-label">
+                PROFILE
             </span>
-
-            <span class="nav-name">
-                $ home
-            </span>
-
-        </button>
-
-
-        <button
-            class="nav-button active"
-            data-page="keys"
-        >
-
-            <span class="nav-symbol">
-                K
-            </span>
-
-            <span class="nav-name">
-                $ keys
-            </span>
-
-        </button>
-
-
-        <button
-            class="nav-button"
-            data-page="lighting"
-        >
-
-            <span class="nav-symbol">
-                L
-            </span>
-
-            <span class="nav-name">
-                $ lighting
-            </span>
-
-        </button>
-
-
-        <button
-            class="nav-button"
-            data-page="device"
-        >
-
-            <span class="nav-symbol">
-                D
-            </span>
-
-            <span class="nav-name">
-                $ device
-            </span>
-
-        </button>
-
-
-        <div class="sidebar-bottom">
-
-            <div class="unsaved">
-                ● no unsaved changes
-            </div>
 
 
             <button
-                id="saveKeyboard"
-                class="save-button"
+                class="profile-button active"
+                data-profile="1"
             >
-                SAVE_TO_KEYBOARD
+                PROFILE_1
+            </button>
+
+
+            <button
+                class="profile-button"
+                data-profile="2"
+            >
+                PROFILE_2
+            </button>
+
+
+            <button
+                class="profile-button"
+                data-profile="3"
+            >
+                PROFILE_3
             </button>
 
         </div>
 
-    </aside>
+
+        <div class="performance-strip">
+
+            <span class="meta-label">
+                POLLING
+            </span>
 
 
-    <!-- =====================================================
-         MAIN
-    ====================================================== -->
+            <select
+                id="pollingSelect"
+                class="polling-select"
+            >
 
-    <main class="main">
+                <option value="1000">
+                    1000 Hz
+                </option>
 
+                <option value="2000">
+                    2000 Hz
+                </option>
 
-        <header class="topbar">
+                <option value="4000">
+                    4000 Hz
+                </option>
 
-
-            <div class="topbar-left">
-
-                <button
-                    id="sidebarToggle"
-                    class="sidebar-toggle"
-                    title="Collapse sidebar"
+                <option
+                    value="8000"
+                    selected
                 >
-                    ☰
-                </button>
+                    8000 Hz
+                </option>
+
+            </select>
+
+        </div>
+
+    </div>
 
 
-                <div class="breadcrumb">
 
-                    root / keyboard /
+    <!-- ==================================================
+         KEYBOARD + SELECTED KEY
+    =================================================== -->
 
-                    <strong id="breadcrumb">
-                        keys
-                    </strong>
-
-                </div>
-
-            </div>
+    <div class="keys-main-grid">
 
 
-            <div class="top-status">
+        <!-- KEYBOARD -->
 
-                <div class="status-dot"></div>
-
-                CONNECTED
-
-            </div>
-
-        </header>
+        <div class="panel">
 
 
-        <div class="content">
+            <div class="keyboard-toolbar">
 
 
-            <!-- =================================================
-                 HOME
-            ================================================== -->
+                <div>
 
-            <section
-                id="page-home"
-                class="page"
-            >
-
-                <div class="page-header">
-
-                    <div>
-
-                        <div class="page-title">
-                            /home
-                        </div>
-
-                        <div class="page-description">
-                            read-only keyboard status
-                        </div>
-
+                    <div class="panel-title">
+                        KEYBOARD_MATRIX
                     </div>
 
 
-                    <div class="terminal-command">
+                    <div class="legend">
 
-                        <span>></span>
-
-                        device.status --read-only
-
-                    </div>
-
-                </div>
-
-
-                <div class="home-grid">
-
-
-                    <div class="info-card">
-
-                        <div class="info-label">
-                            DEVICE_STATUS
-                        </div>
-
-                        <div class="info-value good">
-                            CONNECTED
-                        </div>
-
-                        <div class="info-sub">
-
-                            Mock device<br>
-
-                            M484KIDAE<br>
-
-                            61 Hall Sensors
-
-                        </div>
-
-                    </div>
-
-
-                    <div class="info-card">
-
-                        <div class="info-label">
-                            ACTIVE_PROFILE
-                        </div>
-
-                        <div
-                            class="info-value purple"
-                            id="homeProfile"
-                        >
-                            PROFILE_1
-                        </div>
-
-                        <div class="info-sub">
-
-                            onboard profile<br>
-
-                            rotary selector ready
-
-                        </div>
-
-                    </div>
-
-
-                    <div class="info-card">
-
-                        <div class="info-label">
-                            USB_POLLING
-                        </div>
-
-                        <div
-                            class="info-value"
-                            id="homePolling"
-                        >
-                            8000 Hz
-                        </div>
-
-                        <div
-                            class="info-sub"
-                            id="homePollingSub"
-                        >
-                            0.125 ms report interval
-                        </div>
-
-                    </div>
-
-
-                    <div class="info-card">
-
-                        <div class="info-label">
-                            KEY_STATE
-                        </div>
-
-                        <div
-                            class="info-value"
-                            id="homeKeyState"
-                        >
-                            W : RELEASED
-                        </div>
-
-                        <div class="info-sub">
-
-                            last selected key<br>
-
-                            live state mirror
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-
-                <div class="home-wide-grid">
-
-
-                    <div class="panel">
-
-                        <div class="panel-title">
-                            CURRENT_KEY_CONFIGURATION [READ ONLY]
-                        </div>
-
-
-                        <table class="readonly-table">
-
-                            <tr>
-
-                                <td>
-                                    selected_key
-                                </td>
-
-                                <td id="homeSelectedKey">
-                                    W
-                                </td>
-
-                            </tr>
-
-
-                            <tr>
-
-                                <td>
-                                    actuation_point
-                                </td>
-
-                                <td id="homeActuation">
-                                    1.50 mm
-                                </td>
-
-                            </tr>
-
-
-                            <tr>
-
-                                <td>
-                                    rapid_trigger
-                                </td>
-
-                                <td id="homeRT">
-                                    ENABLED
-                                </td>
-
-                            </tr>
-
-
-                            <tr>
-
-                                <td>
-                                    rt_sensitivity
-                                </td>
-
-                                <td id="homeRTSensitivity">
-                                    0.20 mm
-                                </td>
-
-                            </tr>
-
-
-                            <tr>
-
-                                <td>
-                                    top_deadzone
-                                </td>
-
-                                <td id="homeTopDeadzone">
-                                    0.10 mm
-                                </td>
-
-                            </tr>
-
-
-                            <tr>
-
-                                <td>
-                                    bottom_deadzone
-                                </td>
-
-                                <td id="homeBottomDeadzone">
-                                    0.10 mm
-                                </td>
-
-                            </tr>
-
-                        </table>
-
-                    </div>
-
-
-                    <div class="panel">
-
-                        <div class="panel-title">
-                            SYSTEM
-                        </div>
-
-
-                        <table class="readonly-table">
-
-                            <tr>
-
-                                <td>
-                                    firmware
-                                </td>
-
-                                <td>
-                                    0.1.0 MOCK
-                                </td>
-
-                            </tr>
-
-
-                            <tr>
-
-                                <td>
-                                    hall_keys
-                                </td>
-
-                                <td>
-                                    61
-                                </td>
-
-                            </tr>
-
-
-                            <tr>
-
-                                <td>
-                                    mux
-                                </td>
-
-                                <td>
-                                    TMUX1208 × 8
-                                </td>
-
-                            </tr>
-
-
-                            <tr>
-
-                                <td>
-                                    lighting
-                                </td>
-
-                                <td>
-                                    WS2812B × 10
-                                </td>
-
-                            </tr>
-
-
-                            <tr>
-
-                                <td>
-                                    interface
-                                </td>
-
-                                <td>
-                                    USB HID
-                                </td>
-
-                            </tr>
-
-                        </table>
-
-                    </div>
-
-                </div>
-
-            </section>
-
-
-            <!-- =================================================
-                 KEYS
-            ================================================== -->
-
-            <section
-                id="page-keys"
-                class="page active"
-            >
-
-
-                <div class="page-header">
-
-
-                    <div>
-
-                        <div class="page-title">
-                            /keys
-                        </div>
-
-                        <div class="page-description">
-                            key behaviour / rapid trigger / calibration / profiles / performance
-                        </div>
-
-                    </div>
-
-
-                    <div class="terminal-command">
-
-                        <span>></span>
-
-                        keyboard.configure --hall
-
-                    </div>
-
-                </div>
-
-
-                <!-- =============================================
-                     PROFILE + PERFORMANCE
-                ============================================== -->
-
-                <div class="keys-meta">
-
-
-                    <div class="profile-strip">
-
-                        <span class="meta-label">
-                            PROFILE
-                        </span>
-
-
-                        <button
-                            class="profile-button active"
-                            data-profile="1"
-                        >
-                            PROFILE_1
-                        </button>
-
-
-                        <button
-                            class="profile-button"
-                            data-profile="2"
-                        >
-                            PROFILE_2
-                        </button>
-
-
-                        <button
-                            class="profile-button"
-                            data-profile="3"
-                        >
-                            PROFILE_3
-                        </button>
-
-                    </div>
-
-
-                    <div class="performance-strip">
-
-                        <span class="meta-label">
-                            POLLING
-                        </span>
-
-
-                        <select
-                            id="pollingSelect"
-                            class="polling-select"
-                        >
-
-                            <option value="1000">
-                                1000 Hz
-                            </option>
-
-                            <option value="2000">
-                                2000 Hz
-                            </option>
-
-                            <option value="4000">
-                                4000 Hz
-                            </option>
-
-                            <option
-                                value="8000"
-                                selected
-                            >
-                                8000 Hz
-                            </option>
-
-                        </select>
-
-                    </div>
-
-
-                    <div class="performance-strip">
-
-                        <span class="meta-label">
-                            SCAN
-                        </span>
-
-                        <span
-                            class="small-text"
-                            id="scanRate"
-                        >
-                            ~40 kHz MOCK
-                        </span>
-
-                    </div>
-
-                </div>
-
-
-                <!-- =============================================
-                     MAIN KEYS GRID
-                ============================================== -->
-
-                <div class="keys-grid">
-
-
-                    <!-- =========================================
-                         KEYBOARD
-                    ========================================== -->
-
-                    <div class="panel keyboard-panel">
-
-
-                        <div class="keyboard-toolbar">
-
-
-                            <div>
-
-                                <div class="panel-title">
-                                    KEYBOARD_MATRIX
-                                </div>
-
-
-                                <div class="legend">
-
-                                    <div class="legend-item">
-
-                                        <div
-                                            class="legend-square hall"
-                                        ></div>
-
-                                        HALL 61
-
-                                    </div>
-
-
-                                    <div class="legend-item">
-
-                                        <div
-                                            class="legend-square mechanical"
-                                        ></div>
-
-                                        MECHANICAL / VISUAL
-
-                                    </div>
-
-                                </div>
-
-                            </div>
-
-
-                            <div class="segmented">
-
-
-                                <button
-                                    id="singleMode"
-                                    class="active"
-                                >
-                                    SINGLE
-                                </button>
-
-
-                                <button
-                                    id="multiMode"
-                                >
-                                    MULTI
-                                </button>
-
-                            </div>
-
-                        </div>
-
-
-                        <div class="keyboard-stage">
-
+                        <div class="legend-item">
 
                             <div
-                                id="functionRow"
-                                class="function-row"
+                                class="legend-square hall"
                             ></div>
 
-
-                            <div class="keyboard-body">
-
-
-                                <div
-                                    id="keyboard"
-                                    class="hall-board"
-                                ></div>
-
-
-                                <div class="mechanical-side">
-
-
-                                    <div>
-
-                                        <div class="cluster-title">
-                                            NAV / ARROWS
-                                        </div>
-
-
-                                        <div
-                                            id="navCluster"
-                                            class="nav-cluster"
-                                        ></div>
-
-
-                                        <div
-                                            id="arrowCluster"
-                                            class="arrow-cluster"
-                                        ></div>
-
-                                    </div>
-
-
-                                    <div>
-
-                                        <div class="cluster-title">
-                                            NUMPAD
-                                        </div>
-
-
-                                        <div
-                                            id="numpad"
-                                            class="numpad"
-                                        ></div>
-
-                                    </div>
-
-                                </div>
-
-                            </div>
-
-                        </div>
-
-                    </div>
-
-
-                    <!-- =========================================
-                         SETTINGS
-                    ========================================== -->
-
-                    <div class="panel">
-
-
-                        <div class="panel-title">
-                            SELECTED_KEY
-                        </div>
-
-
-                        <div
-                            id="selectedKey"
-                            class="selected-key"
-                        >
-                            W
-                        </div>
-
-
-                        <!-- Actuation -->
-
-                        <div class="field">
-
-
-                            <div class="field-line">
-
-                                <span class="field-label">
-                                    actuation
-                                </span>
-
-
-                                <input
-                                    id="actuationNumber"
-                                    class="number-input"
-                                    type="number"
-                                    min="0.10"
-                                    max="4.00"
-                                    step="0.05"
-                                    value="1.50"
-                                >
-
-                            </div>
-
-
-                            <input
-                                id="actuation"
-                                type="range"
-                                min="10"
-                                max="400"
-                                value="150"
-                            >
+                            HALL 61
 
                         </div>
 
 
-                        <!-- RT -->
+                        <div class="legend-item">
 
-                        <div class="field">
+                            <div
+                                class="legend-square mechanical"
+                            ></div>
 
-
-                            <div class="field-line">
-
-                                <span class="field-label">
-                                    rapid_trigger
-                                </span>
-
-
-                                <input
-                                    id="rtToggle"
-                                    class="toggle"
-                                    type="checkbox"
-                                    checked
-                                >
-
-                            </div>
-
-                        </div>
-
-
-                        <!-- RT Sensitivity -->
-
-                        <div class="field">
-
-
-                            <div class="field-line">
-
-                                <span class="field-label">
-                                    rt_sensitivity
-                                </span>
-
-
-                                <input
-                                    id="rtNumber"
-                                    class="number-input"
-                                    type="number"
-                                    min="0.05"
-                                    max="2.00"
-                                    step="0.05"
-                                    value="0.20"
-                                >
-
-                            </div>
-
-
-                            <input
-                                id="rtSensitivity"
-                                type="range"
-                                min="5"
-                                max="200"
-                                value="20"
-                            >
-
-                        </div>
-
-
-                        <!-- Top deadzone -->
-
-                        <div class="field">
-
-
-                            <div class="field-line">
-
-                                <span class="field-label">
-                                    top_deadzone
-                                </span>
-
-
-                                <input
-                                    id="topDeadzoneNumber"
-                                    class="number-input"
-                                    type="number"
-                                    min="0"
-                                    max="1"
-                                    step="0.05"
-                                    value="0.10"
-                                >
-
-                            </div>
-
-
-                            <input
-                                id="topDeadzone"
-                                type="range"
-                                min="0"
-                                max="100"
-                                value="10"
-                            >
-
-                        </div>
-
-
-                        <!-- Bottom deadzone -->
-
-                        <div class="field">
-
-
-                            <div class="field-line">
-
-                                <span class="field-label">
-                                    bottom_deadzone
-                                </span>
-
-
-                                <input
-                                    id="bottomDeadzoneNumber"
-                                    class="number-input"
-                                    type="number"
-                                    min="0"
-                                    max="1"
-                                    step="0.05"
-                                    value="0.10"
-                                >
-
-                            </div>
-
-
-                            <input
-                                id="bottomDeadzone"
-                                type="range"
-                                min="0"
-                                max="100"
-                                value="10"
-                            >
-
-                        </div>
-
-
-                        <div class="live-state-box">
-
-                            <div class="panel-title">
-                                LIVE_STATE
-                            </div>
-
-
-                            <div class="live-state-value">
-
-                                <div class="status-dot"></div>
-
-                                <span id="keyState">
-                                    RELEASED
-                                </span>
-
-                            </div>
+                            MECHANICAL / VISUAL
 
                         </div>
 
@@ -2531,413 +2668,82 @@ input[type="range"] {
                 </div>
 
 
-                <!-- =============================================
-                     TRAVEL VISUALIZATION
-                ============================================== -->
-
-                <div class="panel travel-panel">
+                <div class="segmented">
 
 
-                    <div class="travel-header">
+                    <button
+                        id="singleMode"
+                        class="active"
+                    >
+                        SINGLE
+                    </button>
+
+
+                    <button
+                        id="multiMode"
+                    >
+                        MULTI
+                    </button>
+
+                </div>
+
+            </div>
+
+
+
+            <div class="keyboard-stage">
+
+
+                <div
+                    id="functionRow"
+                    class="function-row"
+                ></div>
+
+
+                <div class="keyboard-body">
+
+
+                    <div
+                        id="keyboard"
+                        class="hall-board"
+                    ></div>
+
+
+                    <div class="mechanical-side">
 
 
                         <div>
 
-                            <div class="panel-title">
-                                SWITCH_TRAVEL_VISUALIZER
+                            <div class="cluster-title">
+                                NAV / ARROWS
                             </div>
-
-
-                            <div class="small-text">
-                                travel / deadzone / actuation / rapid-trigger threshold
-                            </div>
-
-                        </div>
-
-
-                        <div
-                            id="travelValue"
-                            class="travel-number"
-                        >
-                            0.00 mm
-                        </div>
-
-                    </div>
-
-
-                    <div class="travel-visual">
-
-
-                        <div class="travel-axis">
 
 
                             <div
-                                id="topDeadzoneVisual"
-                                class="deadzone top"
+                                id="navCluster"
+                                class="nav-cluster"
                             ></div>
 
 
                             <div
-                                id="usableZoneVisual"
-                                class="usable-zone"
-                            ></div>
-
-
-                            <div
-                                id="bottomDeadzoneVisual"
-                                class="deadzone bottom"
+                                id="arrowCluster"
+                                class="arrow-cluster"
                             ></div>
 
                         </div>
 
 
-                        <!-- actuation -->
+                        <div>
 
-                        <div
-                            id="actuationMarker"
-                            class="
-                                axis-marker
-                                marker-actuation
-                            "
-                        >
-
-                            <div class="marker-label">
-                                AP
+                            <div class="cluster-title">
+                                NUMPAD
                             </div>
 
-                        </div>
-
-
-                        <!-- RT -->
-
-                        <div
-                            id="rtMarker"
-                            class="
-                                axis-marker
-                                marker-rt
-                            "
-                        >
 
                             <div
-                                id="rtMarkerLabel"
-                                class="marker-label"
-                            >
-                                RT
-                            </div>
-
-                        </div>
-
-
-                        <!-- Current -->
-
-                        <div
-                            id="currentMarker"
-                            class="
-                                axis-marker
-                                marker-current
-                            "
-                        >
-
-                            <div class="marker-label">
-                                CURRENT
-                            </div>
-
-                        </div>
-
-
-                        <div class="travel-scale">
-
-                            <span>
-                                0.00 mm
-                            </span>
-
-                            <span>
-                                1.00
-                            </span>
-
-                            <span>
-                                2.00
-                            </span>
-
-                            <span>
-                                3.00
-                            </span>
-
-                            <span>
-                                4.00 mm
-                            </span>
-
-                        </div>
-
-                    </div>
-
-
-                    <div class="visual-legend">
-
-
-                        <div class="visual-legend-item">
-
-                            <div
-                                class="legend-dot"
-                                style="
-                                    background:#fb7185;
-                                "
+                                id="numpad"
+                                class="numpad"
                             ></div>
-
-                            Deadzone
-
-                        </div>
-
-
-                        <div class="visual-legend-item">
-
-                            <div
-                                class="legend-dot"
-                                style="
-                                    background:#8b5cf6;
-                                "
-                            ></div>
-
-                            Actuation Point
-
-                        </div>
-
-
-                        <div class="visual-legend-item">
-
-                            <div
-                                class="legend-dot"
-                                style="
-                                    background:#fb923c;
-                                "
-                            ></div>
-
-                            RT Dynamic Point
-
-                        </div>
-
-
-                        <div class="visual-legend-item">
-
-                            <div
-                                class="legend-dot"
-                                style="
-                                    background:#22d3ee;
-                                "
-                            ></div>
-
-                            Current Travel
-
-                        </div>
-
-                    </div>
-
-
-                    <div class="mock-slider-row">
-
-
-                        <div class="mock-slider-label">
-                            MOCK_SENSOR
-                        </div>
-
-
-                        <input
-                            id="travel"
-                            type="range"
-                            min="0"
-                            max="400"
-                            value="0"
-                        >
-
-                    </div>
-
-                </div>
-
-
-                <!-- =============================================
-                     LOWER
-                ============================================== -->
-
-                <div class="keys-lower-grid">
-
-
-                    <!-- Apply -->
-
-                    <div class="panel">
-
-                        <div class="panel-title">
-                            APPLY_CURRENT_SETTINGS
-                        </div>
-
-
-                        <div class="apply-buttons">
-
-
-                            <button
-                                id="applyAll"
-                                class="
-                                    action-button
-                                    primary
-                                "
-                            >
-                                APPLY_ALL_61
-                            </button>
-
-
-                            <button
-                                id="applySelected"
-                                class="action-button"
-                            >
-                                APPLY_SELECTED
-                            </button>
-
-
-                            <button
-                                id="clearSelection"
-                                class="action-button"
-                            >
-                                CLEAR_SELECTION
-                            </button>
-
-                        </div>
-
-
-                        <div
-                            id="selectionCount"
-                            class="selection-count"
-                        >
-                            selected_for_batch = 0
-                        </div>
-
-                    </div>
-
-
-                    <!-- Calibration -->
-
-                    <div class="panel">
-
-                        <div class="panel-title">
-                            CALIBRATION
-                        </div>
-
-
-                        <div class="calibration-values">
-
-
-                            <div class="calibration-value">
-
-                                <div class="label">
-                                    REST_RAW
-                                </div>
-
-                                <div
-                                    id="restRaw"
-                                    class="value"
-                                >
-                                    512
-                                </div>
-
-                            </div>
-
-
-                            <div class="calibration-value">
-
-                                <div class="label">
-                                    BOTTOM_RAW
-                                </div>
-
-                                <div
-                                    id="bottomRaw"
-                                    class="value"
-                                >
-                                    3500
-                                </div>
-
-                            </div>
-
-                        </div>
-
-
-                        <div class="apply-buttons">
-
-
-                            <button
-                                id="setRest"
-                                class="action-button"
-                            >
-                                SET_REST
-                            </button>
-
-
-                            <button
-                                id="setBottom"
-                                class="action-button"
-                            >
-                                SET_BOTTOM
-                            </button>
-
-                        </div>
-
-                    </div>
-
-
-                    <!-- Performance -->
-
-                    <div class="panel">
-
-                        <div class="panel-title">
-                            PERFORMANCE
-                        </div>
-
-
-                        <div class="performance-value">
-
-                            <span>
-                                USB Polling
-                            </span>
-
-                            <span id="performancePolling">
-                                8000 Hz
-                            </span>
-
-                        </div>
-
-
-                        <div class="performance-value">
-
-                            <span>
-                                Report Interval
-                            </span>
-
-                            <span id="reportInterval">
-                                0.125 ms
-                            </span>
-
-                        </div>
-
-
-                        <div class="performance-value">
-
-                            <span>
-                                Hall Scan
-                            </span>
-
-                            <span>
-                                ~40 kHz MOCK
-                            </span>
-
-                        </div>
-
-
-                        <div class="performance-value">
-
-                            <span>
-                                USB Mode
-                            </span>
-
-                            <span>
-                                HID HS
-                            </span>
 
                         </div>
 
@@ -2945,142 +2751,806 @@ input[type="range"] {
 
                 </div>
 
-
-                <div
-                    id="console"
-                    class="console"
-                >
-
-                    <div class="console-line">
-
-                        <span class="prompt">
-                            HE>
-                        </span>
-
-                        mock keyboard initialized
-
-                    </div>
-
-
-                    <div class="console-line">
-
-                        <span class="prompt">
-                            HE>
-                        </span>
-
-                        hall matrix:
-
-                        <span class="good">
-                            61 keys
-                        </span>
-
-                    </div>
-
-
-                    <div class="console-line">
-
-                        <span class="prompt">
-                            HE>
-                        </span>
-
-                        ready_
-
-                    </div>
-
-                </div>
-
-            </section>
-
-
-            <!-- =================================================
-                 LIGHTING
-            ================================================== -->
-
-            <section
-                id="page-lighting"
-                class="page"
-            >
-
-                <div class="page-header">
-
-                    <div>
-
-                        <div class="page-title">
-                            /lighting
-                        </div>
-
-                        <div class="page-description">
-                            WS2812B lighting
-                        </div>
-
-                    </div>
-
-                </div>
-
-
-                <div class="placeholder">
-
-                    <strong>
-                        WS2812B LIGHTING
-                    </strong>
-
-                    next implementation
-
-                </div>
-
-            </section>
-
-
-            <!-- =================================================
-                 DEVICE
-            ================================================== -->
-
-            <section
-                id="page-device"
-                class="page"
-            >
-
-                <div class="page-header">
-
-                    <div>
-
-                        <div class="page-title">
-                            /device
-                        </div>
-
-                        <div class="page-description">
-                            firmware / device information
-                        </div>
-
-                    </div>
-
-                </div>
-
-
-                <div class="placeholder">
-
-                    <strong>
-                        DEVICE / FIRMWARE
-                    </strong>
-
-                    next implementation
-
-                </div>
-
-            </section>
+            </div>
 
         </div>
 
-    </main>
+
+
+        <!-- SELECTED KEY -->
+
+        <div class="panel">
+
+
+            <div class="panel-title">
+                SELECTED_KEY
+            </div>
+
+
+            <div
+                id="selectedKey"
+                class="selected-key"
+            >
+                W
+            </div>
+
+
+            <!-- Actuation -->
+
+            <div class="field">
+
+                <div class="field-line">
+
+                    <span class="field-label">
+                        actuation
+                    </span>
+
+
+                    <input
+                        id="actuationNumber"
+                        class="number-input"
+                        type="number"
+                        min="0.10"
+                        max="4.00"
+                        step="0.05"
+                        value="1.50"
+                    >
+
+                </div>
+
+
+                <input
+                    id="actuation"
+                    type="range"
+                    min="10"
+                    max="400"
+                    value="150"
+                >
+
+            </div>
+
+
+            <!-- Rapid Trigger -->
+
+            <div class="field">
+
+                <div class="field-line">
+
+                    <span class="field-label">
+                        rapid_trigger
+                    </span>
+
+
+                    <input
+                        id="rtToggle"
+                        class="toggle"
+                        type="checkbox"
+                        checked
+                    >
+
+                </div>
+
+            </div>
+
+
+            <!-- RT Sensitivity -->
+
+            <div class="field">
+
+                <div class="field-line">
+
+                    <span class="field-label">
+                        rt_sensitivity
+                    </span>
+
+
+                    <input
+                        id="rtNumber"
+                        class="number-input"
+                        type="number"
+                        min="0.05"
+                        max="2.00"
+                        step="0.05"
+                        value="0.20"
+                    >
+
+                </div>
+
+
+                <input
+                    id="rtSensitivity"
+                    type="range"
+                    min="5"
+                    max="200"
+                    value="20"
+                >
+
+            </div>
+
+
+            <!-- Top Deadzone -->
+
+            <div class="field">
+
+                <div class="field-line">
+
+                    <span class="field-label">
+                        top_deadzone
+                    </span>
+
+
+                    <input
+                        id="topDeadzoneNumber"
+                        class="number-input"
+                        type="number"
+                        min="0"
+                        max="1"
+                        step="0.05"
+                        value="0.10"
+                    >
+
+                </div>
+
+
+                <input
+                    id="topDeadzone"
+                    type="range"
+                    min="0"
+                    max="100"
+                    value="10"
+                >
+
+            </div>
+
+
+            <!-- Bottom Deadzone -->
+
+            <div class="field">
+
+                <div class="field-line">
+
+                    <span class="field-label">
+                        bottom_deadzone
+                    </span>
+
+
+                    <input
+                        id="bottomDeadzoneNumber"
+                        class="number-input"
+                        type="number"
+                        min="0"
+                        max="1"
+                        step="0.05"
+                        value="0.10"
+                    >
+
+                </div>
+
+
+                <input
+                    id="bottomDeadzone"
+                    type="range"
+                    min="0"
+                    max="100"
+                    value="10"
+                >
+
+            </div>
+
+
+            <div class="live-state-box">
+
+                <div class="panel-title">
+                    LIVE_STATE
+                </div>
+
+
+                <div class="live-state-value">
+
+                    <div class="status-dot"></div>
+
+                    <span id="keyState">
+                        RELEASED
+                    </span>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- ==================================================
+         TRAVEL
+    =================================================== -->
+
+    <div class="panel travel-panel">
+
+
+        <div class="travel-header">
+
+
+            <div>
+
+                <div class="panel-title">
+                    SWITCH_TRAVEL_VISUALIZER
+                </div>
+
+
+                <div class="small-text">
+                    travel / deadzone / actuation / rapid trigger
+                </div>
+
+            </div>
+
+
+            <div
+                id="travelValue"
+                class="travel-number"
+            >
+                0.00 mm
+            </div>
+
+        </div>
+
+
+
+        <div class="travel-visual">
+
+
+            <div class="travel-axis">
+
+
+                <div
+                    id="topDeadzoneVisual"
+                    class="deadzone top"
+                ></div>
+
+
+                <div
+                    id="usableZoneVisual"
+                    class="usable-zone"
+                ></div>
+
+
+                <div
+                    id="bottomDeadzoneVisual"
+                    class="deadzone bottom"
+                ></div>
+
+            </div>
+
+
+
+            <div
+                id="actuationMarker"
+                class="
+                    axis-marker
+                    marker-actuation
+                "
+            >
+
+                <div class="marker-label">
+                    AP
+                </div>
+
+            </div>
+
+
+
+            <div
+                id="rtMarker"
+                class="
+                    axis-marker
+                    marker-rt
+                "
+            >
+
+                <div
+                    id="rtMarkerLabel"
+                    class="marker-label"
+                >
+                    RT
+                </div>
+
+            </div>
+
+
+
+            <div
+                id="currentMarker"
+                class="
+                    axis-marker
+                    marker-current
+                "
+            >
+
+                <div class="marker-label">
+                    CURRENT
+                </div>
+
+            </div>
+
+
+
+            <div class="travel-scale">
+
+                <span>
+                    0.00 mm
+                </span>
+
+                <span>
+                    1.00
+                </span>
+
+                <span>
+                    2.00
+                </span>
+
+                <span>
+                    3.00
+                </span>
+
+                <span>
+                    4.00 mm
+                </span>
+
+            </div>
+
+        </div>
+
+
+
+        <div class="visual-legend">
+
+
+            <div class="visual-legend-item">
+
+                <div
+                    class="legend-dot"
+                    style="background:#fb7185;"
+                ></div>
+
+                Deadzone
+
+            </div>
+
+
+            <div class="visual-legend-item">
+
+                <div
+                    class="legend-dot"
+                    style="background:#8b5cf6;"
+                ></div>
+
+                Actuation
+
+            </div>
+
+
+            <div class="visual-legend-item">
+
+                <div
+                    class="legend-dot"
+                    style="background:#fb923c;"
+                ></div>
+
+                RT Dynamic Point
+
+            </div>
+
+
+            <div class="visual-legend-item">
+
+                <div
+                    class="legend-dot"
+                    style="background:#22d3ee;"
+                ></div>
+
+                Current Travel
+
+            </div>
+
+        </div>
+
+
+
+        <div class="mock-slider-row">
+
+            <div class="mock-slider-label">
+                MOCK_SENSOR
+            </div>
+
+
+            <input
+                id="travel"
+                type="range"
+                min="0"
+                max="400"
+                value="0"
+            >
+
+        </div>
+
+    </div>
+
+
+
+    <!-- ==================================================
+         LOWER SETTINGS
+    =================================================== -->
+
+    <div class="keys-lower-grid">
+
+
+        <!-- Copy settings -->
+
+        <div class="panel">
+
+            <div class="panel-title">
+                COPY_KEY_SETTINGS
+            </div>
+
+
+            <div class="action-buttons">
+
+
+                <button
+                    id="applyAll"
+                    class="
+                        action-button
+                        primary
+                    "
+                >
+                    COPY_TO_ALL_61
+                </button>
+
+
+                <button
+                    id="applySelected"
+                    class="action-button"
+                >
+                    COPY_TO_SELECTED
+                </button>
+
+
+                <button
+                    id="clearSelection"
+                    class="action-button"
+                >
+                    CLEAR_SELECTION
+                </button>
+
+            </div>
+
+
+            <div
+                id="selectionCount"
+                class="selection-count"
+            >
+                selected_for_batch = 0
+            </div>
+
+        </div>
+
+
+
+        <!-- Calibration -->
+
+        <div class="panel">
+
+            <div class="panel-title">
+                CALIBRATION
+            </div>
+
+
+            <div class="calibration-values">
+
+
+                <div class="calibration-value">
+
+                    <div class="label">
+                        REST_RAW
+                    </div>
+
+                    <div
+                        id="restRaw"
+                        class="value"
+                    >
+                        512
+                    </div>
+
+                </div>
+
+
+                <div class="calibration-value">
+
+                    <div class="label">
+                        BOTTOM_RAW
+                    </div>
+
+                    <div
+                        id="bottomRaw"
+                        class="value"
+                    >
+                        3500
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="action-buttons">
+
+
+                <button
+                    id="setRest"
+                    class="action-button"
+                >
+                    SET_REST
+                </button>
+
+
+                <button
+                    id="setBottom"
+                    class="action-button"
+                >
+                    SET_BOTTOM
+                </button>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- Performance -->
+
+        <div class="panel">
+
+            <div class="panel-title">
+                PERFORMANCE
+            </div>
+
+
+            <div class="performance-row">
+
+                <span>
+                    USB Polling
+                </span>
+
+                <span id="performancePolling">
+                    8000 Hz
+                </span>
+
+            </div>
+
+
+            <div class="performance-row">
+
+                <span>
+                    Report Interval
+                </span>
+
+                <span id="reportInterval">
+                    0.125 ms
+                </span>
+
+            </div>
+
+
+            <div class="performance-row">
+
+                <span>
+                    Hall Scan
+                </span>
+
+                <span>
+                    ~40 kHz MOCK
+                </span>
+
+            </div>
+
+
+            <div class="performance-row">
+
+                <span>
+                    USB Mode
+                </span>
+
+                <span>
+                    HID HS
+                </span>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+    <div
+        id="console"
+        class="console"
+    >
+
+        <div class="console-line">
+
+            <span class="prompt">
+                HE>
+            </span>
+
+            mock keyboard initialized
+
+        </div>
+
+
+        <div class="console-line">
+
+            <span class="prompt">
+                HE>
+            </span>
+
+            hall matrix:
+
+            <span class="good">
+                61 keys
+            </span>
+
+        </div>
+
+
+        <div class="console-line">
+
+            <span class="prompt">
+                HE>
+            </span>
+
+            ready_
+
+        </div>
+
+    </div>
 
 </div>
+
+</section>
+
+
+
+<!-- ======================================================
+     LIGHTING
+======================================================= -->
+
+<section
+    id="page-lighting"
+    class="page"
+>
+
+<div class="page-shell">
+
+
+    <div class="page-header">
+
+        <div>
+
+            <div class="page-title">
+                /lighting
+            </div>
+
+            <div class="page-description">
+                WS2812B lighting configuration
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="placeholder">
+
+        <strong>
+            WS2812B LIGHTING
+        </strong>
+
+        next implementation
+
+    </div>
+
+</div>
+
+</section>
+
+
+
+<!-- ======================================================
+     DEVICE
+======================================================= -->
+
+<section
+    id="page-device"
+    class="page"
+>
+
+<div class="page-shell">
+
+
+    <div class="page-header">
+
+        <div>
+
+            <div class="page-title">
+                /device
+            </div>
+
+            <div class="page-description">
+                firmware / device information
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="placeholder">
+
+        <strong>
+            DEVICE / FIRMWARE
+        </strong>
+
+        next implementation
+
+    </div>
+
+</div>
+
+</section>
+
+
+</div>
+
+</main>
+
+</div>
+
 
 
 <script>
 
 /* =========================================================
-   61 HALL KEYS
-   0.25U = 1 grid column
+   DEVICE INFORMATION
+========================================================= */
+
+const DEVICE_INFO = {
+
+    switchName:
+        "TBD - Magnetic Hall Switch",
+
+    switchStroke:
+        4.00,
+
+    mcu:
+        "M484KIDAE",
+
+    hallSensor:
+        "DRV5055A3",
+
+    mux:
+        "TMUX1208 × 8",
+
+    hallKeys:
+        61
+
+};
+
+
+/* =========================================================
+   HALL LAYOUT
 ========================================================= */
 
 const hallRows = [
@@ -3173,28 +3643,28 @@ const hallRows = [
 
 
 /* =========================================================
-   MECHANICAL VISUAL ONLY
+   MECHANICAL VISUAL
 ========================================================= */
 
 const functionKeys = [
 
     "Esc",
 
-    "__SPACE__",
+    null,
 
     "F1",
     "F2",
     "F3",
     "F4",
 
-    "__SPACE__",
+    null,
 
     "F5",
     "F6",
     "F7",
     "F8",
 
-    "__SPACE__",
+    null,
 
     "F9",
     "F10",
@@ -3236,141 +3706,128 @@ const arrowKeys = [
 
 const numpadKeys = [
 
-    {
-        key: "Num"
-    },
+    { key:"Num" },
 
-    {
-        key: "/"
-    },
+    { key:"/" },
 
-    {
-        key: "*"
-    },
+    { key:"*" },
 
-    {
-        key: "-"
-    },
+    { key:"-" },
 
 
-    {
-        key: "7"
-    },
+    { key:"7" },
+
+    { key:"8" },
+
+    { key:"9" },
 
     {
-        key: "8"
-    },
-
-    {
-        key: "9"
-    },
-
-    {
-        key: "+",
+        key:"+",
         className:
             "numpad-plus"
     },
 
 
-    {
-        key: "4"
-    },
+    { key:"4" },
 
-    {
-        key: "5"
-    },
+    { key:"5" },
 
-    {
-        key: "6"
-    },
+    { key:"6" },
 
 
-    {
-        key: "1"
-    },
+    { key:"1" },
+
+    { key:"2" },
+
+    { key:"3" },
 
     {
-        key: "2"
-    },
-
-    {
-        key: "3"
-    },
-
-    {
-        key: "Enter",
+        key:"Enter",
         className:
             "numpad-enter"
     },
 
 
     {
-        key: "0",
+        key:"0",
         className:
             "numpad-zero"
     },
 
-    {
-        key: "."
-    }
+    { key:"." }
 
 ];
 
 
 /* =========================================================
-   SETTINGS
+   DEFAULT SETTINGS
 ========================================================= */
 
-const settings = {};
+function makeDefaultSettings() {
+
+    const result = {};
 
 
-hallRows
-    .flat()
-    .forEach(
-        ([key]) => {
+    hallRows
+        .flat()
+        .forEach(
+            ([key]) => {
 
-            settings[key] = {
+                result[key] = {
 
-                actuation:
-                    1.50,
+                    actuation:
+                        1.50,
 
-                rapidTrigger:
-                    true,
+                    rapidTrigger:
+                        true,
 
-                rtSensitivity:
-                    0.20,
+                    rtSensitivity:
+                        0.20,
 
-                topDeadzone:
-                    0.10,
+                    topDeadzone:
+                        0.10,
 
-                bottomDeadzone:
-                    0.10,
+                    bottomDeadzone:
+                        0.10,
 
-                depth:
-                    0.00,
+                    depth:
+                        0.00,
 
-                pressed:
-                    false,
+                    pressed:
+                        false,
 
-                rtArmed:
-                    false,
+                    rtArmed:
+                        false,
 
-                maxDepth:
-                    0.00,
+                    maxDepth:
+                        0.00,
 
-                minDepth:
-                    0.00,
+                    minDepth:
+                        0.00,
 
-                restRaw:
-                    512,
+                    restRaw:
+                        512,
 
-                bottomRaw:
-                    3500
+                    bottomRaw:
+                        3500
 
-            };
+                };
 
-        }
-    );
+            }
+        );
+
+
+    return result;
+
+}
+
+
+/* =========================================================
+   APP STATE
+========================================================= */
+
+let settings =
+    makeDefaultSettings();
 
 
 let selectedKey =
@@ -3391,6 +3848,14 @@ let currentProfile =
 
 let pollingRate =
     8000;
+
+
+let configState =
+    "saved";
+
+
+let appliedSnapshot =
+    null;
 
 
 /* =========================================================
@@ -3500,6 +3965,141 @@ const consoleBox =
 
 
 /* =========================================================
+   CLONE
+========================================================= */
+
+function deepClone(
+    object
+) {
+
+    return JSON.parse(
+        JSON.stringify(
+            object
+        )
+    );
+
+}
+
+
+/* =========================================================
+   SERIALIZE CONFIGURATION
+========================================================= */
+
+function createSnapshot() {
+
+    return {
+
+        settings:
+            deepClone(
+                settings
+            ),
+
+        profile:
+            currentProfile,
+
+        pollingRate:
+            pollingRate
+
+    };
+
+}
+
+
+/* =========================================================
+   CONFIG STATE
+========================================================= */
+
+function setConfigState(
+    state
+) {
+
+    configState =
+        state;
+
+
+    const globalStatus =
+        document.getElementById(
+            "globalStatus"
+        );
+
+
+    const sidebarState =
+        document.getElementById(
+            "sidebarState"
+        );
+
+
+    globalStatus.className =
+        "global-status " +
+        state;
+
+
+    sidebarState.className =
+        "sidebar-state " +
+        state;
+
+
+    if (
+        state ===
+        "pending"
+    ) {
+
+        globalStatus.textContent =
+            "● PENDING CHANGES";
+
+
+        sidebarState.textContent =
+            "● pending changes";
+
+    }
+
+
+    else if (
+        state ===
+        "applied"
+    ) {
+
+        globalStatus.textContent =
+            "● APPLIED / NOT SAVED";
+
+
+        sidebarState.textContent =
+            "● applied / not saved";
+
+    }
+
+
+    else {
+
+        globalStatus.textContent =
+            "● SAVED";
+
+
+        sidebarState.textContent =
+            "● configuration saved";
+
+    }
+
+
+    updateHome();
+
+}
+
+
+/* =========================================================
+   MARK CHANGED
+========================================================= */
+
+function markChanged() {
+
+    setConfigState(
+        "pending"
+    );
+
+}
+
+
+/* =========================================================
    CONSOLE
 ========================================================= */
 
@@ -3543,7 +4143,7 @@ function log(
 
 
 /* =========================================================
-   SIDEBAR COLLAPSE
+   SIDEBAR
 ========================================================= */
 
 document
@@ -3561,7 +4161,7 @@ document
 
 
 /* =========================================================
-   BUILD HALL KEYS
+   BUILD HALL KEYBOARD
 ========================================================= */
 
 function buildHallKeyboard() {
@@ -3652,22 +4252,13 @@ function buildFunctionRow() {
         key => {
 
             if (
-                key ===
-                "__SPACE__"
+                key === null
             ) {
 
-                const space =
+                row.appendChild(
                     document.createElement(
                         "div"
-                    );
-
-
-                space.className =
-                    "function-space";
-
-
-                row.appendChild(
-                    space
+                    )
                 );
 
 
@@ -3705,10 +4296,10 @@ function buildFunctionRow() {
 
 
 /* =========================================================
-   BUILD NAV
+   BUILD NAVIGATION
 ========================================================= */
 
-function buildNav() {
+function buildNavigation() {
 
     const nav =
         document.getElementById(
@@ -3995,66 +4586,22 @@ function loadSelectedKey() {
 
     updateKeyboardVisual();
 
-    updateHome();
-
 }
 
 
 /* =========================================================
-   RT LOGIC
+   RAPID TRIGGER LOGIC
 ========================================================= */
 
 function processRapidTrigger(
     s
 ) {
 
-    const depth =
-        s.depth;
-
-
-    const validTop =
-        s.topDeadzone;
-
-
-    const validBottom =
-        4 -
-        s.bottomDeadzone;
-
-
-    if (
-        depth <=
-        validTop
-    ) {
-
-        if (
-            !s.pressed
-        ) {
-
-            s.minDepth =
-                depth;
-
-        }
-
-    }
-
-
-    if (
-        depth >=
-        validBottom
-    ) {
-
-        s.depth =
-            validBottom;
-
-    }
-
-
     if (
         !s.rapidTrigger
     ) {
 
         s.pressed =
-
             s.depth >=
             s.actuation;
 
@@ -4209,7 +4756,7 @@ function processRapidTrigger(
 
 
 /* =========================================================
-   RT DYNAMIC POINT
+   DYNAMIC RT POINT
 ========================================================= */
 
 function getRTPoint(
@@ -4251,7 +4798,7 @@ function getRTPoint(
 
         value:
             Math.min(
-                4,
+                DEVICE_INFO.switchStroke,
                 s.minDepth +
                 s.rtSensitivity
             ),
@@ -4296,8 +4843,6 @@ travel.addEventListener(
 
         updateKeyboardVisual();
 
-        updateHome();
-
     }
 
 );
@@ -4327,23 +4872,27 @@ function updateTravelUI() {
 
     const pct =
         value =>
+
             Math.max(
                 0,
                 Math.min(
                     100,
-                    value / 4 * 100
+                    value /
+                    DEVICE_INFO.switchStroke *
+                    100
                 )
             );
 
-
-    /* Deadzones */
 
     document
         .getElementById(
             "topDeadzoneVisual"
         )
         .style.width =
-            `${pct(s.topDeadzone)}%`;
+
+            `${pct(
+                s.topDeadzone
+            )}%`;
 
 
     document
@@ -4351,7 +4900,10 @@ function updateTravelUI() {
             "bottomDeadzoneVisual"
         )
         .style.width =
-            `${pct(s.bottomDeadzone)}%`;
+
+            `${pct(
+                s.bottomDeadzone
+            )}%`;
 
 
     document
@@ -4359,7 +4911,10 @@ function updateTravelUI() {
             "usableZoneVisual"
         )
         .style.left =
-            `${pct(s.topDeadzone)}%`;
+
+            `${pct(
+                s.topDeadzone
+            )}%`;
 
 
     document
@@ -4367,30 +4922,33 @@ function updateTravelUI() {
             "usableZoneVisual"
         )
         .style.right =
-            `${pct(s.bottomDeadzone)}%`;
 
+            `${pct(
+                s.bottomDeadzone
+            )}%`;
 
-    /* AP */
 
     document
         .getElementById(
             "actuationMarker"
         )
         .style.left =
-            `${pct(s.actuation)}%`;
 
+            `${pct(
+                s.actuation
+            )}%`;
 
-    /* Current */
 
     document
         .getElementById(
             "currentMarker"
         )
         .style.left =
-            `${pct(s.depth)}%`;
 
+            `${pct(
+                s.depth
+            )}%`;
 
-    /* RT */
 
     const rt =
         getRTPoint(
@@ -4420,7 +4978,10 @@ function updateTravelUI() {
 
 
         rtMarker.style.left =
-            `${pct(rt.value)}%`;
+
+            `${pct(
+                rt.value
+            )}%`;
 
 
         document
@@ -4462,9 +5023,9 @@ actuation.addEventListener(
             value.toFixed(2);
 
 
-        updateTravelUI();
+        markChanged();
 
-        updateHome();
+        updateTravelUI();
 
     }
 
@@ -4486,9 +5047,9 @@ actuationNumber.addEventListener(
 
         value =
             Math.max(
-                0.1,
+                0.10,
                 Math.min(
-                    4,
+                    DEVICE_INFO.switchStroke,
                     value
                 )
             );
@@ -4510,9 +5071,9 @@ actuationNumber.addEventListener(
             value.toFixed(2);
 
 
-        updateTravelUI();
+        markChanged();
 
-        updateHome();
+        updateTravelUI();
 
     }
 
@@ -4520,7 +5081,7 @@ actuationNumber.addEventListener(
 
 
 /* =========================================================
-   RT
+   RAPID TRIGGER
 ========================================================= */
 
 rtToggle.addEventListener(
@@ -4548,9 +5109,11 @@ rtToggle.addEventListener(
         );
 
 
+        markChanged();
+
         updateTravelUI();
 
-        updateHome();
+        updateKeyboardVisual();
 
     }
 
@@ -4580,9 +5143,9 @@ rtSensitivity.addEventListener(
             value.toFixed(2);
 
 
-        updateTravelUI();
+        markChanged();
 
-        updateHome();
+        updateTravelUI();
 
     }
 
@@ -4628,9 +5191,9 @@ rtNumber.addEventListener(
             value.toFixed(2);
 
 
-        updateTravelUI();
+        markChanged();
 
-        updateHome();
+        updateTravelUI();
 
     }
 
@@ -4664,9 +5227,9 @@ topDeadzone.addEventListener(
             value.toFixed(2);
 
 
-        updateTravelUI();
+        markChanged();
 
-        updateHome();
+        updateTravelUI();
 
     }
 
@@ -4712,9 +5275,9 @@ topDeadzoneNumber.addEventListener(
             value.toFixed(2);
 
 
-        updateTravelUI();
+        markChanged();
 
-        updateHome();
+        updateTravelUI();
 
     }
 
@@ -4744,9 +5307,9 @@ bottomDeadzone.addEventListener(
             value.toFixed(2);
 
 
-        updateTravelUI();
+        markChanged();
 
-        updateHome();
+        updateTravelUI();
 
     }
 
@@ -4792,9 +5355,9 @@ bottomDeadzoneNumber.addEventListener(
             value.toFixed(2);
 
 
-        updateTravelUI();
+        markChanged();
 
-        updateHome();
+        updateTravelUI();
 
     }
 
@@ -4802,7 +5365,7 @@ bottomDeadzoneNumber.addEventListener(
 
 
 /* =========================================================
-   KEYBOARD VISUAL
+   UPDATE KEYBOARD
 ========================================================= */
 
 function updateKeyboardVisual() {
@@ -4976,6 +5539,10 @@ function copySettings(
 }
 
 
+/* =========================================================
+   COPY ALL
+========================================================= */
+
 document
     .getElementById(
         "applyAll"
@@ -4992,13 +5559,20 @@ document
                 );
 
 
+            markChanged();
+
+
             log(
-                "settings applied to all 61 hall keys",
+                "key settings copied to all 61 keys",
                 true
             );
 
         };
 
+
+/* =========================================================
+   COPY SELECTED
+========================================================= */
 
 document
     .getElementById(
@@ -5028,9 +5602,12 @@ document
                 );
 
 
+            markChanged();
+
+
             log(
 
-                `settings applied to ${batchSelection.size} keys`,
+                `key settings copied to ${batchSelection.size} keys`,
 
                 true
 
@@ -5038,6 +5615,10 @@ document
 
         };
 
+
+/* =========================================================
+   CLEAR SELECTION
+========================================================= */
 
 document
     .getElementById(
@@ -5071,7 +5652,7 @@ function updateSelectionCount() {
 
 
 /* =========================================================
-   CALIBRATION MOCK
+   CALIBRATION
 ========================================================= */
 
 document
@@ -5088,6 +5669,7 @@ document
 
 
             s.restRaw =
+
                 Math.round(
                     500 +
                     s.depth * 40
@@ -5100,6 +5682,9 @@ document
                 )
                 .textContent =
                     s.restRaw;
+
+
+            markChanged();
 
 
             log(
@@ -5127,6 +5712,7 @@ document
 
 
             s.bottomRaw =
+
                 Math.round(
                     3400 +
                     s.depth * 40
@@ -5141,6 +5727,9 @@ document
                     s.bottomRaw;
 
 
+            markChanged();
+
+
             log(
 
                 `${selectedKey} bottom calibration = ${s.bottomRaw}`,
@@ -5153,7 +5742,7 @@ document
 
 
 /* =========================================================
-   PROFILES
+   PROFILE
 ========================================================= */
 
 document
@@ -5178,8 +5767,8 @@ document
                             ".profile-button"
                         )
                         .forEach(
-                            p =>
-                                p.classList.remove(
+                            profile =>
+                                profile.classList.remove(
                                     "active"
                                 )
                         );
@@ -5190,23 +5779,12 @@ document
                     );
 
 
-                    document
-                        .getElementById(
-                            "sidebarProfile"
-                        )
-                        .textContent =
-
-                            `Profile ${currentProfile}`;
-
-
-                    updateHome();
+                    markChanged();
 
 
                     log(
 
-                        `PROFILE_${currentProfile} loaded`,
-
-                        true
+                        `editing PROFILE_${currentProfile}`
 
                     );
 
@@ -5217,7 +5795,7 @@ document
 
 
 /* =========================================================
-   PERFORMANCE
+   POLLING
 ========================================================= */
 
 document
@@ -5258,21 +5836,12 @@ document
                     `${interval.toFixed(3)} ms`;
 
 
-            document
-                .getElementById(
-                    "sidebarPolling"
-                )
-                .textContent =
-
-                    `${pollingRate} Hz`;
-
-
-            updateHome();
+            markChanged();
 
 
             log(
 
-                `polling rate = ${pollingRate} Hz`
+                `polling draft = ${pollingRate} Hz`
 
             );
 
@@ -5280,15 +5849,115 @@ document
 
 
 /* =========================================================
-   HOME READ ONLY
+   APPLY CHANGES
+========================================================= */
+
+document
+    .getElementById(
+        "applyChanges"
+    )
+    .onclick =
+        () => {
+
+            appliedSnapshot =
+                createSnapshot();
+
+
+            setConfigState(
+                "applied"
+            );
+
+
+            updateHome();
+
+
+            log(
+
+                "configuration applied to mock keyboard RAM",
+
+                true
+
+            );
+
+        };
+
+
+/* =========================================================
+   SAVE TO KEYBOARD
+========================================================= */
+
+document
+    .getElementById(
+        "saveKeyboard"
+    )
+    .onclick =
+        () => {
+
+            if (
+                configState ===
+                "pending"
+            ) {
+
+                appliedSnapshot =
+                    createSnapshot();
+
+            }
+
+
+            if (
+                appliedSnapshot ===
+                null
+            ) {
+
+                appliedSnapshot =
+                    createSnapshot();
+
+            }
+
+
+            localStorage.setItem(
+
+                "he_keyboard_mock_flash",
+
+                JSON.stringify(
+                    appliedSnapshot
+                )
+
+            );
+
+
+            setConfigState(
+                "saved"
+            );
+
+
+            updateHome();
+
+
+            log(
+
+                "configuration saved to mock keyboard flash",
+
+                true
+
+            );
+
+        };
+
+
+/* =========================================================
+   HOME
 ========================================================= */
 
 function updateHome() {
 
-    const s =
-        settings[
-            selectedKey
-        ];
+    const snapshot =
+
+        appliedSnapshot !== null
+
+        ? appliedSnapshot
+
+        : createSnapshot();
 
 
     document
@@ -5297,7 +5966,7 @@ function updateHome() {
         )
         .textContent =
 
-            `PROFILE_${currentProfile}`;
+            `PROFILE_${snapshot.profile}`;
 
 
     document
@@ -5306,7 +5975,7 @@ function updateHome() {
         )
         .textContent =
 
-            `${pollingRate} Hz`;
+            `${snapshot.pollingRate} Hz`;
 
 
     document
@@ -5317,76 +5986,117 @@ function updateHome() {
 
             `${(
                 1000 /
-                pollingRate
+                snapshot.pollingRate
             ).toFixed(3)} ms report interval`;
 
 
-    document
-        .getElementById(
-            "homeKeyState"
+    let rtCount =
+        0;
+
+
+    Object
+        .values(
+            snapshot.settings
         )
-        .textContent =
+        .forEach(
+            s => {
 
-            `${selectedKey} : ${
-                s.pressed
-                ? "PRESSED"
-                : "RELEASED"
-            }`;
+                if (
+                    s.rapidTrigger
+                ) {
 
+                    rtCount++;
 
-    document
-        .getElementById(
-            "homeSelectedKey"
-        )
-        .textContent =
-            selectedKey;
+                }
+
+            }
+        );
 
 
-    document
-        .getElementById(
-            "homeActuation"
-        )
-        .textContent =
-
-            `${s.actuation.toFixed(2)} mm`;
+    const rtEnabled =
+        rtCount > 0;
 
 
-    document
-        .getElementById(
-            "homeRT"
-        )
-        .textContent =
-
-            s.rapidTrigger
-            ? "ENABLED"
-            : "DISABLED";
+    const rtStatus =
+        document.getElementById(
+            "homeRTStatus"
+        );
 
 
-    document
-        .getElementById(
-            "homeRTSensitivity"
-        )
-        .textContent =
+    rtStatus.textContent =
 
-            `${s.rtSensitivity.toFixed(2)} mm`;
+        rtEnabled
+
+        ? "ENABLED"
+
+        : "DISABLED";
 
 
-    document
-        .getElementById(
-            "homeTopDeadzone"
-        )
-        .textContent =
+    rtStatus.className =
 
-            `${s.topDeadzone.toFixed(2)} mm`;
+        "home-card-value " +
+
+        (
+            rtEnabled
+
+            ? "green"
+
+            : "orange"
+        );
 
 
     document
         .getElementById(
-            "homeBottomDeadzone"
+            "homeRTSub"
         )
         .textContent =
 
-            `${s.bottomDeadzone.toFixed(2)} mm`;
+            `enabled keys : ${rtCount} / 61`;
+
+
+    document
+        .getElementById(
+            "homeConfigState"
+        )
+        .textContent =
+
+            configState.toUpperCase();
+
+
+    document
+        .getElementById(
+            "switchName"
+        )
+        .textContent =
+
+            DEVICE_INFO.switchName;
+
+
+    document
+        .getElementById(
+            "switchStroke"
+        )
+        .textContent =
+
+            `${DEVICE_INFO.switchStroke.toFixed(2)} mm`;
+
+
+    document
+        .getElementById(
+            "sidebarProfile"
+        )
+        .textContent =
+
+            `Profile ${snapshot.profile}`;
+
+
+    document
+        .getElementById(
+            "sidebarPolling"
+        )
+        .textContent =
+
+            `${snapshot.pollingRate} Hz`;
 
 }
 
@@ -5410,8 +6120,8 @@ document
                             ".nav-button"
                         )
                         .forEach(
-                            b =>
-                                b.classList.remove(
+                            nav =>
+                                nav.classList.remove(
                                     "active"
                                 )
                         );
@@ -5431,8 +6141,8 @@ document
                             ".page"
                         )
                         .forEach(
-                            p =>
-                                p.classList.remove(
+                            section =>
+                                section.classList.remove(
                                     "active"
                                 )
                         );
@@ -5464,6 +6174,16 @@ document
 
                     }
 
+
+                    document
+                        .querySelector(
+                            ".content"
+                        )
+                        .scrollTo(
+                            0,
+                            0
+                        );
+
                 };
 
         }
@@ -5471,37 +6191,133 @@ document
 
 
 /* =========================================================
-   SAVE MOCK
+   LOAD MOCK FLASH
 ========================================================= */
 
-document
-    .getElementById(
-        "saveKeyboard"
-    )
-    .onclick =
-        () => {
+function loadSavedConfiguration() {
+
+    const saved =
+        localStorage.getItem(
+            "he_keyboard_mock_flash"
+        );
+
+
+    if (
+        !saved
+    ) {
+
+        appliedSnapshot =
+            createSnapshot();
+
+
+        return;
+
+    }
+
+
+    try {
+
+        const parsed =
+            JSON.parse(
+                saved
+            );
+
+
+        if (
+            parsed.settings &&
+            parsed.profile &&
+            parsed.pollingRate
+        ) {
+
+            settings =
+                parsed.settings;
+
+
+            currentProfile =
+                parsed.profile;
+
+
+            pollingRate =
+                parsed.pollingRate;
+
+
+            appliedSnapshot =
+                deepClone(
+                    parsed
+                );
+
+
+            document
+                .getElementById(
+                    "pollingSelect"
+                )
+                .value =
+                    pollingRate;
+
+
+            document
+                .querySelectorAll(
+                    ".profile-button"
+                )
+                .forEach(
+                    button => {
+
+                        button.classList.toggle(
+
+                            "active",
+
+                            Number(
+                                button.dataset.profile
+                            ) ===
+                            currentProfile
+
+                        );
+
+                    }
+                );
+
+
+            document
+                .getElementById(
+                    "performancePolling"
+                )
+                .textContent =
+
+                    `${pollingRate} Hz`;
+
+
+            document
+                .getElementById(
+                    "reportInterval"
+                )
+                .textContent =
+
+                    `${(
+                        1000 /
+                        pollingRate
+                    ).toFixed(3)} ms`;
+
 
             log(
-                "writing configuration to mock device..."
+                "mock flash configuration loaded",
+                true
             );
 
+        }
 
-            setTimeout(
+    }
 
-                () => {
+    catch (
+        error
+    ) {
 
-                    log(
-                        "configuration saved",
-                        true
-                    );
+        console.error(
+            error
+        );
 
-                },
+    }
 
-                300
-
-            );
-
-        };
+}
 
 
 /* =========================================================
@@ -5512,13 +6328,20 @@ buildHallKeyboard();
 
 buildFunctionRow();
 
-buildNav();
+buildNavigation();
 
 buildNumpad();
 
+loadSavedConfiguration();
+
 loadSelectedKey();
 
+setConfigState(
+    "saved"
+);
+
 updateHome();
+
 
 log(
     "UI ready",
