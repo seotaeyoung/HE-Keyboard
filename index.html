@@ -822,6 +822,299 @@ input[type="range"] { width: 100%; accent-color: var(--purple); }
 }
 .placeholder strong { margin-bottom: 10px; color: #aeb7c4; }
 
+
+/* =========================================================
+   DEVICE PAGE
+========================================================= */
+
+.device-hero-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.35fr) minmax(300px, .65fr);
+    gap: 12px;
+    margin-bottom: 12px;
+}
+
+.device-visual-panel { min-height: 390px; }
+
+.device-model-stage {
+    min-height: 315px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    perspective: 1100px;
+    overflow: hidden;
+}
+
+.device-model {
+    position: relative;
+    width: min(88%, 860px);
+    aspect-ratio: 3.15 / 1;
+    transform: rotateX(58deg) rotateZ(-8deg);
+    transform-style: preserve-3d;
+    filter: drop-shadow(0 34px 30px rgba(0,0,0,.42));
+}
+
+.device-top {
+    position: absolute;
+    inset: 0;
+    padding: 8% 5% 5%;
+    border: 1px solid #4a556a;
+    border-radius: 12px;
+    background: linear-gradient(145deg, #252b34, #12171e 52%, #090d13);
+    box-shadow:
+        inset 0 0 0 2px rgba(255,255,255,.025),
+        inset 0 -16px 30px rgba(0,0,0,.22);
+    transform: translateZ(20px);
+    overflow: hidden;
+}
+
+.device-front-face {
+    position: absolute;
+    left: 1.2%;
+    right: 1.2%;
+    bottom: -17px;
+    height: 24px;
+    border-radius: 0 0 10px 10px;
+    background: linear-gradient(180deg, #171c23, #080b0f);
+    transform: rotateX(-90deg) translateZ(12px);
+    transform-origin: top;
+}
+
+.device-right-face {
+    position: absolute;
+    top: 2.8%;
+    right: -16px;
+    width: 22px;
+    bottom: 2.8%;
+    background: linear-gradient(90deg, #141920, #080b0f);
+    transform: rotateY(90deg) translateZ(11px);
+    transform-origin: left;
+}
+
+.device-key-field {
+    height: 100%;
+    display: grid;
+    grid-template-columns: repeat(16, 1fr);
+    grid-template-rows: repeat(6, 1fr);
+    gap: 5px;
+}
+
+.device-keycap {
+    border: 1px solid #3a4352;
+    border-radius: 4px;
+    background: linear-gradient(145deg, #1b222c, #0e141c);
+    box-shadow:
+        inset 0 1px 0 rgba(255,255,255,.05),
+        0 2px 3px rgba(0,0,0,.25);
+}
+
+.device-rear-lights {
+    position: absolute;
+    top: 3.2%;
+    left: 11%;
+    right: 11%;
+    display: grid;
+    grid-template-columns: repeat(10, 1fr);
+    gap: 8px;
+    z-index: 5;
+}
+
+.device-rear-light {
+    height: 4px;
+    border-radius: 10px;
+    background: #8b5cf6;
+    box-shadow: 0 0 8px #8b5cf6, 0 0 18px rgba(139,92,246,.55);
+}
+
+.device-badge {
+    position: absolute;
+    right: 3%;
+    bottom: 4%;
+    color: #707b8d;
+    font-size: 9px;
+    letter-spacing: 1px;
+}
+
+.device-model-caption {
+    text-align: center;
+    color: #657187;
+    font-size: 9px;
+    letter-spacing: .4px;
+}
+
+.health-row {
+    padding: 10px 2px;
+    border-bottom: 1px solid #161e29;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    font-size: 10px;
+}
+
+.health-row > span:first-child { color: #687487; }
+
+.health-ok {
+    color: var(--green);
+    white-space: nowrap;
+}
+
+.health-ok i {
+    display: inline-block;
+    width: 7px;
+    height: 7px;
+    margin-right: 6px;
+    border-radius: 50%;
+    background: var(--green);
+    box-shadow: 0 0 7px rgba(74,222,128,.8);
+}
+
+.device-live-box {
+    margin-top: 14px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+}
+
+.device-live-box > div {
+    padding: 11px;
+    border: 1px solid var(--border);
+    background: #090e14;
+}
+
+.device-live-label {
+    display: block;
+    margin-bottom: 7px;
+    color: #647085;
+    font-size: 8px;
+}
+
+.device-live-box strong {
+    color: #d8dfe9;
+    font-size: 12px;
+}
+
+.device-spec-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0,1fr));
+    gap: 12px;
+    margin-bottom: 12px;
+}
+
+.device-spec-row {
+    padding: 9px 1px;
+    border-bottom: 1px solid #161e29;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 9px;
+    font-size: 9px;
+}
+
+.device-spec-row span { color: #687487; }
+
+.device-spec-row strong {
+    color: #d3dae5;
+    font-weight: 500;
+    text-align: right;
+}
+
+.device-bottom-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.35fr) minmax(300px, .65fr);
+    gap: 12px;
+}
+
+.recovery-list {
+    display: grid;
+    gap: 8px;
+}
+
+.recovery-item {
+    padding: 12px;
+    border: 1px solid #1d2735;
+    background: #090e14;
+    display: grid;
+    grid-template-columns: minmax(0,1fr) auto;
+    align-items: center;
+    gap: 12px;
+}
+
+.recovery-item strong {
+    display: block;
+    margin-bottom: 5px;
+    color: #cdd5e0;
+    font-size: 10px;
+}
+
+.recovery-item span {
+    color: #69758a;
+    font-size: 9px;
+    line-height: 1.55;
+}
+
+.recovery-item.danger-zone {
+    border-color: rgba(251,113,133,.32);
+}
+
+.recovery-button {
+    min-width: 82px;
+    height: 34px;
+    border: 1px solid #425069;
+    background: #111722;
+    color: #c6ceda;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 9px;
+}
+
+.recovery-button:hover {
+    border-color: #71809a;
+    color: white;
+}
+
+.recovery-button.warning {
+    border-color: #805f33;
+    color: #f6bd6a;
+}
+
+.recovery-button.danger {
+    min-width: 112px;
+    border-color: #7d3949;
+    background: rgba(251,113,133,.08);
+    color: #ff93a7;
+}
+
+.diagnostic-command {
+    width: 100%;
+    margin-bottom: 8px;
+    padding: 11px;
+    border: 1px solid var(--border);
+    background: #090e14;
+    color: #9ba6b8;
+    text-align: left;
+    cursor: pointer;
+    font-size: 9px;
+}
+
+.diagnostic-command:hover {
+    border-color: #594581;
+    color: #d8ccff;
+}
+
+.diagnostic-note {
+    margin-top: 8px;
+    padding: 11px;
+    border-left: 2px solid #3d315d;
+    background: rgba(139,92,246,.04);
+    color: #677389;
+    font-size: 9px;
+    line-height: 1.65;
+}
+
+.shared-console { margin-top: 12px; }
+
+
 @media (max-width: 1320px) {
     .keys-main-grid { grid-template-columns: minmax(0,1fr) 255px; }
     .keyboard-body { grid-template-columns: minmax(0,1fr) minmax(150px, 22%); }
@@ -832,6 +1125,27 @@ input[type="range"] { width: 100%; accent-color: var(--purple); }
     .home-specs { grid-template-columns: 1fr; }
     .lighting-grid { grid-template-columns: 1fr; }
 }
+@media (max-width: 1120px) {
+    .device-hero-grid,
+    .device-bottom-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .device-spec-grid {
+        grid-template-columns: repeat(2, minmax(0,1fr));
+    }
+}
+
+@media (max-width: 700px) {
+    .device-spec-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .device-model {
+        width: 96%;
+    }
+}
+
 @media (max-width: 850px) {
     .app { grid-template-columns: var(--sidebar-closed) minmax(0,1fr); }
     .sidebar { padding: 14px; }
@@ -974,7 +1288,7 @@ input[type="range"] { width: 100%; accent-color: var(--purple); }
             <div class="panel-title">KEYBOARD_STATUS</div>
             <div class="spec-row"><span>connection</span><span style="color:#4ade80">ONLINE</span></div>
             <div class="spec-row"><span>interface</span><span>USB HID</span></div>
-            <div class="spec-row"><span>firmware</span><span>0.2.0 MOCK</span></div>
+            <div class="spec-row"><span>firmware</span><span>0.3.0 MOCK</span></div>
             <div class="spec-row"><span>config_state</span><span id="homeConfigState">SAVED</span></div>
             <div class="readonly-note">
                 HOME is status-only.<br><br>
@@ -982,6 +1296,13 @@ input[type="range"] { width: 100%; accent-color: var(--purple); }
             </div>
         </div>
     </div>
+
+    <div class="console shared-console">
+        <div class="console-line"><span class="prompt">HE&gt;</span> mock keyboard initialized</div>
+        <div class="console-line"><span class="prompt">HE&gt;</span> hall matrix: <span class="good">61 keys</span></div>
+        <div class="console-line"><span class="prompt">HE&gt;</span> ready_</div>
+    </div>
+
 </div>
 </section>
 
@@ -1149,7 +1470,7 @@ input[type="range"] { width: 100%; accent-color: var(--purple); }
         </div>
     </div>
 
-    <div id="console" class="console">
+<div class="console shared-console">
         <div class="console-line"><span class="prompt">HE&gt;</span> mock keyboard initialized</div>
         <div class="console-line"><span class="prompt">HE&gt;</span> hall matrix: <span class="good">61 keys</span></div>
         <div class="console-line"><span class="prompt">HE&gt;</span> ready_</div>
@@ -1251,6 +1572,13 @@ input[type="range"] { width: 100%; accent-color: var(--purple); }
             </div>
         </div>
     </div>
+
+    <div class="console shared-console">
+        <div class="console-line"><span class="prompt">HE&gt;</span> mock keyboard initialized</div>
+        <div class="console-line"><span class="prompt">HE&gt;</span> hall matrix: <span class="good">61 keys</span></div>
+        <div class="console-line"><span class="prompt">HE&gt;</span> ready_</div>
+    </div>
+
 </div>
 </section>
 
@@ -1259,10 +1587,167 @@ input[type="range"] { width: 100%; accent-color: var(--purple); }
     <div class="page-header">
         <div>
             <div class="page-title">/device</div>
-            <div class="page-description">firmware / device information</div>
+            <div class="page-description">complete keyboard specification / diagnostics / recovery</div>
+        </div>
+        <div class="terminal-command"><span>&gt;</span> device.inspect --all</div>
+    </div>
+
+    <div class="device-hero-grid">
+        <div class="panel device-visual-panel">
+            <div class="panel-title">HE_KEYBOARD / HARDWARE_MODEL</div>
+
+            <div class="device-model-stage">
+                <div class="device-model">
+                    <div class="device-top">
+                        <div id="deviceRearLights" class="device-rear-lights"></div>
+                        <div class="device-key-field" id="deviceKeyField"></div>
+                        <div class="device-badge">HE / CUSTOM</div>
+                    </div>
+                    <div class="device-front-face"></div>
+                    <div class="device-right-face"></div>
+                </div>
+            </div>
+
+            <div class="device-model-caption">
+                WIRED HALL-EFFECT CUSTOM KEYBOARD / 61 HE KEYS / 10 REAR RGB LEDs
+            </div>
+        </div>
+
+        <div class="panel">
+            <div class="panel-title">DEVICE_HEALTH</div>
+            <div class="health-row"><span>USB</span><span class="health-ok"><i></i> ONLINE</span></div>
+            <div class="health-row"><span>MCU</span><span class="health-ok"><i></i> READY</span></div>
+            <div class="health-row"><span>HALL_ARRAY</span><span class="health-ok"><i></i> 61 / 61 MOCK</span></div>
+            <div class="health-row"><span>MUX</span><span class="health-ok"><i></i> 8 / 8 MOCK</span></div>
+            <div class="health-row"><span>REAR_LED</span><span class="health-ok"><i></i> 10 / 10 MOCK</span></div>
+            <div class="health-row"><span>LAST_ERROR</span><span id="lastErrorText">NONE</span></div>
+
+            <div class="device-live-box">
+                <div>
+                    <span class="device-live-label">ACTIVE PROFILE</span>
+                    <strong id="deviceActiveProfile">PROFILE_1</strong>
+                </div>
+                <div>
+                    <span class="device-live-label">POLLING</span>
+                    <strong id="devicePolling">8000 Hz</strong>
+                </div>
+            </div>
         </div>
     </div>
-    <div class="placeholder"><strong>DEVICE / FIRMWARE</strong>next implementation</div>
+
+    <div class="device-spec-grid">
+        <div class="panel">
+            <div class="panel-title">CORE / CONTROL</div>
+            <div class="device-spec-row"><span>MCU</span><strong>M484KIDAE</strong></div>
+            <div class="device-spec-row"><span>USB</span><strong>USB-C / WIRED ONLY</strong></div>
+            <div class="device-spec-row"><span>interface</span><strong>USB HID</strong></div>
+            <div class="device-spec-row"><span>target_polling</span><strong>8000 Hz</strong></div>
+            <div class="device-spec-row"><span>clock</span><strong>12 MHz crystal</strong></div>
+            <div class="device-spec-row"><span>profiles</span><strong>3 onboard profiles</strong></div>
+            <div class="device-spec-row"><span>firmware</span><strong>0.3.0 MOCK</strong></div>
+        </div>
+
+        <div class="panel">
+            <div class="panel-title">HALL / SWITCH SYSTEM</div>
+            <div class="device-spec-row"><span>hall_keys</span><strong>61</strong></div>
+            <div class="device-spec-row"><span>mechanical_keys</span><strong>43</strong></div>
+            <div class="device-spec-row"><span>hall_sensor</span><strong>DRV5055A3</strong></div>
+            <div class="device-spec-row"><span>multiplexer</span><strong>TMUX1208 × 8</strong></div>
+            <div class="device-spec-row"><span>switch</span><strong>TBD magnetic switch</strong></div>
+            <div class="device-spec-row"><span>stroke</span><strong>4.00 mm target</strong></div>
+            <div class="device-spec-row"><span>hot_swap</span><strong>YES / MX compatible</strong></div>
+        </div>
+
+        <div class="panel">
+            <div class="panel-title">POWER / PROTECTION</div>
+            <div class="device-spec-row"><span>LDO</span><strong>TLV76733DRV</strong></div>
+            <div class="device-spec-row"><span>USB_ESD</span><strong>TPD2EUSB30</strong></div>
+            <div class="device-spec-row"><span>USB_fuse</span><strong>polyfuse</strong></div>
+            <div class="device-spec-row"><span>logic_level</span><strong>3.3 V</strong></div>
+            <div class="device-spec-row"><span>LED_buffer</span><strong>74AHCT1G125</strong></div>
+            <div class="device-spec-row"><span>debug</span><strong>5-pin SWD</strong></div>
+        </div>
+
+        <div class="panel">
+            <div class="panel-title">LIGHTING / PHYSICAL</div>
+            <div class="device-spec-row"><span>rear_LED</span><strong>WS2812B × 10</strong></div>
+            <div class="device-spec-row"><span>effects</span><strong>Normal / Breathing / Reactive</strong></div>
+            <div class="device-spec-row"><span>individual_RGB</span><strong>10 LEDs</strong></div>
+            <div class="device-spec-row"><span>PCB</span><strong>custom full keyboard PCB</strong></div>
+            <div class="device-spec-row"><span>case</span><strong>2-piece aluminium / planned</strong></div>
+            <div class="device-spec-row"><span>mount</span><strong>top mount / planned</strong></div>
+        </div>
+    </div>
+
+    <div class="device-bottom-grid">
+        <div class="panel">
+            <div class="panel-title">RECOVERY / TROUBLESHOOTING</div>
+
+            <div class="recovery-list">
+                <div class="recovery-item">
+                    <div>
+                        <strong>SOFT_RESET</strong>
+                        <span>Clear live key state and restart the mock runtime without deleting settings.</span>
+                    </div>
+                    <button id="softResetButton" class="recovery-button">RUN</button>
+                </div>
+
+                <div class="recovery-item">
+                    <div>
+                        <strong>RECALIBRATE_ALL</strong>
+                        <span>Reset all Hall calibration raw values in the current profile.</span>
+                    </div>
+                    <button id="recalibrateButton" class="recovery-button">RUN</button>
+                </div>
+
+                <div class="recovery-item">
+                    <div>
+                        <strong>RESET_CURRENT_PROFILE</strong>
+                        <span>Restore the currently selected profile, including lighting, to defaults.</span>
+                    </div>
+                    <button id="resetProfileButton" class="recovery-button warning">RESET</button>
+                </div>
+
+                <div class="recovery-item danger-zone">
+                    <div>
+                        <strong>FACTORY_RESET_ALL</strong>
+                        <span>Delete all 3 profiles, lighting settings and mock flash storage.</span>
+                    </div>
+                    <button id="factoryResetButton" class="recovery-button danger">FACTORY RESET</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="panel">
+            <div class="panel-title">DIAGNOSTIC_COMMANDS</div>
+
+            <button id="runDiagnosticsButton" class="diagnostic-command">
+                &gt; run device.self_test --all
+            </button>
+
+            <button id="usbReconnectButton" class="diagnostic-command">
+                &gt; usb.reconnect --simulate
+            </button>
+
+            <button id="clearErrorButton" class="diagnostic-command">
+                &gt; error.clear
+            </button>
+
+            <div class="diagnostic-note">
+                These are MOCK controls for UI development.
+                When the PCB arrives, the same buttons can be connected to real HID firmware commands
+                without changing the page structure.
+            </div>
+        </div>
+    </div>
+
+
+    <div class="console shared-console">
+        <div class="console-line"><span class="prompt">HE&gt;</span> mock keyboard initialized</div>
+        <div class="console-line"><span class="prompt">HE&gt;</span> hall matrix: <span class="good">61 keys</span></div>
+        <div class="console-line"><span class="prompt">HE&gt;</span> ready_</div>
+    </div>
+
 </div>
 </section>
 
@@ -1391,7 +1876,7 @@ const bottomDeadzone = document.getElementById("bottomDeadzone");
 const bottomDeadzoneNumber = document.getElementById("bottomDeadzoneNumber");
 const keyState = document.getElementById("keyState");
 const selectionCount = document.getElementById("selectionCount");
-const consoleBox = document.getElementById("console");
+const consoleBoxes = document.querySelectorAll(".shared-console");
 
 function setConfigState(state) {
     configState = state;
@@ -1410,15 +1895,18 @@ function setConfigState(state) {
         sidebarState.textContent = "● configuration saved";
     }
     updateHome();
+    updateDevicePage();
 }
 function markChanged() { setConfigState("pending"); }
 
 function log(text,good=false) {
-    const line = document.createElement("div");
-    line.className = "console-line";
-    line.innerHTML = `<span class="prompt">HE&gt;</span> ` + (good ? `<span class="good">${text}</span>` : text);
-    consoleBox.appendChild(line);
-    consoleBox.scrollTop = consoleBox.scrollHeight;
+    consoleBoxes.forEach(consoleBox => {
+        const line = document.createElement("div");
+        line.className = "console-line";
+        line.innerHTML = `<span class="prompt">HE&gt;</span> ` + (good ? `<span class="good">${text}</span>` : text);
+        consoleBox.appendChild(line);
+        consoleBox.scrollTop = consoleBox.scrollHeight;
+    });
 }
 
 document.getElementById("sidebarToggle").onclick = () => app.classList.toggle("sidebar-collapsed");
@@ -1944,6 +2432,7 @@ function renderLightingPreview() {
     else if (lighting.libraryEffect === "normal") caption.textContent = "LIBRARY / NORMAL — all 10 rear LEDs stay on";
     else if (lighting.libraryEffect === "breathing") caption.textContent = "LIBRARY / BREATHING — brightness rises and falls repeatedly";
     else caption.textContent = "LIBRARY / REACTIVE — key input spreads from the center pair toward both ends";
+    updateDeviceModelLighting();
 }
 
 function triggerReactiveLighting() {
@@ -1970,6 +2459,145 @@ setInterval(() => {
     const lighting = currentLighting();
     if (lighting.mode === "library" && lighting.libraryEffect === "breathing") renderLightingPreview();
 },45);
+
+
+function buildDeviceModel() {
+    const keyField = document.getElementById("deviceKeyField");
+
+    if (keyField && keyField.children.length === 0) {
+        for (let i = 0; i < 96; i++) {
+            const key = document.createElement("div");
+            key.className = "device-keycap";
+            keyField.appendChild(key);
+        }
+    }
+
+    const rearLights = document.getElementById("deviceRearLights");
+
+    if (rearLights && rearLights.children.length === 0) {
+        for (let i = 0; i < DEVICE_INFO.rearLedCount; i++) {
+            const light = document.createElement("div");
+            light.className = "device-rear-light";
+            rearLights.appendChild(light);
+        }
+    }
+
+    updateDeviceModelLighting();
+}
+
+function updateDeviceModelLighting() {
+    const rearLights = document.querySelectorAll(".device-rear-light");
+    if (rearLights.length === 0) return;
+
+    const lighting = currentLighting();
+
+    rearLights.forEach((light,index) => {
+        const color =
+            lighting.mode === "individual"
+            ? lighting.individualColors[index]
+            : lighting.libraryColor;
+
+        const rgb = hexToRgb(color);
+
+        light.style.background = color;
+        light.style.boxShadow =
+            `0 0 8px ${color}, 0 0 18px rgba(${rgb.r},${rgb.g},${rgb.b},.55)`;
+    });
+}
+
+function updateDevicePage() {
+    const snapshot =
+        appliedSnapshot !== null
+        ? appliedSnapshot
+        : createSnapshot();
+
+    const profile =
+        snapshot.profiles[snapshot.currentProfile];
+
+    document.getElementById("deviceActiveProfile").textContent =
+        `PROFILE_${snapshot.currentProfile}`;
+
+    document.getElementById("devicePolling").textContent =
+        `${profile.pollingRate} Hz`;
+
+    updateDeviceModelLighting();
+}
+
+function resetRuntimeStates() {
+    Object.values(currentProfileData().keys).forEach(s => {
+        s.depth = 0;
+        s.pressed = false;
+        s.rtArmed = false;
+        s.maxDepth = 0;
+        s.minDepth = 0;
+    });
+
+    batchSelection.clear();
+    travel.value = 0;
+
+    updateSelectionCount();
+    loadSelectedKey();
+    updateKeyboardVisual();
+}
+
+document.getElementById("softResetButton").onclick = () => {
+    resetRuntimeStates();
+    document.getElementById("lastErrorText").textContent = "NONE";
+    log("soft reset complete — runtime restarted, settings preserved", true);
+};
+
+document.getElementById("recalibrateButton").onclick = () => {
+    Object.values(currentProfileData().keys).forEach(s => {
+        s.restRaw = 512;
+        s.bottomRaw = 3500;
+    });
+
+    loadSelectedKey();
+    markChanged();
+    log(`PROFILE_${currentProfile}: all 61 Hall calibration values reset`, true);
+};
+
+document.getElementById("resetProfileButton").onclick = () => {
+    if (!confirm(`Reset PROFILE_${currentProfile} to default settings?`)) return;
+
+    profiles[currentProfile] = makeDefaultProfile();
+    batchSelection.clear();
+    loadProfileUI();
+    markChanged();
+    log(`PROFILE_${currentProfile} restored to defaults`);
+};
+
+document.getElementById("factoryResetButton").onclick = () => {
+    if (!confirm("Factory reset ALL 3 profiles and clear saved mock flash?")) return;
+
+    profiles = makeDefaultProfiles();
+    currentProfile = 1;
+    selectedKey = "W";
+    batchSelection.clear();
+    appliedSnapshot = createSnapshot();
+
+    localStorage.removeItem(STORE_KEY);
+
+    loadProfileUI();
+    setConfigState("saved");
+    log("factory reset complete — all profiles restored and mock flash cleared", true);
+};
+
+document.getElementById("runDiagnosticsButton").onclick = () => {
+    document.getElementById("lastErrorText").textContent = "NONE";
+    log("self-test: USB OK / MCU OK / HALL 61/61 / MUX 8/8 / LED 10/10", true);
+};
+
+document.getElementById("usbReconnectButton").onclick = () => {
+    log("USB reconnect simulation started...");
+    setTimeout(() => log("USB HID reconnected", true), 350);
+};
+
+document.getElementById("clearErrorButton").onclick = () => {
+    document.getElementById("lastErrorText").textContent = "NONE";
+    log("error register cleared", true);
+};
+
 
 document.getElementById("applyChanges").onclick = () => {
     appliedSnapshot = createSnapshot();
@@ -2018,6 +2646,7 @@ document.querySelectorAll(".nav-button").forEach(button => {
         document.getElementById("breadcrumb").textContent = page;
         if (page === "home") updateHome();
         if (page === "lighting") loadLightingUI();
+        if (page === "device") updateDevicePage();
         document.querySelector(".content").scrollTo(0,0);
     };
 });
@@ -2049,6 +2678,7 @@ buildFunctionRow();
 buildNavigation();
 buildNumpad();
 buildLightingKeyboard();
+buildDeviceModel();
 loadSavedConfiguration();
 loadProfileUI();
 setConfigState("saved");
