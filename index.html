@@ -444,9 +444,6 @@ button, input, select { font-family: inherit; }
 .key,
 .mech-key {
     min-width: 0;
-    height: clamp(32px, 2.1vw, 42px);
-    border-radius: 4px;
-    font-size: clamp(8px, .58vw, 10px);
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
@@ -471,6 +468,7 @@ button, input, select { font-family: inherit; }
     color: #667184;
     cursor: default;
     opacity: .84;
+    display: flex; align-items: center; justify-content: center;
 }
 .mechanical-side {
     min-width: 0;
@@ -701,7 +699,8 @@ input[type="range"] { width: 100%; accent-color: var(--purple); }
 .lighting-keyboard {
     position: relative;
     width: min(100%, 920px);
-    aspect-ratio: 2.9 / 1;
+    aspect-ratio: 23.7 / 9.3;
+    container-type: inline-size;
     border: 1px solid #303a4a;
     border-radius: 12px;
     background: linear-gradient(180deg, rgba(32,39,52,.65), rgba(10,14,20,.95));
@@ -710,7 +709,7 @@ input[type="range"] { width: 100%; accent-color: var(--purple); }
 }
 .rear-edge-label {
     position: absolute;
-    top: 11px;
+    top: 1cqw;
     left: 50%;
     transform: translateX(-50%);
     color: #5d687b;
@@ -719,7 +718,7 @@ input[type="range"] { width: 100%; accent-color: var(--purple); }
 }
 .rear-led-row {
     position: absolute;
-    top: 34px;
+    top: 3.2cqw;
     left: 7%;
     right: 7%;
     display: grid;
@@ -735,8 +734,8 @@ input[type="range"] { width: 100%; accent-color: var(--purple); }
     cursor: pointer;
 }
 .rear-led {
-    width: clamp(14px, 1.6vw, 22px);
-    height: clamp(14px, 1.6vw, 22px);
+    width: clamp(10px, 1.7cqw, 22px);
+    height: clamp(10px, 1.7cqw, 22px);
     border-radius: 50%;
     background: #8b5cf6;
     border: 1px solid rgba(255,255,255,.35);
@@ -848,7 +847,7 @@ input[type="range"] { width: 100%; accent-color: var(--purple); }
 .device-model {
     position: relative;
     width: min(88%, 860px);
-    aspect-ratio: 3.15 / 1;
+    aspect-ratio: 23.7 / 8;
     transform: rotateX(58deg) rotateZ(-8deg);
     transform-style: preserve-3d;
     filter: drop-shadow(0 34px 30px rgba(0,0,0,.42));
@@ -857,13 +856,16 @@ input[type="range"] { width: 100%; accent-color: var(--purple); }
 .device-top {
     position: absolute;
     inset: 0;
-    padding: 8% 5% 5%;
-    border: 1px solid #4a556a;
+    padding: 3.8% 2.53% 2.53%;
+    border: 1px solid #aeb7c4;
     border-radius: 12px;
-    background: linear-gradient(145deg, #252b34, #12171e 52%, #090d13);
+    background:
+        repeating-linear-gradient(90deg, rgba(255,255,255,.035) 0 1px, rgba(0,0,0,.03) 1px 3px),
+        linear-gradient(145deg, #a3acb9, #6d7684 38%, #444b57 72%, #2f353f);
     box-shadow:
-        inset 0 0 0 2px rgba(255,255,255,.025),
-        inset 0 -16px 30px rgba(0,0,0,.22);
+        inset 0 1px 0 rgba(255,255,255,.45),
+        inset 0 0 0 2px rgba(255,255,255,.06),
+        inset 0 -16px 30px rgba(0,0,0,.25);
     transform: translateZ(20px);
     overflow: hidden;
 }
@@ -891,13 +893,7 @@ input[type="range"] { width: 100%; accent-color: var(--purple); }
     transform-origin: left;
 }
 
-.device-key-field {
-    height: 100%;
-    display: grid;
-    grid-template-columns: repeat(16, 1fr);
-    grid-template-rows: repeat(6, 1fr);
-    gap: 5px;
-}
+.device-key-field { position: relative; width: 100%; }
 
 .device-keycap {
     border: 1px solid #3a4352;
@@ -910,9 +906,9 @@ input[type="range"] { width: 100%; accent-color: var(--purple); }
 
 .device-rear-lights {
     position: absolute;
-    top: 3.2%;
-    left: 11%;
-    right: 11%;
+    top: 3.4%;
+    left: 15%;
+    right: 15%;
     display: grid;
     grid-template-columns: repeat(10, 1fr);
     gap: 8px;
@@ -1115,6 +1111,96 @@ input[type="range"] { width: 100%; accent-color: var(--purple); }
 .shared-console { margin-top: 12px; }
 
 
+/* ===== 22.5u x 6.5u 비율 고정 키보드 레이아웃 (창 크기에 맞춰 전체가 같이 커지고 작아짐) ===== */
+.kb-layout {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 22.5 / 6.5;
+    container-type: inline-size;
+    --u: calc(100cqw / 22.5);
+    --g: calc(100cqw / 22.5 * .045);
+}
+.kk {
+    position: absolute;
+    left: calc(var(--x) * var(--u) + var(--g));
+    top: calc(var(--y) * var(--u) + var(--g));
+    width: calc(var(--w) * var(--u) - 2 * var(--g));
+    height: calc(var(--h) * var(--u) - 2 * var(--g));
+    border-radius: calc(var(--u) * .1);
+    padding: 0 calc(var(--u) * .04);
+    font-size: max(6px, calc(var(--u) * .27));
+    line-height: 1;
+    margin: 0;
+}
+.kk.key { display: flex; align-items: center; justify-content: center; }
+.kk.key.current { border-width: max(1.5px, calc(var(--u) * .05)); }
+.kk.key.multi { border-width: max(1.5px, calc(var(--u) * .05)); }
+.kg {
+    display: flex; align-items: flex-start; justify-content: flex-start;
+    padding: calc(var(--u) * .1) calc(var(--u) * .12);
+    font-size: max(0px, calc(var(--u) * .22));
+    color: #8c98ab;
+    overflow: hidden;
+    border: 1px solid #0f131a;
+    border-radius: calc(var(--u) * .12);
+    background: linear-gradient(180deg, #2b323e 0%, #1a2029 100%);
+    box-shadow:
+        inset 0 calc(var(--u) * .035) 0 rgba(255,255,255,.14),
+        inset 0 0 0 calc(var(--u) * .05) rgba(0,0,0,.18),
+        0 calc(var(--u) * .08) 0 #05070a,
+        0 calc(var(--u) * .14) calc(var(--u) * .12) rgba(0,0,0,.5);
+}
+.kg.hall { background: linear-gradient(180deg, #333b49 0%, #1d2430 100%); }
+.fake-keyboard.kb-layout {
+    display: block;
+    top: auto;
+    position: absolute;
+    left: 2.53%;
+    right: 2.53%;
+    bottom: 6.45%;
+    width: auto;
+}
+.fake-keyboard .kg { opacity: .9; }
+.device-plate {
+    position: absolute;
+    left: 1.5%; right: 1.5%; top: 8.1%; bottom: 4.4%;
+    border-radius: 7px;
+    background: linear-gradient(180deg, #10141b, #0a0d12);
+    box-shadow: inset 0 2px 8px rgba(0,0,0,.8), 0 0 0 1px rgba(255,255,255,.07);
+}
+.device-usb {
+    position: absolute;
+    top: -1px; left: 48.2%;
+    width: 3.6%; height: 2.4%;
+    border-radius: 0 0 5px 5px;
+    background: #07090c;
+    box-shadow: inset 0 -2px 0 #3b4350, 0 0 0 1px #8b94a1;
+    z-index: 6;
+}
+.device-knob {
+    display: none;
+}
+.name-input {
+    width: 60%;
+    min-width: 120px;
+    padding: 4px 7px;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    background: #06090d;
+    color: #cfd5df;
+    font: inherit;
+    text-align: right;
+}
+.name-input:focus { outline: 1px solid var(--purple); border-color: var(--purple); }
+.console-input { display: flex; align-items: center; gap: 6px; line-height: 1.7; }
+.console-input .prompt { white-space: nowrap; }
+.console-input input {
+    flex: 1; min-width: 0;
+    border: 0; outline: 0; background: transparent;
+    color: #dce1ea; font: inherit; caret-color: var(--purple2);
+}
+.console-line .dim { color: #55607a; }
+
 @media (max-width: 1320px) {
     .keys-main-grid { grid-template-columns: minmax(0,1fr) 255px; }
     .keyboard-body { grid-template-columns: minmax(0,1fr) minmax(150px, 22%); }
@@ -1274,8 +1360,10 @@ input[type="range"] { width: 100%; accent-color: var(--purple); }
         <div class="panel">
             <div class="panel-title">INSTALLED_SWITCH</div>
             <div class="spec-list">
-                <div class="spec-row"><span>switch_name</span><span id="switchName">TBD - Magnetic Hall Switch</span></div>
-                <div class="spec-row"><span>switch_type</span><span>Magnetic / Hall Effect</span></div>
+                <div class="spec-row"><span>hall_switch_name</span><input id="switchNameHall" class="name-input" type="text" maxlength="31" spellcheck="false" autocomplete="off"></div>
+                <div class="spec-row"><span>hall_switch_type</span><span>Magnetic / Hall Effect (61 keys)</span></div>
+                <div class="spec-row"><span>mech_switch_name</span><input id="switchNameMech" class="name-input" type="text" maxlength="31" spellcheck="false" autocomplete="off"></div>
+                <div class="spec-row"><span>mech_switch_type</span><span>Mechanical hot-swap (43 keys)</span></div>
                 <div class="spec-row"><span>total_stroke</span><span id="switchStroke">4.00 mm</span></div>
                 <div class="spec-row"><span>hall_sensor</span><span>DRV5055A3</span></div>
                 <div class="spec-row"><span>hall_keys</span><span>61</span></div>
@@ -1292,8 +1380,8 @@ input[type="range"] { width: 100%; accent-color: var(--purple); }
             <div class="spec-row"><span>firmware</span><span id="fwHome">0.3.0 MOCK</span></div>
             <div class="spec-row"><span>config_state</span><span id="homeConfigState">SAVED</span></div>
             <div class="readonly-note">
-                HOME is status-only.<br><br>
-                Settings are changed from <strong>Keys</strong>, <strong>Lighting</strong> and <strong>Device</strong>.
+                Switch names can be edited here (saved with the keyboard).<br><br>
+                Other settings are changed from <strong>Keys</strong>, <strong>Lighting</strong>, <strong>Device</strong> — or type commands in the console (<strong>help</strong>).
             </div>
         </div>
     </div>
@@ -1352,21 +1440,7 @@ input[type="range"] { width: 100%; accent-color: var(--purple); }
             </div>
 
             <div class="keyboard-stage">
-                <div id="functionRow" class="function-row"></div>
-                <div class="keyboard-body">
-                    <div id="keyboard" class="hall-board"></div>
-                    <div class="mechanical-side">
-                        <div>
-                            <div class="cluster-title">NAV / ARROWS</div>
-                            <div id="navCluster" class="nav-cluster"></div>
-                            <div id="arrowCluster" class="arrow-cluster"></div>
-                        </div>
-                        <div>
-                            <div class="cluster-title">NUMPAD</div>
-                            <div id="numpad" class="numpad"></div>
-                        </div>
-                    </div>
-                </div>
+                <div id="keyboard" class="kb-layout"></div>
             </div>
         </div>
 
@@ -1600,6 +1674,8 @@ input[type="range"] { width: 100%; accent-color: var(--purple); }
             <div class="device-model-stage">
                 <div class="device-model">
                     <div class="device-top">
+                        <div class="device-plate"></div>
+                        <div class="device-usb"></div>
                         <div id="deviceRearLights" class="device-rear-lights"></div>
                         <div class="device-key-field" id="deviceKeyField"></div>
                         <div class="device-badge">HE / CUSTOM</div>
@@ -1654,7 +1730,8 @@ input[type="range"] { width: 100%; accent-color: var(--purple); }
             <div class="device-spec-row"><span>mechanical_keys</span><strong>43</strong></div>
             <div class="device-spec-row"><span>hall_sensor</span><strong>DRV5055A3</strong></div>
             <div class="device-spec-row"><span>multiplexer</span><strong>TMUX1208 × 8</strong></div>
-            <div class="device-spec-row"><span>switch</span><strong>TBD magnetic switch</strong></div>
+            <div class="device-spec-row"><span>hall_switch</span><strong id="deviceSwitchHall">—</strong></div>
+            <div class="device-spec-row"><span>mech_switch</span><strong id="deviceSwitchMech">—</strong></div>
             <div class="device-spec-row"><span>stroke</span><strong>4.00 mm target</strong></div>
             <div class="device-spec-row"><span>hot_swap</span><strong>YES / MX compatible</strong></div>
         </div>
@@ -1759,8 +1836,18 @@ input[type="range"] { width: 100%; accent-color: var(--purple); }
 <script>
 const STORE_KEY = "he_keyboard_mock_flash_v4";
 
+const switchNames = {hall: "SWK Peony HE", mech: "Gateron 2.0 Silent Red"};
+const DEFAULT_SWITCH_NAMES = {hall: "SWK Peony HE", mech: "Gateron 2.0 Silent Red"};
+const NAME_MAX_BYTES = 31;
+function fitName(text) {
+    let t = String(text).replace(/[\u0000-\u001f]/g, "").trim();
+    const enc = new TextEncoder();
+    while (t.length && enc.encode(t).length > NAME_MAX_BYTES) t = t.slice(0, -1);
+    return t;
+}
+
 const DEVICE_INFO = {
-    switchName: "TBD - Magnetic Hall Switch",
+    switchName: "SWK Peony HE",
     switchStroke: 4.00,
     mcu: "STM32H743VIT6",
     hallSensor: "DRV5055A3",
@@ -1859,7 +1946,7 @@ function rgbToHex(r,g,b) {
         .map(value => Math.round(value).toString(16).padStart(2,"0"))
         .join("");
 }
-function createSnapshot() { return {profiles:deepClone(profiles),currentProfile}; }
+function createSnapshot() { return {profiles:deepClone(profiles),currentProfile,names:{...switchNames}}; }
 
 const app = document.getElementById("app");
 const keyboard = document.getElementById("keyboard");
@@ -1905,74 +1992,53 @@ function log(text,good=false) {
         const line = document.createElement("div");
         line.className = "console-line";
         line.innerHTML = `<span class="prompt">HE&gt;</span> ` + (good ? `<span class="good">${text}</span>` : text);
-        consoleBox.appendChild(line);
+        const inputRow = consoleBox.querySelector(".console-input");
+        if (inputRow) consoleBox.insertBefore(line, inputRow); else consoleBox.appendChild(line);
         consoleBox.scrollTop = consoleBox.scrollHeight;
     });
 }
 
 document.getElementById("sidebarToggle").onclick = () => app.classList.toggle("sidebar-collapsed");
 
+/* ---------- 풀배열 레이아웃(22.5u x 6.5u). 키 위치는 u(1키=1u) 단위 ---------- */
+function buildLayoutItems() {
+    const items = [];
+    const add = (id,label,x,y,w,h,hall) => items.push({id,label,x,y,w,h,hall});
+    [["Esc",0],["F1",2],["F2",3],["F3",4],["F4",5],["F5",6.5],["F6",7.5],["F7",8.5],["F8",9.5],
+     ["F9",11],["F10",12],["F11",13],["F12",14],["PrtSc",15.25],["ScrLk",16.25],["Pause",17.25]]
+        .forEach(([k,x]) => add("M_"+k,k,x,0,1,1,false));
+    hallRows.forEach((row,r) => {
+        let x = 0;
+        row.forEach(([key,span]) => { add(key,key,x,1.5+r,span/4,1,true); x += span/4; });
+    });
+    navigationKeys.forEach((k,i) => add("M_"+k,k,15.25+(i%3),1.5+Math.floor(i/3),1,1,false));
+    [["↑",16.25,4.5],["←",15.25,5.5],["↓",16.25,5.5],["→",17.25,5.5]].forEach(([k,x,y]) => add("M_"+k,k,x,y,1,1,false));
+    const pad = [["Num",0,0,1,1],["/",1,0,1,1],["*",2,0,1,1],["-",3,0,1,1],
+                 ["7",0,1,1,1],["8",1,1,1,1],["9",2,1,1,1],["+",3,1,1,2],
+                 ["4",0,2,1,1],["5",1,2,1,1],["6",2,2,1,1],
+                 ["1",0,3,1,1],["2",1,3,1,1],["3",2,3,1,1],["Enter",3,3,1,2],
+                 ["0",0,4,2,1],[".",2,4,1,1]];
+    pad.forEach(([k,c,r,w,h]) => add("NP_"+k,k,18.5+c,1.5+r,w,h,false));
+    return items;
+}
+function renderLayout(container, makeClass, onKey) {
+    container.innerHTML = "";
+    container.classList.add("kb-layout");
+    buildLayoutItems().forEach(it => {
+        const interactive = onKey && it.hall;
+        const el = document.createElement(interactive ? "button" : "div");
+        el.className = "kk " + makeClass(it);
+        el.style.setProperty("--x", it.x); el.style.setProperty("--y", it.y);
+        el.style.setProperty("--w", it.w); el.style.setProperty("--h", it.h);
+        el.textContent = it.label;
+        if (interactive) { el.dataset.key = it.id; el.onclick = () => onKey(it.id); }
+        container.appendChild(el);
+    });
+}
+
 function buildHallKeyboard() {
-    keyboard.innerHTML = "";
-    hallRows.forEach(row => {
-        const rowElement = document.createElement("div");
-        rowElement.className = "hall-row";
-        row.forEach(([key,span]) => {
-            const button = document.createElement("button");
-            button.className = "key";
-            button.dataset.key = key;
-            button.textContent = key;
-            button.style.gridColumn = `span ${span}`;
-            button.onclick = () => keyClicked(key);
-            rowElement.appendChild(button);
-        });
-        keyboard.appendChild(rowElement);
-    });
+    renderLayout(keyboard, it => it.hall ? "key" : "mech-key", keyClicked);
     updateKeyboardVisual();
-}
-
-function buildFunctionRow() {
-    const row = document.getElementById("functionRow");
-    functionKeys.forEach(key => {
-        if (key === null) { row.appendChild(document.createElement("div")); return; }
-        const button = document.createElement("button");
-        button.className = "mech-key";
-        button.textContent = key;
-        button.disabled = true;
-        row.appendChild(button);
-    });
-}
-
-function buildNavigation() {
-    const nav = document.getElementById("navCluster");
-    navigationKeys.forEach(key => {
-        const button = document.createElement("button");
-        button.className = "mech-key";
-        button.textContent = key;
-        button.disabled = true;
-        nav.appendChild(button);
-    });
-    const arrows = document.getElementById("arrowCluster");
-    arrowKeys.forEach(key => {
-        if (key === null) { arrows.appendChild(document.createElement("div")); return; }
-        const button = document.createElement("button");
-        button.className = "mech-key";
-        button.textContent = key;
-        button.disabled = true;
-        arrows.appendChild(button);
-    });
-}
-
-function buildNumpad() {
-    const pad = document.getElementById("numpad");
-    numpadKeys.forEach(item => {
-        const button = document.createElement("button");
-        button.className = "mech-key";
-        if (item.className) button.classList.add(item.className);
-        button.textContent = item.key;
-        button.disabled = true;
-        pad.appendChild(button);
-    });
 }
 
 function keyClicked(key) {
@@ -2281,18 +2347,7 @@ function buildLightingKeyboard() {
         cell.appendChild(label);
         ledRow.appendChild(cell);
     }
-    const fake = document.getElementById("fakeKeyboard");
-    fake.innerHTML = "";
-    for (let rowIndex=0; rowIndex<5; rowIndex++) {
-        const row = document.createElement("div");
-        row.className = "fake-key-row";
-        for (let keyIndex=0; keyIndex<15; keyIndex++) {
-            const key = document.createElement("div");
-            key.className = "fake-key";
-            row.appendChild(key);
-        }
-        fake.appendChild(row);
-    }
+    renderLayout(document.getElementById("fakeKeyboard"), it => it.hall ? "kg hall" : "kg");
 }
 
 function setIndividualColorFromRGB() {
@@ -2466,11 +2521,7 @@ function buildDeviceModel() {
     const keyField = document.getElementById("deviceKeyField");
 
     if (keyField && keyField.children.length === 0) {
-        for (let i = 0; i < 96; i++) {
-            const key = document.createElement("div");
-            key.className = "device-keycap";
-            keyField.appendChild(key);
-        }
+        renderLayout(keyField, it => it.hall ? "kg hall" : "kg");
     }
 
     const rearLights = document.getElementById("deviceRearLights");
@@ -2505,6 +2556,26 @@ function updateDeviceModelLighting() {
             `0 0 8px ${color}, 0 0 18px rgba(${rgb.r},${rgb.g},${rgb.b},.55)`;
     });
 }
+
+function syncNameInputs() {
+    [["switchNameHall","hall","deviceSwitchHall"],["switchNameMech","mech","deviceSwitchMech"]].forEach(([id,k,devId]) => {
+        const el = document.getElementById(id);
+        if (el && document.activeElement !== el) el.value = switchNames[k];
+        const d = document.getElementById(devId);
+        if (d) d.textContent = switchNames[k] || "—";
+    });
+}
+function setSwitchName(which, text, announce = true) {
+    switchNames[which] = fitName(text);
+    markChanged();
+    if (announce) log(`${which}_switch_name = "${switchNames[which]}"`);
+}
+[["switchNameHall","hall"],["switchNameMech","mech"]].forEach(([id,k]) => {
+    const el = document.getElementById(id);
+    el.addEventListener("input", () => setSwitchName(k, el.value, false));
+    el.addEventListener("change", () => { el.value = switchNames[k] = fitName(el.value); log(`${k}_switch_name = "${switchNames[k]}"`); updateDevicePage(); });
+    el.addEventListener("keydown", e => { if (e.key === "Enter") el.blur(); });
+});
 
 function updateDevicePage() {
     const snapshot =
@@ -2573,6 +2644,7 @@ document.getElementById("factoryResetButton").onclick = () => {
 
     profiles = makeDefaultProfiles();
     currentProfile = 1;
+    Object.assign(switchNames, DEFAULT_SWITCH_NAMES);
     selectedKey = "W";
     batchSelection.clear();
     appliedSnapshot = createSnapshot();
@@ -2631,7 +2703,7 @@ function updateHome() {
     rtStatus.className = "home-card-value " + (rtEnabled ? "green" : "orange");
     document.getElementById("homeRTSub").textContent = `enabled keys : ${rtCount} / 61`;
     document.getElementById("homeConfigState").textContent = configState.toUpperCase();
-    document.getElementById("switchName").textContent = DEVICE_INFO.switchName;
+    syncNameInputs();
     document.getElementById("switchStroke").textContent = `${DEVICE_INFO.switchStroke.toFixed(2)} mm`;
     document.getElementById("sidebarProfile").textContent = `Profile ${activeProfile}`;
     document.getElementById("sidebarPolling").textContent = `${profile.pollingRate} Hz`;
@@ -2663,6 +2735,7 @@ function loadSavedConfiguration() {
         if (parsed.profiles && parsed.currentProfile) {
             profiles = parsed.profiles;
             currentProfile = parsed.currentProfile;
+            if (parsed.names) Object.assign(switchNames, parsed.names);
             appliedSnapshot = deepClone(parsed);
             log("mock flash configuration loaded",true);
         }
@@ -2675,9 +2748,6 @@ function loadSavedConfiguration() {
 }
 
 buildHallKeyboard();
-buildFunctionRow();
-buildNavigation();
-buildNumpad();
 buildLightingKeyboard();
 buildDeviceModel();
 loadSavedConfiguration();
@@ -2693,7 +2763,7 @@ log("UI ready",true);
    연결되어 있지 않으면 기존 MOCK 동작을 그대로 쓴다.
    ============================================================ */
 (() => {
-const CMD = {INFO:0x01,STATUS:0x02,PROFILE:0x10,GET_KEYS:0x11,SET_KEYS:0x12,POLL:0x13,
+const CMD = {INFO:0x01,STATUS:0x02,PROFILE:0x10,GET_KEYS:0x11,SET_KEYS:0x12,POLL:0x13,NAMES:0x14,
   GET_LIGHT:0x20,SET_LIGHT:0x21,CAL_REST:0x30,CAL_BOTTOM:0x31,LIVE:0x32,SAVE:0x40,LOAD:0x41,
   FACTORY:0x42,RESET_PROFILE:0x43,SOFT_RESET:0x44,RECAL_ALL:0x45,SELF_TEST:0x46,USB_RECONNECT:0x47,CLEAR_ERROR:0x48};
 const ST_NAME = ["OK","BAD_CMD","BAD_ARG","BUSY","SAVE_FAIL"];
@@ -2787,6 +2857,13 @@ async function readAll() {
   link.info = {proto:info[0], fw:`${info[1]}.${info[2]}.${info[3]}`,
     devId:(info[4]|(info[5]<<8)|(info[6]<<16)|(info[7]*16777216)), active:info[11]};
   for (const p of [1,2,3]) await readProfile(p);
+  link.cache.names = {};
+  for (const [w, k] of [[0, "hall"], [1, "mech"]]) {
+    const r = await call(CMD.NAMES, [w]);
+    let end = 1; while (end < r.length && r[end] !== 0) end++;
+    switchNames[k] = new TextDecoder().decode(r.slice(1, end));
+    link.cache.names[k] = switchNames[k];
+  }
   currentProfile = link.info.active;
   loadProfileUI();
   appliedSnapshot = createSnapshot();
@@ -2814,6 +2891,12 @@ async function pushAll() {
     }
     const lb = lightToBytes(prof.lighting);
     if (hexs(lb) !== cache.light) { await call(CMD.SET_LIGHT, [p, ...lb]); cache.light = hexs(lb); sent++; }
+  }
+  for (const [w, k] of [[0, "hall"], [1, "mech"]]) {
+    if (switchNames[k] === link.cache.names[k]) continue;
+    const bytes = new Uint8Array(32); bytes.set(new TextEncoder().encode(switchNames[k]).slice(0, 31));
+    await call(CMD.NAMES, [w, ...bytes]);
+    link.cache.names[k] = switchNames[k]; sent++;
   }
   await call(CMD.PROFILE, [currentProfile]);
   return sent;
@@ -2924,7 +3007,219 @@ wrap("runDiagnosticsButton", async () => {
 });
 
 // 테스트에서 쓰는 훅
-window.__he = {link, call, readAll, pushAll, KEY_NAMES};
+window.__he = {link, call, readAll, pushAll, KEY_NAMES, CMD, isConnected};
+})();
+</script>
+<script id="console-layer">
+/* ============================================================
+   콘솔 명령어 — 아래 터미널에 명령을 입력해 모든 설정을 바꿀 수 있다.
+   `help` 로 목록 확인. 설정을 바꾸는 명령은 PENDING 상태로 두고, `apply` / `save` 로 키보드에 반영한다.
+   ============================================================ */
+(() => {
+const KEYS = hallRows.flat().map(([k]) => k);
+const esc = t => String(t).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+const say = (t, good = false) => String(t).split("\n").forEach(l => log(esc(l), good));
+const err = t => log(`<span style="color:#fb7185">${esc(t)}</span>`);
+const click = id => document.getElementById(id).click();
+const COLORS = {red:"#ff0000",green:"#00ff00",blue:"#0000ff",white:"#ffffff",black:"#000000",off:"#000000",
+  purple:"#8b5cf6",violet:"#8b5cf6",orange:"#ff8800",yellow:"#ffff00",cyan:"#00ffff",pink:"#ff4fa3",magenta:"#ff00ff"};
+
+function tokenize(line) {
+  const out = []; const re = /"([^"]*)"|(\S+)/g; let m;
+  while ((m = re.exec(line))) out.push(m[1] !== undefined ? m[1] : m[2]);
+  return out;
+}
+function findKey(t) {
+  const l = t.toLowerCase();
+  const alias = {bksp:"Backspace",back:"Backspace",ctrl:"LCtrl",shift:"LShift",alt:"LAlt",win:"LWin",caps:"Caps",capslock:"Caps",return:"Enter"};
+  return KEYS.find(k => k.toLowerCase() === l) || (alias[l] && KEYS.find(k => k === alias[l])) || null;
+}
+function parseKeys(arg) {
+  if (!arg) throw new Error("key required (e.g. W, W,A,S,D, row2, all)");
+  const set = [];
+  for (const part of arg.split(",")) {
+    const p = part.trim().toLowerCase(); if (!p) continue;
+    if (p === "all") { set.push(...KEYS); continue; }
+    const m = /^row([1-5])$/.exec(p);
+    if (m) { set.push(...hallRows[Number(m[1]) - 1].map(([k]) => k)); continue; }
+    const k = findKey(part.trim());
+    if (!k) throw new Error(`unknown key "${part}" (hall keys only; try "keys")`);
+    set.push(k);
+  }
+  return [...new Set(set)];
+}
+function parseColor(tokens) {
+  if (tokens.length === 1) {
+    const t = tokens[0].toLowerCase();
+    if (COLORS[t]) return COLORS[t];
+    const m = /^#?([0-9a-f]{6})$/.exec(t); if (m) return "#" + m[1];
+    const m3 = /^#?([0-9a-f]{3})$/.exec(t); if (m3) return "#" + m3[1].split("").map(c => c + c).join("");
+  }
+  if (tokens.length === 3 && tokens.every(x => /^\d+$/.test(x) && Number(x) <= 255)) return rgbToHex(...tokens.map(Number));
+  throw new Error('color: #rrggbb, "r g b" (0-255) or a name (red, green, blue, white, purple, orange, yellow, cyan, pink, off)');
+}
+const onoff = v => { v = String(v).toLowerCase(); if (["on","1","true","yes"].includes(v)) return true; if (["off","0","false","no"].includes(v)) return false; throw new Error("on/off expected"); };
+function num(v, lo, hi, name) { const n = Number(v); if (!isFinite(n) || n < lo || n > hi) throw new Error(`${name}: ${lo} ~ ${hi}`); return Math.round(n * 100) / 100; }
+const fmtKey = (k, s) => `${k.padEnd(9)} act=${s.actuation.toFixed(2)}mm  rt=${s.rapidTrigger ? "on " : "off"} sens=${s.rtSensitivity.toFixed(2)}  top=${s.topDeadzone.toFixed(2)} bot=${s.bottomDeadzone.toFixed(2)}  rest=${s.restRaw} bottom=${s.bottomRaw}`;
+
+function refreshKeys() { loadSelectedKey(); updateKeyboardVisual(); markChanged(); }
+function withYes(args, fn) {
+  const yes = args.includes("-y") || args.includes("yes");
+  const orig = window.confirm; if (yes) window.confirm = () => true;
+  try { fn(); } finally { window.confirm = orig; }
+}
+
+const COMMANDS = {
+  help: { usage: "help [command]", info: "show this list", run(a) {
+    if (a[0] && COMMANDS[a[0]]) return say(`${COMMANDS[a[0]].usage}\n  ${COMMANDS[a[0]].info}`);
+    say("commands (type help <command> for details):\n" + Object.entries(COMMANDS).map(([n, c]) => `  ${n.padEnd(11)} ${c.info}`).join("\n"));
+  }},
+  status: { usage: "status", info: "connection, profile, polling, config state, switch names", run() {
+    const he = window.__he, p = currentProfileData();
+    const rt = Object.values(p.keys).filter(k => k.rapidTrigger).length;
+    say(`connection : ${he.isConnected() ? "USB (firmware " + he.link.info.fw + ")" : "MOCK (not connected)"}\n` +
+        `profile    : ${currentProfile}   polling: ${p.pollingRate} Hz   rapid trigger: ${rt}/61 keys\n` +
+        `config     : ${configState}\nhall switch: ${switchNames.hall}\nmech switch: ${switchNames.mech}`);
+  }},
+  keys: { usage: "keys", info: "list hall key names", run() { say(hallRows.map((r, i) => `row${i + 1}: ` + r.map(([k]) => k).join(" ")).join("\n")); } },
+  profile: { usage: "profile [1|2|3]", info: "show or switch the active profile", run(a) {
+    if (!a[0]) return say(`active profile = ${currentProfile}`);
+    if (!["1","2","3"].includes(a[0])) throw new Error("profile 1, 2 or 3");
+    document.querySelector(`.profile-button[data-profile="${a[0]}"]`).click();
+  }},
+  poll: { usage: "poll [1000|2000|4000|8000]", info: "show or set polling rate (Hz)", run(a) {
+    const sel = document.getElementById("pollingSelect");
+    if (!a[0]) return say(`polling = ${currentProfileData().pollingRate} Hz`);
+    if (![...sel.options].some(o => o.value === a[0])) throw new Error("1000, 2000, 4000 or 8000");
+    sel.value = a[0]; sel.onchange({target: sel});
+  }},
+  select: { usage: "select <key>", info: "select a key in the Keys page", run(a) {
+    const k = parseKeys(a[0])[0]; mode = "single"; document.getElementById("singleMode").click(); keyClicked(k);
+  }},
+  get: { usage: "get <key|a,b|rowN|all>", info: "print key settings", run(a) {
+    const keys = parseKeys(a[0] || selectedKey), prof = currentProfileData();
+    say(keys.map(k => fmtKey(k, prof.keys[k])).join("\n"));
+  }},
+  set: { usage: "set <keys> <field> <value> [field value ...]", info: "change key settings. fields: act(0.10-4.00) rt(on|off) sens(0.05-2.00) top(0-1) bottom(0-1)", run(a) {
+    const keys = parseKeys(a[0]), prof = currentProfileData();
+    if (a.length < 3 || a.length % 2 === 0) throw new Error("usage: set <keys> <field> <value> [field value ...]");
+    const changes = [];
+    for (let i = 1; i < a.length; i += 2) {
+      const f = a[i].toLowerCase(), v = a[i + 1];
+      if (["act","actuation"].includes(f)) changes.push(s => s.actuation = num(v, .1, 4, "act"));
+      else if (["rt","rapid","rapidtrigger"].includes(f)) changes.push(s => s.rapidTrigger = onoff(v));
+      else if (["sens","rtsens","rt_sensitivity"].includes(f)) changes.push(s => s.rtSensitivity = num(v, .05, 2, "sens"));
+      else if (["top","top_deadzone"].includes(f)) changes.push(s => s.topDeadzone = num(v, 0, 1, "top"));
+      else if (["bottom","bot","bottom_deadzone"].includes(f)) changes.push(s => s.bottomDeadzone = num(v, 0, 1, "bottom"));
+      else throw new Error(`unknown field "${a[i]}" (act, rt, sens, top, bottom)`);
+    }
+    changes.forEach(c => c({}));                       // 값 검증만 먼저 (오류면 아무것도 바꾸지 않음)
+    keys.forEach(k => changes.forEach(c => c(prof.keys[k])));
+    refreshKeys();
+    say(`${keys.length} key(s) updated (draft) — run "apply" or "save"`, true);
+  }},
+  copy: { usage: "copy <src-key> <dst-keys>", info: "copy actuation / rapid trigger / deadzones from one key to others", run(a) {
+    const src = parseKeys(a[0])[0], dst = parseKeys(a[1]).filter(k => k !== src), prof = currentProfileData(), S = prof.keys[src];
+    dst.forEach(k => { const d = prof.keys[k]; d.actuation = S.actuation; d.rapidTrigger = S.rapidTrigger; d.rtSensitivity = S.rtSensitivity; d.topDeadzone = S.topDeadzone; d.bottomDeadzone = S.bottomDeadzone; });
+    refreshKeys(); say(`copied ${src} → ${dst.length} key(s) (draft)`, true);
+  }},
+  light: { usage: "light [mode individual|library] [effect normal|breathing|reactive] [color <c>]", info: "rear lighting mode / effect / library colour", run(a) {
+    const L = currentLighting();
+    if (!a.length) return say(`mode=${L.mode} effect=${L.libraryEffect} color=${L.libraryColor}\nleds: ${L.individualColors.join(" ")}`);
+    for (let i = 0; i < a.length;) {
+      const f = a[i].toLowerCase();
+      if (f === "mode") {
+        if (!["individual","library"].includes(a[i + 1])) throw new Error("mode individual|library");
+        document.querySelector(`[data-lighting-mode="${a[i + 1]}"]`).click(); i += 2;
+      } else if (f === "effect") {
+        if (!["normal","breathing","reactive"].includes(a[i + 1])) throw new Error("effect normal|breathing|reactive");
+        const card = document.querySelector(`.effect-card[data-effect="${a[i + 1]}"]`);
+        if (L.mode !== "library") document.querySelector('[data-lighting-mode="library"]').click();
+        card.click(); i += 2;
+      } else if (f === "color") {
+        const n = /^\d+$/.test(a[i + 1] || "") ? 3 : 1;
+        L.libraryColor = parseColor(a.slice(i + 1, i + 1 + n)); i += 1 + n;
+        markChanged(); loadLightingUI(); updateDeviceModelLighting();
+      } else throw new Error(`unknown option "${a[i]}"`);
+    }
+    say(`light: mode=${L.mode} effect=${L.libraryEffect} color=${L.libraryColor} (draft)`, true);
+  }},
+  led: { usage: "led <1-10|all> <colour>", info: "set individual rear LED colour (individual mode)", run(a) {
+    if (a.length < 2) throw new Error("led <1-10|all> <#rrggbb | r g b | name>");
+    const L = currentLighting(), col = parseColor(a.slice(1));
+    const idx = a[0].toLowerCase() === "all" ? [...Array(10).keys()] : [Number(a[0]) - 1];
+    if (idx.some(i => !(i >= 0 && i < 10) || !Number.isInteger(i))) throw new Error("led number 1-10 or all");
+    idx.forEach(i => L.individualColors[i] = col);
+    if (L.mode !== "individual") document.querySelector('[data-lighting-mode="individual"]').click();
+    markChanged(); loadLightingUI(); updateDeviceModelLighting();
+    say(`led ${a[0]} = ${col} (draft)`, true);
+  }},
+  name: { usage: "name [hall|mech] [text]", info: "show or set the switch names", run(a) {
+    if (!a.length) return say(`hall: ${switchNames.hall}\nmech: ${switchNames.mech}`);
+    if (!["hall","mech"].includes(a[0])) throw new Error("name hall <text> | name mech <text>");
+    if (a.length === 1) return say(`${a[0]}: ${switchNames[a[0]]}`);
+    setSwitchName(a[0], a.slice(1).join(" ")); updateHome(); updateDevicePage();
+  }},
+  cal: { usage: "cal rest|bottom [key]", info: "calibrate rest (key released) or bottom (key fully pressed) of a key", run(a) {
+    if (!["rest","bottom"].includes(a[0])) throw new Error("cal rest|bottom [key]");
+    if (a[1]) { selectedKey = parseKeys(a[1])[0]; loadSelectedKey(); updateKeyboardVisual(); }
+    click(a[0] === "rest" ? "setRest" : "setBottom");
+  }},
+  recal: { usage: "recal", info: "re-measure rest value of all 61 keys (keep keys released)", run() { click("recalibrateButton"); } },
+  apply: { usage: "apply", info: "send pending changes to the keyboard RAM", run() { click("applyChanges"); } },
+  save: { usage: "save", info: "save to the keyboard flash", run() { click("saveKeyboard"); } },
+  load: { usage: "load", info: "discard drafts and reload from the keyboard (or mock flash)", run() {
+    const he = window.__he;
+    if (he.isConnected()) he.readAll().then(() => say("reloaded from keyboard", true)).catch(e => err(e.message));
+    else { loadSavedConfiguration(); loadProfileUI(); setConfigState("saved"); say("reloaded from mock flash", true); }
+  }},
+  reset: { usage: "reset profile|factory [-y]", info: "restore current profile / everything to defaults", run(a) {
+    if (a[0] === "profile") withYes(a, () => click("resetProfileButton"));
+    else if (a[0] === "factory") withYes(a, () => click("factoryResetButton"));
+    else throw new Error("reset profile | reset factory");
+  }},
+  softreset: { usage: "softreset", info: "restart keyboard firmware (settings kept)", run() { click("softResetButton"); } },
+  usbreconnect: { usage: "usbreconnect", info: "ask the keyboard to re-enumerate USB", run() { click("usbReconnectButton"); } },
+  selftest: { usage: "selftest", info: "run the self-test", run() { click("runDiagnosticsButton"); } },
+  clearerror: { usage: "clearerror", info: "clear the error register", run() { click("clearErrorButton"); } },
+  connect: { usage: "connect", info: "connect to the keyboard over USB (WebHID)", run() {
+    if (window.__he.isConnected()) return say("already connected"); click("connectButton"); } },
+  disconnect: { usage: "disconnect", info: "disconnect (back to MOCK mode)", run() {
+    if (!window.__he.isConnected()) return say("not connected"); click("connectButton"); } },
+  clear: { usage: "clear", info: "clear the console", run() { document.querySelectorAll(".shared-console .console-line").forEach(l => l.remove()); } },
+};
+
+const history = []; let hpos = 0;
+function exec(line) {
+  line = line.trim(); if (!line) return;
+  log(`<span style="color:#cfd5df">${esc(line)}</span>`);
+  history.push(line); hpos = history.length;
+  const t = tokenize(line), name = t[0].toLowerCase();
+  const cmd = COMMANDS[name];
+  if (!cmd) return err(`unknown command "${t[0]}" — type help`);
+  try { cmd.run(t.slice(1)); } catch (e) { err(e.message); say("usage: " + cmd.usage); }
+}
+window.__he.exec = exec;
+
+document.querySelectorAll(".shared-console").forEach(box => {
+  const row = document.createElement("div");
+  row.className = "console-input";
+  row.innerHTML = '<span class="prompt">HE&gt;</span><input type="text" spellcheck="false" autocomplete="off" autocapitalize="off" placeholder="type a command — help">';
+  box.appendChild(row);
+  const input = row.querySelector("input");
+  input.addEventListener("keydown", e => {
+    if (e.key === "Enter") { const v = input.value; input.value = ""; exec(v); }
+    else if (e.key === "ArrowUp") { if (hpos > 0) input.value = history[--hpos]; e.preventDefault(); }
+    else if (e.key === "ArrowDown") { hpos = Math.min(history.length, hpos + 1); input.value = history[hpos] || ""; e.preventDefault(); }
+    else if (e.key === "Tab") {
+      const v = input.value.trim().toLowerCase();
+      if (v && !v.includes(" ")) { const m = Object.keys(COMMANDS).filter(c => c.startsWith(v)); if (m.length === 1) input.value = m[0] + " "; }
+      e.preventDefault();
+    }
+  });
+  box.addEventListener("click", ev => { if (ev.target === box && !getSelection().toString()) input.focus(); });
+});
+say('console ready — type "help" for commands', true);
 })();
 </script>
 </body>
