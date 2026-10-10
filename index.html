@@ -1186,11 +1186,12 @@ input[type="range"] { width: 100%; accent-color: var(--purple); }
             <span>HE Keyboard</span>
         </div>
         <div class="device-small">
-            STATUS&nbsp;&nbsp;&nbsp;CONNECTED [MOCK]<br>
-            MCU&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;M484KIDAE<br>
+            STATUS&nbsp;&nbsp;&nbsp;<span id="sbStatus">DISCONNECTED [MOCK]</span><br>
+            MCU&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;STM32H743VIT6<br>
             USB&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span id="sidebarPolling">8000 Hz</span><br>
             PROFILE&nbsp;&nbsp;<span id="sidebarProfile">Profile 1</span>
         </div>
+        <button id="connectButton" class="global-button apply" style="margin-top:10px;width:100%">CONNECT_USB</button>
     </div>
 
     <div class="nav-title">// NAV</div>
@@ -1279,7 +1280,7 @@ input[type="range"] { width: 100%; accent-color: var(--purple); }
                 <div class="spec-row"><span>hall_sensor</span><span>DRV5055A3</span></div>
                 <div class="spec-row"><span>hall_keys</span><span>61</span></div>
                 <div class="spec-row"><span>multiplexer</span><span>TMUX1208 × 8</span></div>
-                <div class="spec-row"><span>MCU</span><span>M484KIDAE</span></div>
+                <div class="spec-row"><span>MCU</span><span>STM32H743VIT6</span></div>
                 <div class="spec-row"><span>rear_lighting</span><span>WS2812B × 10</span></div>
             </div>
         </div>
@@ -1288,7 +1289,7 @@ input[type="range"] { width: 100%; accent-color: var(--purple); }
             <div class="panel-title">KEYBOARD_STATUS</div>
             <div class="spec-row"><span>connection</span><span style="color:#4ade80">ONLINE</span></div>
             <div class="spec-row"><span>interface</span><span>USB HID</span></div>
-            <div class="spec-row"><span>firmware</span><span>0.3.0 MOCK</span></div>
+            <div class="spec-row"><span>firmware</span><span id="fwHome">0.3.0 MOCK</span></div>
             <div class="spec-row"><span>config_state</span><span id="homeConfigState">SAVED</span></div>
             <div class="readonly-note">
                 HOME is status-only.<br><br>
@@ -1638,13 +1639,13 @@ input[type="range"] { width: 100%; accent-color: var(--purple); }
     <div class="device-spec-grid">
         <div class="panel">
             <div class="panel-title">CORE / CONTROL</div>
-            <div class="device-spec-row"><span>MCU</span><strong>M484KIDAE</strong></div>
+            <div class="device-spec-row"><span>MCU</span><strong>STM32H743VIT6</strong></div>
             <div class="device-spec-row"><span>USB</span><strong>USB-C / WIRED ONLY</strong></div>
             <div class="device-spec-row"><span>interface</span><strong>USB HID</strong></div>
             <div class="device-spec-row"><span>target_polling</span><strong>8000 Hz</strong></div>
             <div class="device-spec-row"><span>clock</span><strong>12 MHz crystal</strong></div>
             <div class="device-spec-row"><span>profiles</span><strong>3 onboard profiles</strong></div>
-            <div class="device-spec-row"><span>firmware</span><strong>0.3.0 MOCK</strong></div>
+            <div class="device-spec-row"><span>firmware</span><strong id="fwDevice">0.3.0 MOCK</strong></div>
         </div>
 
         <div class="panel">
@@ -1761,7 +1762,7 @@ const STORE_KEY = "he_keyboard_mock_flash_v4";
 const DEVICE_INFO = {
     switchName: "TBD - Magnetic Hall Switch",
     switchStroke: 4.00,
-    mcu: "M484KIDAE",
+    mcu: "STM32H743VIT6",
     hallSensor: "DRV5055A3",
     mux: "TMUX1208 × 8",
     hallKeys: 61,
@@ -2684,6 +2685,247 @@ loadProfileUI();
 setConfigState("saved");
 updateHome();
 log("UI ready",true);
+</script>
+<script id="hid-layer">
+/* ============================================================
+   WebHID 연결 계층 — 펌웨어(Raw HID, Usage Page 0xFF60 / Usage 0x61)와 통신
+   프로토콜: 요청 [cmd, seq, len, payload…] / 응답 [cmd|0x80, seq, status, len, payload…] (64바이트)
+   연결되어 있지 않으면 기존 MOCK 동작을 그대로 쓴다.
+   ============================================================ */
+(() => {
+const CMD = {INFO:0x01,STATUS:0x02,PROFILE:0x10,GET_KEYS:0x11,SET_KEYS:0x12,POLL:0x13,
+  GET_LIGHT:0x20,SET_LIGHT:0x21,CAL_REST:0x30,CAL_BOTTOM:0x31,LIVE:0x32,SAVE:0x40,LOAD:0x41,
+  FACTORY:0x42,RESET_PROFILE:0x43,SOFT_RESET:0x44,RECAL_ALL:0x45,SELF_TEST:0x46,USB_RECONNECT:0x47,CLEAR_ERROR:0x48};
+const ST_NAME = ["OK","BAD_CMD","BAD_ARG","BUSY","SAVE_FAIL"];
+const LIGHT_MODES = ["individual","library"], EFFECTS = ["normal","breathing","reactive"];
+const KEY_NAMES = hallRows.flat().map(([k]) => k);          // 펌웨어의 홀 키 인덱스 순서와 동일
+const FILTERS = [{usagePage:0xFF60, usage:0x61}];
+
+const link = { dev:null, seq:0, pending:null, chain:Promise.resolve(), cache:null, info:null };
+const isConnected = () => link.dev !== null;
+const btn = document.getElementById("connectButton");
+
+function setSidebar(text) { document.getElementById("sbStatus").textContent = text; }
+function mm(v) { return Math.round(v * 100); }
+
+/* ---------- 저수준: 요청 1개 보내고 응답 1개 기다리기 (한 번에 하나씩) ---------- */
+function rawCall(cmd, payload, timeoutMs) {
+  return new Promise((resolve, reject) => {
+    const seq = (link.seq = (link.seq + 1) & 0xFF);
+    const buf = new Uint8Array(64);
+    buf[0] = cmd; buf[1] = seq; buf[2] = payload.length; buf.set(payload, 3);
+    const timer = setTimeout(() => { link.pending = null; reject(new Error(`timeout (cmd 0x${cmd.toString(16)})`)); }, timeoutMs);
+    link.pending = { cmd, seq, resolve: r => { clearTimeout(timer); resolve(r); } };
+    link.dev.sendReport(0, buf).catch(e => { clearTimeout(timer); link.pending = null; reject(e); });
+  });
+}
+function call(cmd, payload = [], timeoutMs = 1500) {
+  const run = () => rawCall(cmd, Uint8Array.from(payload), timeoutMs).then(r => {
+    if (r.status !== 0) throw new Error(`${ST_NAME[r.status] || r.status} (cmd 0x${cmd.toString(16)})`);
+    return r.payload;
+  });
+  const p = link.chain.then(run, run);
+  link.chain = p.catch(() => {});
+  return p;
+}
+function onInput(e) {
+  const d = new Uint8Array(e.data.buffer, e.data.byteOffset, e.data.byteLength);
+  const w = link.pending;
+  if (!w || d[0] !== (w.cmd | 0x80) || d[1] !== w.seq) return;
+  link.pending = null;
+  w.resolve({status:d[2], payload:d.slice(4, 4 + d[3])});
+}
+
+/* ---------- UI 값 ↔ 바이트 ---------- */
+const le16 = (a, o) => a[o] | (a[o+1] << 8);
+function keyToBytes(s) {
+  const o = [];
+  const p16 = v => { v = Math.max(0, Math.min(65535, Math.round(v))); o.push(v & 255, v >> 8); };
+  p16(mm(s.actuation)); o.push(s.rapidTrigger ? 1 : 0); p16(mm(s.rtSensitivity));
+  p16(mm(s.topDeadzone)); p16(mm(s.bottomDeadzone)); p16(s.restRaw); p16(s.bottomRaw);
+  return o;
+}
+function bytesToKey(a, o, s) {
+  s.actuation = le16(a, o) / 100; s.rapidTrigger = a[o+2] === 1; s.rtSensitivity = le16(a, o+3) / 100;
+  s.topDeadzone = le16(a, o+5) / 100; s.bottomDeadzone = le16(a, o+7) / 100;
+  s.restRaw = le16(a, o+9); s.bottomRaw = le16(a, o+11);
+}
+function lightToBytes(l) {
+  const c = hexToRgb(l.libraryColor);
+  const o = [LIGHT_MODES.indexOf(l.mode), EFFECTS.indexOf(l.libraryEffect), c.r, c.g, c.b];
+  l.individualColors.forEach(h => { const x = hexToRgb(h); o.push(x.r, x.g, x.b); });
+  return o;
+}
+function bytesToLight(a, o, l) {
+  l.mode = LIGHT_MODES[a[o]] || "individual"; l.libraryEffect = EFFECTS[a[o+1]] || "normal";
+  l.libraryColor = rgbToHex(a[o+2], a[o+3], a[o+4]);
+  l.individualColors = [];
+  for (let i = 0; i < 10; i++) l.individualColors.push(rgbToHex(a[o+5+3*i], a[o+6+3*i], a[o+7+3*i]));
+}
+const hexs = a => Array.from(a).join(",");
+
+/* ---------- 장치 → UI ---------- */
+async function readProfile(p) {
+  const prof = profiles[p];
+  for (let s = 0; s < 61; s += 4) {
+    const c = Math.min(4, 61 - s);
+    const r = await call(CMD.GET_KEYS, [p, s, c]);
+    for (let i = 0; i < c; i++) {
+      bytesToKey(r, 3 + 13 * i, prof.keys[KEY_NAMES[s + i]]);
+      link.cache[p].keys[s + i] = hexs(keyToBytes(prof.keys[KEY_NAMES[s + i]]));
+    }
+  }
+  const poll = await call(CMD.POLL, [p]);
+  prof.pollingRate = le16(poll, 1); link.cache[p].poll = prof.pollingRate;
+  const lr = await call(CMD.GET_LIGHT, [p]);
+  bytesToLight(lr, 1, prof.lighting);
+  link.cache[p].light = hexs(lightToBytes(prof.lighting));
+}
+async function readAll() {
+  link.cache = {1:{keys:[]},2:{keys:[]},3:{keys:[]}};
+  const info = await call(CMD.INFO);
+  link.info = {proto:info[0], fw:`${info[1]}.${info[2]}.${info[3]}`,
+    devId:(info[4]|(info[5]<<8)|(info[6]<<16)|(info[7]*16777216)), active:info[11]};
+  for (const p of [1,2,3]) await readProfile(p);
+  currentProfile = link.info.active;
+  loadProfileUI();
+  appliedSnapshot = createSnapshot();
+  setConfigState("saved");
+}
+
+/* ---------- UI → 장치 (바뀐 것만 보냄) ---------- */
+async function pushAll() {
+  let sent = 0;
+  for (const p of [1,2,3]) {
+    const prof = profiles[p], cache = link.cache[p];
+    for (let s = 0; s < 61; s += 4) {
+      const c = Math.min(4, 61 - s);
+      const enc = [];
+      for (let i = 0; i < c; i++) enc.push(hexs(keyToBytes(prof.keys[KEY_NAMES[s + i]])));
+      if (enc.every((e, i) => e === cache.keys[s + i])) continue;
+      const pl = [p, s, c];
+      for (let i = 0; i < c; i++) pl.push(...keyToBytes(prof.keys[KEY_NAMES[s + i]]));
+      await call(CMD.SET_KEYS, pl);
+      enc.forEach((e, i) => cache.keys[s + i] = e); sent++;
+    }
+    if (prof.pollingRate !== cache.poll) {
+      await call(CMD.POLL, [p, prof.pollingRate & 255, prof.pollingRate >> 8]);
+      cache.poll = prof.pollingRate; sent++;
+    }
+    const lb = lightToBytes(prof.lighting);
+    if (hexs(lb) !== cache.light) { await call(CMD.SET_LIGHT, [p, ...lb]); cache.light = hexs(lb); sent++; }
+  }
+  await call(CMD.PROFILE, [currentProfile]);
+  return sent;
+}
+
+/* ---------- 연결/해제 ---------- */
+async function openDevice(dev) {
+  if (!dev.opened) await dev.open();
+  link.dev = dev; link.chain = Promise.resolve();
+  dev.addEventListener("inputreport", onInput);
+  btn.textContent = "DISCONNECT"; setSidebar("CONNECTING…");
+  try {
+    await readAll();
+    setSidebar("CONNECTED"); log(`device connected — firmware ${link.info.fw}, protocol v${link.info.proto}`, true);
+    document.getElementById("fwHome").textContent = document.getElementById("fwDevice").textContent = link.info.fw;
+  } catch (e) {
+    log("connect failed: " + e.message); await closeDevice(false);
+  }
+}
+async function closeDevice(userAction = true) {
+  const dev = link.dev; link.dev = null; link.pending = null;
+  if (dev) { dev.removeEventListener("inputreport", onInput); try { await dev.close(); } catch (e) {} }
+  btn.textContent = "CONNECT_USB"; setSidebar("DISCONNECTED [MOCK]");
+  document.getElementById("fwHome").textContent = document.getElementById("fwDevice").textContent = "0.3.0 MOCK";
+  if (userAction) log("device disconnected — mock mode");
+}
+btn.onclick = async () => {
+  if (isConnected()) return closeDevice();
+  if (!("hid" in navigator)) { log("WebHID is not supported in this browser (use Chrome or Edge)"); setSidebar("NO WEBHID [MOCK]"); return; }
+  try {
+    const [dev] = await navigator.hid.requestDevice({filters: FILTERS});
+    if (dev) await openDevice(dev);
+  } catch (e) { log("connect cancelled: " + e.message); }
+};
+if ("hid" in navigator) {
+  navigator.hid.addEventListener("disconnect", e => { if (e.device === link.dev) { closeDevice(false); log("USB disconnected"); } });
+  navigator.hid.addEventListener("connect", async e => {
+    if (!isConnected() && e.device.collections.some(c => c.usagePage === 0xFF60)) await openDevice(e.device);
+  });
+  navigator.hid.getDevices().then(async list => {
+    const d = list.find(x => x.collections.some(c => c.usagePage === 0xFF60));
+    if (d && !isConnected()) await openDevice(d);
+  }).catch(() => {});
+}
+
+/* ---------- 버튼 동작: 연결돼 있으면 장치로, 아니면 기존 MOCK 동작 ---------- */
+function wrap(id, handler) {
+  const el = document.getElementById(id), orig = el.onclick;
+  el.onclick = async ev => {
+    if (!isConnected()) return orig && orig.call(el, ev);
+    try { await handler(orig, ev); } catch (e) { log(`${id} failed: ${e.message}`); }
+  };
+}
+const reloadCurrent = async () => { await call(CMD.PROFILE, [currentProfile]); await readProfile(currentProfile); loadProfileUI(); };
+
+wrap("applyChanges", async () => {
+  const n = await pushAll();
+  appliedSnapshot = createSnapshot(); setConfigState("applied");
+  log(`configuration applied to keyboard RAM (${n} packets)`, true);
+});
+wrap("saveKeyboard", async () => {
+  const n = await pushAll();
+  await call(CMD.SAVE, [], 4000);
+  appliedSnapshot = createSnapshot(); setConfigState("saved");
+  log(`saved to keyboard flash (${n} packets)`, true);
+});
+wrap("setRest", async () => {
+  await call(CMD.PROFILE, [currentProfile]);
+  const idx = KEY_NAMES.indexOf(selectedKey), r = await call(CMD.CAL_REST, [idx]);
+  const v = le16(r, 1), s = currentKeySettings();
+  s.restRaw = v; link.cache[currentProfile].keys[idx] = hexs(keyToBytes(s));
+  document.getElementById("restRaw").textContent = v; markChanged();
+  log(`${selectedKey} rest calibration = ${v}`, true);
+});
+wrap("setBottom", async () => {
+  await call(CMD.PROFILE, [currentProfile]);
+  const idx = KEY_NAMES.indexOf(selectedKey), r = await call(CMD.CAL_BOTTOM, [idx]);
+  const v = le16(r, 1), s = currentKeySettings();
+  s.bottomRaw = v; link.cache[currentProfile].keys[idx] = hexs(keyToBytes(s));
+  document.getElementById("bottomRaw").textContent = v; markChanged();
+  log(`${selectedKey} bottom calibration = ${v}`, true);
+});
+wrap("recalibrateButton", async () => {
+  await call(CMD.PROFILE, [currentProfile]); await call(CMD.RECAL_ALL, [], 4000);
+  await readProfile(currentProfile); loadProfileUI(); markChanged();
+  log(`PROFILE_${currentProfile}: all 61 rest values re-measured`, true);
+});
+wrap("resetProfileButton", async () => {
+  if (!confirm(`Reset PROFILE_${currentProfile} to default settings?`)) return;
+  await call(CMD.RESET_PROFILE, [currentProfile]); await reloadCurrent(); markChanged();
+  log(`PROFILE_${currentProfile} restored to defaults`, true);
+});
+wrap("factoryResetButton", async () => {
+  if (!confirm("Factory reset ALL 3 profiles on the keyboard?")) return;
+  await call(CMD.FACTORY, [0xA5]); await readAll();
+  log("factory reset complete", true);
+});
+wrap("softResetButton", async () => {
+  await call(CMD.SOFT_RESET, [0xA5]);
+  log("soft reset sent — keyboard restarting, will reconnect automatically", true);
+});
+wrap("usbReconnectButton", async () => { await call(CMD.USB_RECONNECT); log("USB reconnect requested", true); });
+wrap("clearErrorButton", async () => { await call(CMD.CLEAR_ERROR); document.getElementById("lastErrorText").textContent = "NONE"; log("error register cleared", true); });
+wrap("runDiagnosticsButton", async () => {
+  const st = await call(CMD.STATUS), t = await call(CMD.SELF_TEST);
+  const up = st[3] | (st[4] << 8) | (st[5] << 16) | (st[6] * 16777216);
+  log(`status: flags=0x${st[0].toString(16)} hall=${st[1]}/61 mux=${st[2]}/8 uptime=${up}s selftest=0x${t[0].toString(16)}`, true);
+});
+
+// 테스트에서 쓰는 훅
+window.__he = {link, call, readAll, pushAll, KEY_NAMES};
+})();
 </script>
 </body>
 </html>
