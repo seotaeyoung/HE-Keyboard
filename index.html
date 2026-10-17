@@ -2784,7 +2784,7 @@ log("UI ready",true);
    ============================================================ */
 (() => {
 const CMD = {INFO:0x01,STATUS:0x02,PROFILE:0x10,GET_KEYS:0x11,SET_KEYS:0x12,POLL:0x13,NAMES:0x14,
-  GET_LIGHT:0x20,SET_LIGHT:0x21,CAL_REST:0x30,CAL_BOTTOM:0x31,LIVE:0x32,SAVE:0x40,LOAD:0x41,
+  GET_LIGHT:0x20,SET_LIGHT:0x21,CAL_REST:0x30,CAL_BOTTOM:0x31,LIVE:0x32,CAL_ALL:0x33,SAVE:0x40,LOAD:0x41,
   FACTORY:0x42,RESET_PROFILE:0x43,SOFT_RESET:0x44,RECAL_ALL:0x45,SELF_TEST:0x46,USB_RECONNECT:0x47,CLEAR_ERROR:0x48};
 const ST_NAME = ["OK","BAD_CMD","BAD_ARG","BUSY","SAVE_FAIL"];
 const LIGHT_MODES = ["individual","library"], EFFECTS = ["normal","breathing","reactive"];
@@ -3242,6 +3242,58 @@ const COMMANDS = {
     if (!["rest","bottom"].includes(a[0])) throw new Error("cal rest|bottom [key]");
     if (a[1]) { selectedKey = parseKeys(a[1])[0]; loadSelectedKey(); updateKeyboardVisual(); }
     click(a[0] === "rest" ? "setRest" : "setBottom");
+  }},
+  calall: { usage: "calall [done|cancel]", info: "calibrate the bottom of ALL keys: run calall, press every key fully down once, then calall done", run(a) {
+    const he = window.__he; if (!he.isConnected()) throw new Error("not connected");
+    const names = r => { const o = []; for (let i = 0; i < 61; i++) if (r[1 + (i >> 3)] & (1 << (i & 7))) o.push(KEY_NAMES[i]); return o; };
+    if (window.__calallTimer) { clearInterval(window.__calallTimer); window.__calallTimer = null; }
+    if (a[0] === "cancel") { he.call(he.CMD.CAL_ALL, [3]).then(() => say("calall cancelled", true)).catch(e => say("calall: " + e.message)); return; }
+    if (a[0] === "done") {
+      he.call(he.CMD.CAL_ALL, [2]).then(async r => {
+        if (!r[0]) { say("calall: no key was pressed down far enough — nothing changed"); return; }
+        say(`bottom calibrated: ${r[0]} key(s): ${names(r).join(" ")}`, true);
+        await he.call(he.CMD.SAVE, []);
+        await he.readAll();
+        say("saved to the keyboard flash (all 3 profiles updated)", true);
+      }).catch(e => say("calall: " + e.message));
+      return;
+    }
+    he.call(he.CMD.CAL_ALL, [0]).then(() => {
+      say("calall: press EVERY key you want to calibrate fully down, one by one, holding ~0.5 s.", true);
+      say("calall: when finished type  calall done   (or  calall cancel)", true);
+      let last = -1;
+      window.__calallTimer = setInterval(() => {
+        he.call(he.CMD.CAL_ALL, [1]).then(r => {
+          if (r[0] !== last) { last = r[0]; say(`captured ${r[0]}: ${names(r).join(" ")}`); }
+        }).catch(() => { clearInterval(window.__calallTimer); window.__calallTimer = null; });
+      }, 400);
+    }).catch(e => say("calall: " + e.message));
+  }},
+  mechtest: { usage: "mechtest [seconds]", info: "show which mechanical-matrix keys are pressed (default 30 s) to test switches / ghosting", run(a) {
+    const he = window.__he; if (!he.isConnected()) throw new Error("not connected");
+    const HID = [0x29,0x3A,0x3B,0x3C,0x3D,0x3E,0x3F,0x40,0x41,0x42,0x43,0x44,0x45,0x46,0x47,0x48,0x49,0x4A,0x4B,0x4C,0x4D,0x4E,0x52,0x50,0x51,0x4F,0x53,0x54,0x55,0x56,0x5F,0x60,0x61,0x57,0x5C,0x5D,0x5E,0x59,0x5A,0x5B,0x58,0x62,0x63];
+    const NM = {0x29:"Esc",0x46:"PrtSc",0x47:"ScrLk",0x48:"Pause",0x49:"Ins",0x4A:"Home",0x4B:"PgUp",0x4C:"Del",0x4D:"End",0x4E:"PgDn",0x4F:"Right",0x50:"Left",0x51:"Down",0x52:"Up",0x53:"NumLk",0x54:"KP/",0x55:"KP*",0x56:"KP-",0x57:"KP+",0x58:"KPEnter",0x62:"KP0",0x63:"KP."};
+    for (let i = 0; i < 12; i++) NM[0x3A + i] = "F" + (i + 1);
+    for (let i = 0; i < 9; i++) NM[0x59 + i] = "KP" + (i + 1);
+    const nameOf = k => NM[HID[k]] || ("0x" + HID[k].toString(16));
+    const secs = Math.max(5, Math.min(300, Number(a[0]) || 30));
+    const seen = new Set(); let lastSig = "";
+    say(`mechtest: press mechanical keys for ${secs} s (hold several at once to check ghosting)...`, true);
+    const t0 = Date.now();
+    const timer = setInterval(() => {
+      if (Date.now() - t0 > secs * 1000) {
+        clearInterval(timer);
+        const miss = []; for (let k = 0; k < 43; k++) if (!seen.has(k)) miss.push(nameOf(k));
+        say(`mechtest done: ${seen.size}/43 keys seen. never pressed: ${miss.join(" ") || "-"}`, true); return;
+      }
+      he.call(he.CMD.LIVE, [0xE0 + 26, 5]).then(r => {
+        const v = i => r[2 + 2 * i] | (r[3 + 2 * i] << 8);
+        const now = [];
+        for (let k = 0; k < 43; k++) if (v(k >> 4) & (1 << (k & 15))) { now.push(nameOf(k)); seen.add(k); }
+        const sig = now.join(" ");
+        if (sig !== lastSig) { lastSig = sig; if (now.length) say(`pressed (${now.length}): ${sig}`); }
+      }).catch(() => {});
+    }, 50);
   }},
   recal: { usage: "recal", info: "re-measure rest value of all 61 keys (keep keys released)", run() { click("recalibrateButton"); } },
   apply: { usage: "apply", info: "send pending changes to the keyboard RAM", run() { click("applyChanges"); } },
