@@ -3098,6 +3098,24 @@ const COMMANDS = {
       say(lines.join("\n"));
     })().catch(e => say("raw: " + e.message));
   }},
+  watch: { usage: "watch <key> [seconds]", info: "stream raw ADC of one key (default 15 s), prints min/max at the end", run(a) {
+    const he = window.__he; if (!he.isConnected()) throw new Error("not connected");
+    if (!a[0]) throw new Error("watch <key> [seconds]");
+    const name = parseKeys(a[0])[0], i = he.KEY_NAMES.indexOf(name);
+    if (i < 0) throw new Error("unknown key");
+    const sec = Math.max(1, Math.min(120, Number(a[1]) || 15));
+    (async () => {
+      const t0 = performance.now(); let first = null, last = -1e9, mn = 65535, mx = 0;
+      say(`watching ${name} (idx ${i}) for ${sec}s - press and release the switch slowly`);
+      while (performance.now() - t0 < sec * 1000) {
+        const r = await he.call(he.CMD.LIVE, [i, 1]); const v = r[2] | (r[3] << 8);
+        if (first === null) first = v; mn = Math.min(mn, v); mx = Math.max(mx, v);
+        if (Math.abs(v - last) > 40) { last = v; say(`${name}: ${v}  (${v - first >= 0 ? "+" : ""}${v - first})`); }
+        await new Promise(r => setTimeout(r, 30));
+      }
+      say(`done: start=${first} min=${mn} max=${mx} (range ${mx - mn})`, true);
+    })().catch(e => say("watch: " + e.message));
+  }},
   keys: { usage: "keys", info: "list hall key names", run() { say(hallRows.map((r, i) => `row${i + 1}: ` + r.map(([k]) => k).join(" ")).join("\n")); } },
   profile: { usage: "profile [1|2|3]", info: "show or switch the active profile", run(a) {
     if (!a[0]) return say(`active profile = ${currentProfile}`);
