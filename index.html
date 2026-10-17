@@ -3321,7 +3321,7 @@ const COMMANDS = {
   }},
   calall: { usage: "calall [done|cancel]", info: "calibrate the bottom of ALL keys: run calall, press every key fully down once, then calall done", run(a) {
     const he = window.__he; if (!he.isConnected()) throw new Error("not connected");
-    const names = r => { const o = []; for (let i = 0; i < 61; i++) if (r[1 + (i >> 3)] & (1 << (i & 7))) o.push(KEY_NAMES[i]); return o; };
+    const names = r => { const o = []; for (let i = 0; i < 61; i++) if (r[1 + (i >> 3)] & (1 << (i & 7))) o.push(window.__he.KEY_NAMES[i]); return o; };
     if (window.__calallTimer) { clearInterval(window.__calallTimer); window.__calallTimer = null; }
     if (a[0] === "cancel") { he.call(he.CMD.CAL_ALL, [3]).then(() => say("calall cancelled", true)).catch(e => say("calall: " + e.message)); return; }
     if (a[0] === "done") {
