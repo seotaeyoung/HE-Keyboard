@@ -3392,7 +3392,8 @@ const COMMANDS = {
       if (Math.abs(k.rest - 32768) <= 600) f.push("no magnet/switch? (rest≈32768)");
       else {
         if (Math.abs(k.rest - mr) > 1500) f.push(`rest off by ${k.rest - mr}`);
-        if (k.span < 8000) f.push("not pressed to the bottom yet");
+        if (k.span === 11000) f.push("span is exactly the default 11000 → probably never pressed to the bottom (press it fully)");
+        else if (k.span < 8000) f.push("not pressed to the bottom yet");
         else if (k.span < ms * 0.8) f.push(`weak span (${Math.round(k.span / ms * 100)}% of median)`);
         else if (k.span > ms * 1.25) f.push(`strong span (${Math.round(k.span / ms * 100)}% of median)`);
       }
