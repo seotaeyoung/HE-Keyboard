@@ -955,6 +955,9 @@ input[type="range"] { width: 100%; accent-color: var(--purple); }
     white-space: nowrap;
 }
 
+.health-bad { color: #fb7185; white-space: nowrap; }
+.health-bad i { display: inline-block; width: 7px; height: 7px; margin-right: 6px; border-radius: 50%; background: #fb7185; box-shadow: 0 0 7px rgba(251,113,133,.8); }
+
 .health-ok i {
     display: inline-block;
     width: 7px;
@@ -1508,7 +1511,7 @@ input[type="range"] { width: 100%; accent-color: var(--purple); }
         </div>
 
         <div class="mock-slider-row">
-            <div class="mock-slider-label">MOCK_SENSOR</div>
+            <div class="mock-slider-label" id="sensorLabel">MOCK_SENSOR</div>
             <input id="travel" type="range" min="0" max="400" value="0">
         </div>
     </div>
@@ -1540,8 +1543,8 @@ input[type="range"] { width: 100%; accent-color: var(--purple); }
             <div class="panel-title">PERFORMANCE</div>
             <div class="performance-row"><span>USB Polling</span><span id="performancePolling">8000 Hz</span></div>
             <div class="performance-row"><span>Report Interval</span><span id="reportInterval">0.125 ms</span></div>
-            <div class="performance-row"><span>Hall Scan</span><span>~40 kHz MOCK</span></div>
-            <div class="performance-row"><span>USB Mode</span><span>HID HS</span></div>
+            <div class="performance-row"><span>Hall Scan</span><span id="perfScan">~40 kHz MOCK</span></div>
+            <div class="performance-row"><span>USB Mode</span><span id="perfUsb">HID HS</span></div>
         </div>
     </div>
 
@@ -1703,9 +1706,9 @@ input[type="range"] { width: 100%; accent-color: var(--purple); }
             <div class="panel-title">DEVICE_HEALTH</div>
             <div class="health-row"><span>USB</span><span class="health-ok"><i></i> ONLINE</span></div>
             <div class="health-row"><span>MCU</span><span class="health-ok"><i></i> READY</span></div>
-            <div class="health-row"><span>HALL_ARRAY</span><span class="health-ok"><i></i> 61 / 61 MOCK</span></div>
-            <div class="health-row"><span>MUX</span><span class="health-ok"><i></i> 8 / 8 MOCK</span></div>
-            <div class="health-row"><span>REAR_LED</span><span class="health-ok"><i></i> 10 / 10 MOCK</span></div>
+            <div class="health-row"><span>HALL_ARRAY</span><span class="health-ok" id="hHall"><i></i> 61 / 61 MOCK</span></div>
+            <div class="health-row"><span>MUX</span><span class="health-ok" id="hMux"><i></i> 8 / 8 MOCK</span></div>
+            <div class="health-row"><span>REAR_LED</span><span class="health-ok" id="hLed"><i></i> 10 / 10 MOCK</span></div>
             <div class="health-row"><span>LAST_ERROR</span><span id="lastErrorText">NONE</span></div>
 
             <div class="device-live-box">
@@ -2924,6 +2927,44 @@ async function pushAll() {
   return sent;
 }
 
+
+/* ---------- 실시간 값: 연결되면 센서 눌림 깊이/스캔 속도/USB 속도/상태를 장치에서 읽어 표시 ---------- */
+const MOCK_TEXT = {scan:"~40 kHz MOCK", usb:"HID HS", hall:"61 / 61 MOCK", mux:"8 / 8 MOCK", led:"10 / 10 MOCK"};
+function setHealth(id, text, ok) {
+  const el = document.getElementById(id); el.innerHTML = `<i></i> ${text}`; el.className = ok ? "health-ok" : "health-bad";
+}
+let liveBusy = false, liveTick = 0;
+async function liveStep() {
+  if (!isConnected() || liveBusy) return;
+  liveBusy = true;
+  try {
+    const idx = KEY_NAMES.indexOf(selectedKey);
+    if (idx >= 0) {
+      const r = await call(CMD.LIVE, [idx, 1], 600), raw = le16(r, 2);
+      const k = currentKeySettings(), span = k.bottomRaw - k.restRaw;
+      let d = Math.abs(span) < 300 ? 0 : (raw - k.restRaw) * 4 / span;
+      d = Math.max(0, Math.min(4, d));
+      travel.value = Math.round(d * 100); travel.dispatchEvent(new Event("input"));
+    }
+    if ((liveTick++ % 8) === 0) {
+      const d = await call(CMD.LIVE, [0xE0 + 12, 1], 600), hz = le16(d, 2);
+      document.getElementById("perfScan").textContent = hz >= 1000 ? `${(hz / 1000).toFixed(2)} kHz` : `${hz} Hz`;
+      const u = await call(CMD.LIVE, [0xE0 + 31, 1], 600);
+      document.getElementById("perfUsb").textContent = le16(u, 2) === 2 ? "HID HS (480M)" : "HID FS (12M)";
+      const st = await call(CMD.STATUS, [], 600);
+      setHealth("hHall", `${st[1]} / 61`, st[1] === 61);
+      setHealth("hMux", `${st[2]} / 8`, st[2] === 8);
+      setHealth("hLed", "10 (output only)", true);
+    }
+  } catch (e) {} finally { liveBusy = false; }
+}
+setInterval(liveStep, 120);
+function liveReset() {
+  document.getElementById("perfScan").textContent = MOCK_TEXT.scan; document.getElementById("perfUsb").textContent = MOCK_TEXT.usb;
+  setHealth("hHall", MOCK_TEXT.hall, true); setHealth("hMux", MOCK_TEXT.mux, true); setHealth("hLed", MOCK_TEXT.led, true);
+  document.getElementById("sensorLabel").textContent = "MOCK_SENSOR"; travel.disabled = false;
+}
+
 /* ---------- 연결/해제 ---------- */
 async function openDevice(dev) {
   if (!dev.opened) await dev.open();
@@ -2934,6 +2975,7 @@ async function openDevice(dev) {
     await readAll();
     setSidebar("CONNECTED"); log(`device connected — firmware ${link.info.fw}, protocol v${link.info.proto}`, true);
     document.getElementById("fwHome").textContent = document.getElementById("fwDevice").textContent = link.info.fw;
+    document.getElementById("sensorLabel").textContent = "LIVE_SENSOR"; travel.disabled = true;
   } catch (e) {
     log("connect failed: " + e.message); await closeDevice(false);
   }
@@ -2943,6 +2985,7 @@ async function closeDevice(userAction = true) {
   if (dev) { dev.removeEventListener("inputreport", onInput); try { await dev.close(); } catch (e) {} }
   btn.textContent = "CONNECT_USB"; setSidebar("DISCONNECTED [MOCK]");
   document.getElementById("fwHome").textContent = document.getElementById("fwDevice").textContent = "0.3.0 MOCK";
+  liveReset();
   if (userAction) log("device disconnected — mock mode");
 }
 btn.onclick = async () => {
