@@ -3118,9 +3118,9 @@ const COMMANDS = {
   }},
   dbg: { usage: "dbg", info: "firmware debug counters (v0.4b+)", run() {
     const he = window.__he; if (!he.isConnected()) throw new Error("not connected");
-    he.call(he.CMD.LIVE, [0xE0, 19]).then(r => {
+    he.call(he.CMD.LIVE, [0xE0, 26]).then(r => {
       const v = i => r[2 + 2*i] | (r[3 + 2*i] << 8);
-      say(`reports_sent=${v(0)}  send_not_ready=${v(1)}  hall_pressed_now=${v(2)}  W_travel(0.01mm)=${v(3)}  W_pressed=${v(4)}  loops=${v(5)}  scans=${v(6)}  adc_err=${v(7)}  scan_rate=${v(12)}Hz  time_us[usb/scan/keys]=${v(13)}/${v(14)}/${v(15)}  adc_clk=${v(16)}kHz boost=${v(17)} presc_code=${v(18)}\n kbd_in_done=${v(8)}  raw_in_done=${v(9)}  led_out_reports=${v(10)}  usb_state(1=mounted,2=suspended,4=kbd_ready)=${v(11)}`);
+      say(`reports_sent=${v(0)}  send_not_ready=${v(1)}  hall_pressed_now=${v(2)}  W_travel(0.01mm)=${v(3)}  W_pressed=${v(4)}  loops=${v(5)}  scans=${v(6)}  adc_err=${v(7)}  scan_rate=${v(12)}Hz  time_us[usb/scan/keys]=${v(13)}/${v(14)}/${v(15)}  adc_clk=${v(16)}kHz boost=${v(17)} presc_code=${v(18)}\n bench(0.1us per 4ch, smp1..5)=${v(19)}/${v(20)}/${v(21)}/${v(22)}/${v(23)}  settle700=${v(24)}  now=${v(25)}\n kbd_in_done=${v(8)}  raw_in_done=${v(9)}  led_out_reports=${v(10)}  usb_state(1=mounted,2=suspended,4=kbd_ready)=${v(11)}`);
     }).catch(e => say("dbg: " + e.message));
   }},
   keytest: { usage: "keytest", info: "show browser keydown events for 10 s (click the page first, then press keys)", run() {
