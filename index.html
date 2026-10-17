@@ -460,6 +460,7 @@ button, input, select { font-family: inherit; }
 .key:hover { border-color: #685091; }
 .key.current { border: 2px solid var(--purple); box-shadow: 0 0 9px rgba(139,92,246,.38); }
 .key.multi { border: 2px solid var(--orange); }
+.kk.mech-key.pressed { background: #123622; border-color: var(--green); color: #bdffd4; }
 .key.pressed { background: #123622; border-color: var(--green); color: #bdffd4; }
 .mech-key {
     padding: 0 1px;
@@ -2933,11 +2934,37 @@ const MOCK_TEXT = {scan:"~40 kHz MOCK", usb:"HID HS", hall:"61 / 61 MOCK", mux:"
 function setHealth(id, text, ok) {
   const el = document.getElementById(id); el.innerHTML = `<i></i> ${text}`; el.className = ok ? "health-ok" : "health-bad";
 }
-let liveBusy = false, liveTick = 0;
+let liveBusy = false, liveTick = 0, lastActive = null; const lastDevLight = {};
+const MECH_HID = [0x29,0x3A,0x3B,0x3C,0x3D,0x3E,0x3F,0x40,0x41,0x42,0x43,0x44,0x45,0x46,0x47,0x48,0x49,0x4A,0x4B,0x4C,0x4D,0x4E,0x52,0x50,0x51,0x4F,0x53,0x54,0x55,0x56,0x5F,0x60,0x61,0x57,0x5C,0x5D,0x5E,0x59,0x5A,0x5B,0x58,0x62,0x63];
+const MECH_LABEL = {0x29:"Esc",0x46:"PrtSc",0x47:"ScrLk",0x48:"Pause",0x49:"Ins",0x4A:"Home",0x4B:"PgUp",0x4C:"Del",0x4D:"End",0x4E:"PgDn",
+  0x52:"↑",0x50:"←",0x51:"↓",0x4F:"→",0x53:"Num",0x54:"/",0x55:"*",0x56:"-",0x57:"+",0x58:"Enter",0x62:"0",0x63:"."};
+for (let i = 0; i < 12; i++) MECH_LABEL[0x3A + i] = "F" + (i + 1);
+for (let i = 0; i < 9; i++) MECH_LABEL[0x59 + i] = String(i + 1);
 async function liveStep() {
   if (!isConnected() || liveBusy) return;
   liveBusy = true;
   try {
+    // 키보드 쪽에서 바뀐 것(Fn 조합, 노브)을 화면에 반영: 프로파일, 조명(밝기/효과)
+    if ((liveTick % 4) === 3) {
+      const info = await call(CMD.INFO, [], 600), act = info[11];
+      if (lastActive !== null && act !== lastActive) { currentProfile = act; loadProfileUI(); log(`profile ${act} selected on keyboard`, true); }
+      lastActive = act;
+      const lr = await call(CMD.GET_LIGHT, [act], 600), hx = hexs(lr.slice(1, 37));
+      if (lastDevLight[act] !== undefined && hx !== lastDevLight[act]) {
+        bytesToLight(lr, 1, profiles[act].lighting);
+        link.cache[act].light = hexs(lightToBytes(profiles[act].lighting));
+        if (currentProfile === act) loadLightingUI();
+      }
+      lastDevLight[act] = hx;
+    }
+    // 눌린 키 표시: 홀 61키 + 기계식 43키 (장치가 판정한 실제 눌림)
+    const pb = await call(CMD.LIVE, [0xE0 + 26, 10], 600), pv = i => le16(pb, 2 + 2 * i);
+    const hallPressed = k => (pv(6 + (k >> 4)) >> (k & 15)) & 1;
+    const prof = currentProfileData();
+    KEY_NAMES.forEach((name, k) => { if (prof.keys[name]) prof.keys[name].pressed = !!hallPressed(k); });
+    const mechOn = new Set();
+    for (let k = 0; k < 43; k++) if ((pv(k >> 4) >> (k & 15)) & 1) mechOn.add(MECH_LABEL[MECH_HID[k]]);
+    document.querySelectorAll("#keyboard .mech-key").forEach(el => el.classList.toggle("pressed", mechOn.has(el.textContent)));
     const idx = KEY_NAMES.indexOf(selectedKey);
     if (idx >= 0) {
       const r = await call(CMD.LIVE, [idx, 1], 600), raw = le16(r, 2);
@@ -2945,7 +2972,10 @@ async function liveStep() {
       let d = Math.abs(span) < 300 ? 0 : (raw - k.restRaw) * 4 / span;
       d = Math.max(0, Math.min(4, d));
       travel.value = Math.round(d * 100); travel.dispatchEvent(new Event("input"));
+      k.pressed = !!hallPressed(idx);                       // 눌림 여부는 웹 계산이 아니라 장치 판정을 사용
+      updateTravelUI();
     }
+    updateKeyboardVisual();
     if ((liveTick++ % 8) === 0) {
       const d = await call(CMD.LIVE, [0xE0 + 12, 1], 600), hz = le16(d, 2);
       document.getElementById("perfScan").textContent = hz >= 1000 ? `${(hz / 1000).toFixed(2)} kHz` : `${hz} Hz`;
@@ -2960,6 +2990,8 @@ async function liveStep() {
 }
 setInterval(liveStep, 120);
 function liveReset() {
+  lastActive = null; for (const k in lastDevLight) delete lastDevLight[k];
+  document.querySelectorAll("#keyboard .mech-key.pressed").forEach(el => el.classList.remove("pressed"));
   document.getElementById("perfScan").textContent = MOCK_TEXT.scan; document.getElementById("perfUsb").textContent = MOCK_TEXT.usb;
   setHealth("hHall", MOCK_TEXT.hall, true); setHealth("hMux", MOCK_TEXT.mux, true); setHealth("hLed", MOCK_TEXT.led, true);
   document.getElementById("sensorLabel").textContent = "MOCK_SENSOR"; travel.disabled = false;
