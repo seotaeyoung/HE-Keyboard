@@ -1568,6 +1568,15 @@ input[type="range"] { width: 100%; accent-color: var(--purple); }
         <button id="lightingLibraryTab" data-lighting-mode="library">LIBRARY</button>
     </div>
 
+    <div class="panel" style="margin-bottom:14px">
+        <div class="panel-title">BRIGHTNESS</div>
+        <div style="display:flex;align-items:center;gap:14px">
+            <input id="lightingBrightness" type="range" min="0" max="100" step="1" value="25" style="flex:1">
+            <span id="lightingBrightnessValue" style="min-width:48px;text-align:right;color:#d7dce7;font-size:13px">25%</span>
+        </div>
+        <div class="lighting-note">Applies to all rear LEDs of this profile. The firmware lowers it automatically if the estimated LED current would exceed 150 mA (USB 500 mA limit).</div>
+    </div>
+
     <div class="lighting-grid">
         <div class="panel lighting-preview-panel">
             <div class="panel-title">KEYBOARD_REAR_LIGHTING_PREVIEW</div>
@@ -1901,7 +1910,8 @@ function makeDefaultLighting() {
         mode: "individual",
         individualColors: Array(10).fill("#8b5cf6"),
         libraryEffect: "normal",
-        libraryColor: "#8b5cf6"
+        libraryColor: "#8b5cf6",
+        brightness: 25
     };
 }
 
@@ -2402,11 +2412,21 @@ function loadLightingUI() {
     document.querySelectorAll(".effect-card").forEach(button => {
         button.classList.toggle("active",button.dataset.effect === lighting.libraryEffect);
     });
+    if (lighting.brightness == null) lighting.brightness = 25;
+    document.getElementById("lightingBrightness").value = lighting.brightness;
+    document.getElementById("lightingBrightnessValue").textContent = lighting.brightness + "%";
     selectedLed = clamp(selectedLed,0,DEVICE_INFO.rearLedCount-1);
     loadIndividualColorControls();
     loadLibraryColorControls();
     renderLightingPreview();
 }
+
+document.getElementById("lightingBrightness").addEventListener("input", event => {
+    const v = clamp(Number(event.target.value), 0, 100);
+    currentLighting().brightness = v;
+    document.getElementById("lightingBrightnessValue").textContent = v + "%";
+    markChanged();
+});
 
 document.querySelectorAll("[data-lighting-mode]").forEach(button => {
     button.onclick = () => {
@@ -2824,6 +2844,7 @@ function lightToBytes(l) {
   const c = hexToRgb(l.libraryColor);
   const o = [LIGHT_MODES.indexOf(l.mode), EFFECTS.indexOf(l.libraryEffect), c.r, c.g, c.b];
   l.individualColors.forEach(h => { const x = hexToRgb(h); o.push(x.r, x.g, x.b); });
+  o.push(Math.max(0, Math.min(100, Math.round(l.brightness ?? 25))));
   return o;
 }
 function bytesToLight(a, o, l) {
@@ -2831,6 +2852,7 @@ function bytesToLight(a, o, l) {
   l.libraryColor = rgbToHex(a[o+2], a[o+3], a[o+4]);
   l.individualColors = [];
   for (let i = 0; i < 10; i++) l.individualColors.push(rgbToHex(a[o+5+3*i], a[o+6+3*i], a[o+7+3*i]));
+  l.brightness = a[o+35] ?? 25;
 }
 const hexs = a => Array.from(a).join(",");
 
@@ -3191,6 +3213,14 @@ const COMMANDS = {
       } else throw new Error(`unknown option "${a[i]}"`);
     }
     say(`light: mode=${L.mode} effect=${L.libraryEffect} color=${L.libraryColor} (draft)`, true);
+  }},
+  bright: { usage: "bright [0-100]", info: "rear LED brightness in % (current profile)", run(a) {
+    const L = currentLighting();
+    if (!a.length) return say(`brightness=${L.brightness ?? 25}%`);
+    const v = Number(a[0]);
+    if (!Number.isFinite(v) || v < 0 || v > 100) throw new Error("bright 0-100");
+    L.brightness = Math.round(v); markChanged(); loadLightingUI();
+    say(`brightness=${L.brightness}% (draft — APPLY_CHANGES to send)`, true);
   }},
   led: { usage: "led <1-10|all> <colour>", info: "set individual rear LED colour (individual mode)", run(a) {
     if (a.length < 2) throw new Error("led <1-10|all> <#rrggbb | r g b | name>");
