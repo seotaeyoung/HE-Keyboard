@@ -3371,6 +3371,38 @@ const COMMANDS = {
       }).catch(() => {});
     }, 50);
   }},
+  survey: { usage: "survey", info: "check all 61 hall keys: rest/bottom spread, keys not pressed fully yet, missing magnets (press every key to the bottom first)", run() {
+    const he = window.__he; if (!he.isConnected()) throw new Error("not connected");
+    (async () => {
+    const rows = [];
+    for (let st = 0; st < 61; st += 4) {
+      const c = Math.min(4, 61 - st);
+      const r = await he.call(he.CMD.GET_KEYS, [currentProfile, st, c]);
+      for (let i = 0; i < c; i++) {
+        const o = 3 + 13 * i, rest = r[o + 9] | (r[o + 10] << 8), bottom = r[o + 11] | (r[o + 12] << 8);
+        rows.push({name: he.KEY_NAMES[st + i], rest, bottom, span: bottom - rest});
+      }
+    }
+    const med = a => { const b = [...a].sort((x, y) => x - y); return b[b.length >> 1]; };
+    const real = rows.filter(k => Math.abs(k.rest - 32768) > 600);          // 자석 스위치가 꽂힌 것으로 보이는 키
+    const mr = med(real.map(k => k.rest)), ms = med(real.map(k => k.span));
+    const bad = [];
+    for (const k of rows) {
+      const f = [];
+      if (Math.abs(k.rest - 32768) <= 600) f.push("no magnet/switch? (rest≈32768)");
+      else {
+        if (Math.abs(k.rest - mr) > 1500) f.push(`rest off by ${k.rest - mr}`);
+        if (k.span < 8000) f.push("not pressed to the bottom yet");
+        else if (k.span < ms * 0.8) f.push(`weak span (${Math.round(k.span / ms * 100)}% of median)`);
+        else if (k.span > ms * 1.25) f.push(`strong span (${Math.round(k.span / ms * 100)}% of median)`);
+      }
+      if (f.length) bad.push(`  ${k.name.padEnd(7)} rest=${k.rest} bottom=${k.bottom} span=${k.span}  ← ${f.join(", ")}`);
+    }
+    const sp = real.map(k => k.span);
+    say(`survey: ${real.length}/61 keys have a magnetic switch. rest median=${mr} (min ${Math.min(...real.map(k => k.rest))} max ${Math.max(...real.map(k => k.rest))}), span median=${ms} (min ${Math.min(...sp)} max ${Math.max(...sp)})\n` +
+        (bad.length ? `check these ${bad.length} keys:\n` + bad.join("\n") : "all keys look uniform"));
+    })().catch(e => say("survey: " + e.message));
+  }},
   recal: { usage: "recal", info: "re-measure rest value of all 61 keys (keep keys released)", run() { click("recalibrateButton"); } },
   apply: { usage: "apply", info: "send pending changes to the keyboard RAM", run() { click("applyChanges"); } },
   save: { usage: "save", info: "save to the keyboard flash", run() { click("saveKeyboard"); } },
