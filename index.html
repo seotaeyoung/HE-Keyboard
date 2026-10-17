@@ -3081,6 +3081,23 @@ const COMMANDS = {
         `profile    : ${currentProfile}   polling: ${p.pollingRate} Hz   rapid trigger: ${rt}/61 keys\n` +
         `config     : ${configState}\nhall switch: ${switchNames.hall}\nmech switch: ${switchNames.mech}`);
   }},
+  raw: { usage: "raw [samples]", info: "read raw ADC of all 61 hall keys (samples>1 also shows noise p-p)", run(a) {
+    const he = window.__he; if (!he.isConnected()) throw new Error("not connected");
+    const n = Math.max(1, Math.min(200, Number(a[0]) || 1));
+    (async () => {
+      const sum = new Array(61).fill(0), mn = new Array(61).fill(65535), mx = new Array(61).fill(0);
+      for (let t = 0; t < n; t++) {
+        for (let s0 = 0; s0 < 61; s0 += 28) {
+          const c = Math.min(28, 61 - s0), r = await he.call(he.CMD.LIVE, [s0, c]);
+          for (let i = 0; i < c; i++) { const v = r[2 + 2*i] | (r[3 + 2*i] << 8); sum[s0+i] += v; mn[s0+i] = Math.min(mn[s0+i], v); mx[s0+i] = Math.max(mx[s0+i], v); }
+        }
+      }
+      let idx = 0; const lines = [];
+      hallRows.forEach((row, ri) => { lines.push(`row${ri+1}: ` + row.map(([k]) => { const i = idx++;
+        return `${k}=${Math.round(sum[i]/n)}` + (n > 1 ? `(±${mx[i]-mn[i]})` : ""); }).join("  ")); });
+      say(lines.join("\n"));
+    })().catch(e => say("raw: " + e.message));
+  }},
   keys: { usage: "keys", info: "list hall key names", run() { say(hallRows.map((r, i) => `row${i + 1}: ` + r.map(([k]) => k).join(" ")).join("\n")); } },
   profile: { usage: "profile [1|2|3]", info: "show or switch the active profile", run(a) {
     if (!a[0]) return say(`active profile = ${currentProfile}`);
