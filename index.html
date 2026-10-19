@@ -1875,7 +1875,7 @@ const hallRows = [
     [["Tab",6],["Q",4],["W",4],["E",4],["R",4],["T",4],["Y",4],["U",4],["I",4],["O",4],["P",4],["[",4],["]",4],["\\",6]],
     [["Caps",7],["A",4],["S",4],["D",4],["F",4],["G",4],["H",4],["J",4],["K",4],["L",4],[";",4],["'",4],["Enter",9]],
     [["LShift",9],["Z",4],["X",4],["C",4],["V",4],["B",4],["N",4],["M",4],[",",4],[".",4],["/",4],["RShift",11]],
-    [["LCtrl",5],["LWin",5],["LAlt",5],["Space",25],["RAlt",5],["Fn",5],["Menu",5],["RCtrl",5]]
+    [["LCtrl",5],["LWin",5],["LAlt",5],["Space",25],["RAlt",5],["RWin",5],["Fn",5],["RCtrl",5]]
 ];
 
 const functionKeys = ["Esc",null,"F1","F2","F3","F4",null,"F5","F6","F7","F8",null,"F9","F10","F11","F12","PrtSc","ScrLk","Pause"];
@@ -3221,17 +3221,17 @@ const COMMANDS = {
       say(`reports_sent=${v(0)}  send_not_ready=${v(1)}  hall_pressed_now=${v(2)}  W_travel(0.01mm)=${v(3)}  W_pressed=${v(4)}  loops=${v(5)}  scans=${v(6)}  adc_err=${v(7)}  scan_rate=${v(12)}Hz  time_us[usb/scan/keys]=${v(13)}/${v(14)}/${v(15)}  adc_clk=${v(16)}kHz boost=${v(17)} presc_code=${v(18)}\n bench(0.1us per 4ch, smp1..5)=${v(19)}/${v(20)}/${v(21)}/${v(22)}/${v(23)}  settle700=${v(24)}  now=${v(25)}\n kbd_in_done=${v(8)}  raw_in_done=${v(9)}  led_out_reports=${v(10)}  usb_state(1=mounted,2=suspended,4=kbd_ready)=${v(11)}`);
     }).catch(e => say("dbg: " + e.message));
   }},
-  knob: { usage: "knob [seconds]", info: "watch the 3-position knob (fw 0.7.7+): raw pins, confirmed position, contact flicker count, shortcuts sent", run(a) {
+  knob: { usage: "knob [seconds]", info: "watch the 3-position knob (fw 0.7.7+): raw pins, confirmed position, active layout, contact flicker count", run(a) {
     const he = window.__he; if (!he.isConnected()) throw new Error("not connected");
     const sec = Math.max(1, Math.min(300, Number(a[0]) || 30));
     (async () => {
       const t0 = performance.now(); let prev = "";
       say(`watching knob for ${sec}s - turn it through all 3 positions (pins: 1=HIGH)`);
       while (performance.now() - t0 < sec * 1000) {
-        const r = await he.call(he.CMD.LIVE, [0xF0, 24]);
+        const r = await he.call(he.CMD.LIVE, [0xF0, 25]);
         const v = i => r[2 + 2*i] | (r[3 + 2*i] << 8);
-        const raw = v(20), pos = v(21), edges = v(22), combos = v(23);
-        const cur = `PC6=${raw & 1} PC7=${(raw >> 1) & 1}  position=${pos === 255 ? "none" : pos + 1}  pin_changes=${edges}  shortcuts_sent=${combos}`;
+        const raw = v(20), pos = v(21), edges = v(22), combos = v(23), lay = v(24);
+        const cur = `PC6=${raw & 1} PC7=${(raw >> 1) & 1}  position=${pos === 255 ? "none" : pos + 1}  layout=${lay === 0 ? "normal" : "right-hand " + lay}  pin_changes=${edges}`;
         if (cur !== prev) { say(cur); prev = cur; }
         await new Promise(r => setTimeout(r, 40));
       }
