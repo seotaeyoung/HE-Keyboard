@@ -3221,6 +3221,23 @@ const COMMANDS = {
       say(`reports_sent=${v(0)}  send_not_ready=${v(1)}  hall_pressed_now=${v(2)}  W_travel(0.01mm)=${v(3)}  W_pressed=${v(4)}  loops=${v(5)}  scans=${v(6)}  adc_err=${v(7)}  scan_rate=${v(12)}Hz  time_us[usb/scan/keys]=${v(13)}/${v(14)}/${v(15)}  adc_clk=${v(16)}kHz boost=${v(17)} presc_code=${v(18)}\n bench(0.1us per 4ch, smp1..5)=${v(19)}/${v(20)}/${v(21)}/${v(22)}/${v(23)}  settle700=${v(24)}  now=${v(25)}\n kbd_in_done=${v(8)}  raw_in_done=${v(9)}  led_out_reports=${v(10)}  usb_state(1=mounted,2=suspended,4=kbd_ready)=${v(11)}`);
     }).catch(e => say("dbg: " + e.message));
   }},
+  knob: { usage: "knob [seconds]", info: "watch the 3-position knob (fw 0.7.7+): raw pins, confirmed position, contact flicker count, shortcuts sent", run(a) {
+    const he = window.__he; if (!he.isConnected()) throw new Error("not connected");
+    const sec = Math.max(1, Math.min(300, Number(a[0]) || 30));
+    (async () => {
+      const t0 = performance.now(); let prev = "";
+      say(`watching knob for ${sec}s - turn it through all 3 positions (pins: 1=HIGH)`);
+      while (performance.now() - t0 < sec * 1000) {
+        const r = await he.call(he.CMD.LIVE, [0xF0, 24]);
+        const v = i => r[2 + 2*i] | (r[3 + 2*i] << 8);
+        const raw = v(20), pos = v(21), edges = v(22), combos = v(23);
+        const cur = `PC6=${raw & 1} PC7=${(raw >> 1) & 1}  position=${pos === 255 ? "none" : pos + 1}  pin_changes=${edges}  shortcuts_sent=${combos}`;
+        if (cur !== prev) { say(cur); prev = cur; }
+        await new Promise(r => setTimeout(r, 40));
+      }
+      say("knob watch done", true);
+    })().catch(e => say("knob: " + e.message));
+  }},
   keytest: { usage: "keytest", info: "show browser keydown events for 10 s (click the page first, then press keys)", run() {
     say("keytest: press keys now (10 s)...");
     const h = e => { say(`keydown code=${e.code} key=${e.key}`); e.preventDefault(); };
