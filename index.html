@@ -3236,12 +3236,14 @@ const COMMANDS = {
       const t0 = performance.now(); let prev = "";
       say(`watching knob for ${sec}s - turn it through all 3 positions (pins: 1=HIGH)`);
       while (performance.now() - t0 < sec * 1000) {
-        const r = await he.call(he.CMD.LIVE, [0xF0, 25]);
+        let r;
+        try { r = await he.call(he.CMD.LIVE, [0xF0, 25]); }
+        catch (e) { await new Promise(r => setTimeout(r, 120)); continue; }     // 다른 요청과 겹치면 잠깐 쉬고 다시
         const v = i => r[2 + 2*i] | (r[3 + 2*i] << 8);
         const raw = v(20), pos = v(21), edges = v(22), combos = v(23), lay = v(24);
         const cur = `PC6=${raw & 1} PC7=${(raw >> 1) & 1}  position=${pos === 255 ? "none" : pos + 1}  layout=${lay === 0 ? "normal" : "right-hand " + lay}  pin_changes=${edges}`;
         if (cur !== prev) { say(cur); prev = cur; }
-        await new Promise(r => setTimeout(r, 40));
+        await new Promise(r => setTimeout(r, 80));
       }
       say("knob watch done", true);
     })().catch(e => say("knob: " + e.message));
