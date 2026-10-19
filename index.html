@@ -2758,6 +2758,14 @@ function loadSavedConfiguration() {
     try {
         const parsed = JSON.parse(saved);
         if (parsed.profiles && parsed.currentProfile) {
+            // 키 이름이 바뀌어도(Menu -> RWin) 예전에 저장된 설정이 있으면 깨지지 않게 보정
+            const defKeys = makeDefaultKeySettings();
+            Object.values(parsed.profiles).forEach(p => {
+                if (!p || !p.keys) return;
+                if (p.keys.Menu && !p.keys.RWin) p.keys.RWin = p.keys.Menu;
+                delete p.keys.Menu;
+                Object.keys(defKeys).forEach(k => { if (!p.keys[k]) p.keys[k] = deepClone(defKeys[k]); });
+            });
             profiles = parsed.profiles;
             currentProfile = parsed.currentProfile;
             if (parsed.names) Object.assign(switchNames, parsed.names);
