@@ -3001,6 +3001,7 @@ async function liveStep() {
       const span = k.bottomRaw - k.restRaw;
       if (curveN10 === null) { try { curveN10 = (await call(0x49, [0xFE], 600))[0]; } catch (e) {} }
       let d = Math.abs(span) < 300 ? 0 : travelMm(raw, k.restRaw, k.bottomRaw, curveN10);
+      if (k.bottomDeadzone > 0 && k.bottomDeadzone < 2) d = d * 4 / (4 - k.bottomDeadzone);   // 펌웨어와 같은 바닥 데드존 처리
       d = Math.max(0, Math.min(4, d));
       travel.value = Math.round(d * 100); travel.dispatchEvent(new Event("input"));
       k.pressed = !!hallPressed(idx);                       // 눌림 여부는 웹 계산이 아니라 장치 판정을 사용
