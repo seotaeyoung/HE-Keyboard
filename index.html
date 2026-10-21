@@ -2073,8 +2073,7 @@ function keyClicked(key) {
 function loadSelectedKey() {
     const s = currentKeySettings();
     selectedKeyLabel.textContent = selectedKey;
-    actuation.value = Math.round(s.actuation*100);
-    actuationNumber.value = s.actuation.toFixed(2);
+    if (syncActuation(s)) markChanged();
     rtToggle.checked = s.rapidTrigger;
     rtSensitivity.value = Math.round(s.rtSensitivity*100);
     rtNumber.value = s.rtSensitivity.toFixed(2);
@@ -2163,19 +2162,33 @@ function updateTravelUI() {
     }
 }
 
+// 입력 지점은 데드존 안쪽(상단 데드존 ~ 4.00−하단 데드존)에서만 설정할 수 있다
+function actRange(s) {
+    const lo = Math.max(0.10, s.topDeadzone), hi = Math.max(lo, DEVICE_INFO.switchStroke - s.bottomDeadzone);
+    return [lo, hi];
+}
+function syncActuation(s, fromDeadzone) {
+    const [lo, hi] = actRange(s);
+    actuation.min = Math.round(lo*100); actuation.max = Math.round(hi*100);
+    actuationNumber.min = lo.toFixed(2); actuationNumber.max = hi.toFixed(2);
+    const v = Math.max(lo, Math.min(hi, s.actuation));
+    const changed = Math.abs(v - s.actuation) > 1e-6;
+    s.actuation = v;
+    actuation.value = Math.round(v*100);
+    actuationNumber.value = v.toFixed(2);
+    return changed;
+}
 actuation.addEventListener("input",() => {
-    const value = Number(actuation.value)/100;
-    currentKeySettings().actuation = value;
-    actuationNumber.value = value.toFixed(2);
+    const s = currentKeySettings();
+    s.actuation = Number(actuation.value)/100;
+    syncActuation(s);
     markChanged();
     updateTravelUI();
 });
 actuationNumber.addEventListener("change",() => {
-    let value = Number(actuationNumber.value);
-    value = Math.max(.10,Math.min(DEVICE_INFO.switchStroke,value));
-    currentKeySettings().actuation = value;
-    actuation.value = Math.round(value*100);
-    actuationNumber.value = value.toFixed(2);
+    const s = currentKeySettings();
+    s.actuation = Number(actuationNumber.value);
+    syncActuation(s);
     markChanged();
     updateTravelUI();
 });
@@ -2207,6 +2220,7 @@ rtNumber.addEventListener("change",() => {
 topDeadzone.addEventListener("input",() => {
     const value = Number(topDeadzone.value)/100;
     currentKeySettings().topDeadzone = value;
+    syncActuation(currentKeySettings());
     topDeadzoneNumber.value = value.toFixed(2);
     markChanged();
     updateTravelUI();
@@ -2215,6 +2229,7 @@ topDeadzoneNumber.addEventListener("change",() => {
     let value = Number(topDeadzoneNumber.value);
     value = Math.max(0,Math.min(1,value));
     currentKeySettings().topDeadzone = value;
+    syncActuation(currentKeySettings());
     topDeadzone.value = Math.round(value*100);
     topDeadzoneNumber.value = value.toFixed(2);
     markChanged();
@@ -2223,6 +2238,7 @@ topDeadzoneNumber.addEventListener("change",() => {
 bottomDeadzone.addEventListener("input",() => {
     const value = Number(bottomDeadzone.value)/100;
     currentKeySettings().bottomDeadzone = value;
+    syncActuation(currentKeySettings());
     bottomDeadzoneNumber.value = value.toFixed(2);
     markChanged();
     updateTravelUI();
@@ -2231,6 +2247,7 @@ bottomDeadzoneNumber.addEventListener("change",() => {
     let value = Number(bottomDeadzoneNumber.value);
     value = Math.max(0,Math.min(1,value));
     currentKeySettings().bottomDeadzone = value;
+    syncActuation(currentKeySettings());
     bottomDeadzone.value = Math.round(value*100);
     bottomDeadzoneNumber.value = value.toFixed(2);
     markChanged();
@@ -3348,7 +3365,7 @@ const COMMANDS = {
       else throw new Error(`unknown field "${a[i]}" (act, rt, sens, top, bottom)`);
     }
     changes.forEach(c => c({}));                       // 값 검증만 먼저 (오류면 아무것도 바꾸지 않음)
-    keys.forEach(k => changes.forEach(c => c(prof.keys[k])));
+    keys.forEach(k => { changes.forEach(c => c(prof.keys[k])); const q = prof.keys[k], lo = Math.max(0.10, q.topDeadzone), hi = Math.max(lo, 4 - q.bottomDeadzone); q.actuation = Math.max(lo, Math.min(hi, q.actuation)); });
     refreshKeys();
     say(`${keys.length} key(s) updated (draft) — run "apply" or "save"`, true);
   }},
