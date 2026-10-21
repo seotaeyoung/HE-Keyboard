@@ -3051,7 +3051,7 @@ function liveReset() {
 }
 
 /* ---------- 버전 표시 ---------- */
-const WEB_VERSION = "0.9.3";
+const WEB_VERSION = "0.9.4";
 function showVersions() {
   const fw = (typeof link !== "undefined" && link.dev && link.info) ? link.info.fw : "—";
   const el = document.getElementById("verLine");
@@ -3277,22 +3277,26 @@ const COMMANDS = {
           (avg >= 7500 ? "→ OK: multi-key reports keep ~8000 reports/s" : avg >= 5000 ? "→ below 8000/s: check USB cable/port (HS 480M) and what else is running" : "→ far below 8000/s: check connection speed or other USB load"));
     })().catch(e => say("stress: " + e.message));
   }},
-  jitter: { usage: "jitter [seconds]", info: "measure idle wobble of every hall key at the keyboard's full scan rate (max-min of raw over the window, default 5 s). Do not touch the keys.", run(a) {
+  jitter: { usage: "jitter [seconds]", info: "measure idle wobble of every hall key at the keyboard's full scan rate (max-min over the window, default 5 s), before and after the keyboard's input filter. Do not touch the keys.", run(a) {
     const he = window.__he; if (!he.isConnected()) throw new Error("not connected");
     const sec = Math.max(1, Math.min(60, Number(a[0]) || 5));
     (async () => {
       await he.call(0x4D, [0]);
       say(`jitter: measuring ${sec} s at full scan rate - do not touch the keyboard...`);
       await new Promise(r => setTimeout(r, sec * 1000));
-      const v = [];
-      for (let st = 0; st < 61; st += 28) { const c = Math.min(28, 61 - st), r = await he.call(0x4D, [1, st, c]); for (let i = 0; i < c; i++) v.push(r[2 + 2 * i] | (r[3 + 2 * i] << 8)); }
+      const rd = async mode => { const v = []; for (let st = 0; st < 61; st += 28) { const c = Math.min(28, 61 - st), r = await he.call(0x4D, [mode, st, c]); for (let i = 0; i < c; i++) v.push(r[2 + 2 * i] | (r[3 + 2 * i] << 8)); } return v; };
+      const raw = await rd(1), flt = await rd(2);
       const prof = currentProfileData();
-      const rows = v.map((x, i) => { const k = prof.keys[he.KEY_NAMES[i]] ; const span = k ? Math.max(1, k.bottomRaw - k.restRaw) : 11000; return {n: he.KEY_NAMES[i], lsb: x, mm: x * 4 / span}; });
-      const srt = [...rows].sort((p, q) => q.lsb - p.lsb), med = [...rows].map(r => r.lsb).sort((p, q) => p - q)[30];
-      const over = t => rows.filter(r => r.mm > t).length;
-      say(`jitter (${sec} s, idle): median ${med} LSB, worst ${srt[0].lsb} LSB (${srt[0].mm.toFixed(2)} mm)\n` +
-          `keys wobbling more than 0.10 mm: ${over(0.10)},  0.20 mm: ${over(0.20)},  0.30 mm: ${over(0.30)}\n` +
-          "worst 12:\n" + srt.slice(0, 12).map(r => `  ${r.n.padEnd(8)} ${String(r.lsb).padStart(5)} LSB  ≈ ${r.mm.toFixed(2)} mm`).join("\n"));
+      const rows = raw.map((x, i) => { const k = prof.keys[he.KEY_NAMES[i]]; const span = k ? Math.max(1, k.bottomRaw - k.restRaw) : 11000; return {n: he.KEY_NAMES[i], lsb: x, f: flt[i], mm: x * 4 / span, fmm: flt[i] * 4 / span}; });
+      const med = f => [...rows].map(f).sort((p, q) => p - q)[30];
+      const over = (f, t) => rows.filter(r => f(r) > t).length;
+      const srt = [...rows].sort((p, q) => q.fmm - p.fmm);
+      say(`jitter (${sec} s, idle)      raw (sensor)         after filter (used for key decisions)\n` +
+          `  median                 ${String(med(r => r.lsb)).padStart(5)} LSB             ${String(med(r => r.f)).padStart(5)} LSB\n` +
+          `  worst                  ${String(Math.max(...rows.map(r => r.lsb))).padStart(5)} LSB (${Math.max(...rows.map(r => r.mm)).toFixed(2)} mm)   ${String(Math.max(...rows.map(r => r.f))).padStart(5)} LSB (${Math.max(...rows.map(r => r.fmm)).toFixed(2)} mm)\n` +
+          `  keys > 0.10 mm         ${String(over(r => r.mm, 0.10)).padStart(5)}                   ${String(over(r => r.fmm, 0.10)).padStart(5)}\n` +
+          `  keys > 0.20 mm         ${String(over(r => r.mm, 0.20)).padStart(5)}                   ${String(over(r => r.fmm, 0.20)).padStart(5)}\n` +
+          "worst 8 after filter:\n" + srt.slice(0, 8).map(r => `  ${r.n.padEnd(8)} raw ${String(r.lsb).padStart(4)}  filtered ${String(r.f).padStart(4)} LSB ≈ ${r.fmm.toFixed(2)} mm`).join("\n"));
     })().catch(e => say("jitter: " + e.message));
   }},
   events: { usage: "events [seconds]", info: "record the keyboard's own press/release decisions with microsecond timing (default 10 s). Press a key ONCE and see how many events the keyboard really produced (double input / bounce check).", run(a) {
