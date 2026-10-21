@@ -3187,6 +3187,32 @@ const COMMANDS = {
         `profile    : ${currentProfile}   polling: ${p.pollingRate} Hz   rapid trigger: ${rt}/61 keys\n` +
         `config     : ${configState}\nhall switch: ${switchNames.hall}\nmech switch: ${switchNames.mech}`);
   }},
+  noise: { usage: "noise [samples]", info: "measure idle noise of all 61 keys at once and list the worst ones (do not touch the keys; default 100 samples)", run(a) {
+    const he = window.__he; if (!he.isConnected()) throw new Error("not connected");
+    const n = Math.max(10, Math.min(300, Number(a[0]) || 100));
+    (async () => {
+      say(`noise: measuring ${n} samples, do not touch the keyboard...`);
+      const sum = new Array(61).fill(0), mn = new Array(61).fill(65535), mx = new Array(61).fill(0), cnt = new Array(61).fill(0);
+      for (let t = 0; t < n; t++) {
+        for (let s0 = 0; s0 < 61; s0 += 28) {
+          const c = Math.min(28, 61 - s0);
+          try {
+            const r = await he.call(he.CMD.LIVE, [s0, c]);
+            for (let i = 0; i < c; i++) { const v = r[2 + 2*i] | (r[3 + 2*i] << 8); sum[s0+i] += v; cnt[s0+i]++; mn[s0+i] = Math.min(mn[s0+i], v); mx[s0+i] = Math.max(mx[s0+i], v); }
+          } catch (e) { /* skip a failed read */ }
+        }
+      }
+      const rows = [];
+      for (let i = 0; i < 61; i++) if (cnt[i]) rows.push({name: he.KEY_NAMES[i], mean: Math.round(sum[i] / cnt[i]), range: mx[i] - mn[i]});
+      const med = x => { const b = [...x].sort((p, q) => p - q); return b[b.length >> 1]; };
+      const mr = med(rows.map(r => r.range)), mm = med(rows.map(r => r.mean));
+      const worst = [...rows].sort((p, q) => q.range - p.range).slice(0, 10);
+      const odd = rows.filter(r => Math.abs(r.mean - mm) > 1500 || r.range > Math.max(200, mr * 2.5));
+      say(`noise: ${rows.length} keys, median range=${mr} LSB (≈${(mr / 2750).toFixed(3)} mm), median level=${mm}\n` +
+          `worst 10 (range LSB):\n` + worst.map(r => `  ${r.name.padEnd(7)} range=${r.range}  mean=${r.mean}`).join("\n") + "\n" +
+          (odd.length ? `suspicious (noisy or level far from median): ` + odd.map(r => `${r.name}(${r.range}, ${r.mean})`).join(" ") : "no suspicious keys"));
+    })().catch(e => say("noise: " + e.message));
+  }},
   raw: { usage: "raw [samples]", info: "read raw ADC of all 61 hall keys (samples>1 also shows noise p-p)", run(a) {
     const he = window.__he; if (!he.isConnected()) throw new Error("not connected");
     const n = Math.max(1, Math.min(200, Number(a[0]) || 1));
