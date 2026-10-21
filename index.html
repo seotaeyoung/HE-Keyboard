@@ -3051,7 +3051,7 @@ function liveReset() {
 }
 
 /* ---------- 버전 표시 ---------- */
-const WEB_VERSION = "0.9.1";
+const WEB_VERSION = "0.9.2";
 function showVersions() {
   const fw = (typeof link !== "undefined" && link.dev && link.info) ? link.info.fw : "—";
   const el = document.getElementById("verLine");
@@ -3276,6 +3276,34 @@ const COMMANDS = {
           `  hall scan rate (min)    : ${hzMin === 65535 ? "?" : hzMin} Hz\n` +
           (avg >= 7500 ? "→ OK: multi-key reports keep ~8000 reports/s" : avg >= 5000 ? "→ below 8000/s: check USB cable/port (HS 480M) and what else is running" : "→ far below 8000/s: check connection speed or other USB load"));
     })().catch(e => say("stress: " + e.message));
+  }},
+  events: { usage: "events [seconds]", info: "record the keyboard's own press/release decisions with microsecond timing (default 10 s). Press a key ONCE and see how many events the keyboard really produced (double input / bounce check).", run(a) {
+    const he = window.__he; if (!he.isConnected()) throw new Error("not connected");
+    const sec = Math.max(1, Math.min(60, Number(a[0]) || 10));
+    (async () => {
+      const tot = async () => { const r = await he.call(0x4C, [0xFF]); return r[0] | (r[1] << 8); };
+      const base = await tot();
+      say(`events: recording ${sec} s - press the key now...`);
+      await new Promise(r => setTimeout(r, sec * 1000));
+      const end = await tot();
+      let n = (end - base) & 0xFFFF; const evs = [];
+      for (let at = base; evs.length < n && evs.length < 120; ) {
+        const r = await he.call(0x4C, [at & 255, (at >> 8) & 255]);
+        const c = r[2]; if (!c) break;
+        for (let i = 0; i < c; i++) { const o = 3 + 8 * i; evs.push({k: he.KEY_NAMES[r[o]], press: r[o + 1] === 1, tr: (r[o + 2] | (r[o + 3] << 8)) / 100, t: (r[o + 4] | (r[o + 5] << 8) | (r[o + 6] << 16) | (r[o + 7] << 24)) >>> 0}); }
+        at = (at + c) & 0xFFFF;
+      }
+      if (!evs.length) { say("events: no key events were produced"); return; }
+      const lines = []; let prev = null, dbl = 0;
+      for (const e of evs) {
+        const gap = prev === null ? "" : `  (+${((e.t - prev) >>> 0) / 1000 >= 1000 ? (((e.t - prev) >>> 0) / 1e6).toFixed(2) + " s" : (((e.t - prev) >>> 0) / 1000).toFixed(2) + " ms"})`;
+        lines.push(`  ${e.k.padEnd(8)} ${e.press ? "PRESS  " : "RELEASE"} at ${e.tr.toFixed(2)} mm${gap}`);
+        prev = e.t;
+      }
+      const presses = {}; evs.forEach(e => { if (e.press) presses[e.k] = (presses[e.k] || 0) + 1; });
+      const sum = Object.entries(presses).map(([k, v]) => `${k}×${v}`).join(" ");
+      say(`events: ${evs.length} key events (presses: ${sum || "none"})\n` + lines.join("\n"));
+    })().catch(e => say("events: " + e.message));
   }},
   smp: { usage: "smp [0-5 | test]", info: "ADC sampling time code (1=2.5 2=8.5 3=16.5 4=32.5 5=64.5 cycles). Lower = faster hall scan, but maybe more noise. `smp` shows it, `smp 3` sets it (RAM only, resets on reboot), `smp test` compares codes 4,3,2 (scan rate + noise) - do not touch the keyboard.", run(a) {
     const he = window.__he; if (!he.isConnected()) throw new Error("not connected");
