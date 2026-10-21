@@ -3051,7 +3051,7 @@ function liveReset() {
 }
 
 /* ---------- 버전 표시 ---------- */
-const WEB_VERSION = "0.9.0";
+const WEB_VERSION = "0.9.1";
 function showVersions() {
   const fw = (typeof link !== "undefined" && link.dev && link.info) ? link.info.fw : "—";
   const el = document.getElementById("verLine");
@@ -3276,6 +3276,34 @@ const COMMANDS = {
           `  hall scan rate (min)    : ${hzMin === 65535 ? "?" : hzMin} Hz\n` +
           (avg >= 7500 ? "→ OK: multi-key reports keep ~8000 reports/s" : avg >= 5000 ? "→ below 8000/s: check USB cable/port (HS 480M) and what else is running" : "→ far below 8000/s: check connection speed or other USB load"));
     })().catch(e => say("stress: " + e.message));
+  }},
+  smp: { usage: "smp [0-5 | test]", info: "ADC sampling time code (1=2.5 2=8.5 3=16.5 4=32.5 5=64.5 cycles). Lower = faster hall scan, but maybe more noise. `smp` shows it, `smp 3` sets it (RAM only, resets on reboot), `smp test` compares codes 4,3,2 (scan rate + noise) - do not touch the keyboard.", run(a) {
+    const he = window.__he; if (!he.isConnected()) throw new Error("not connected");
+    (async () => {
+      const CY = ["1.5", "2.5", "8.5", "16.5", "32.5", "64.5"];
+      const setSmp = async v => (await he.call(0x4B, [v]))[0];
+      if (a[0] === "test") {
+        const orig = await setSmp(0xFE), rows = [];
+        say("smp test: measuring codes 4, 3, 2 (about 15 s) - do not touch the keyboard...");
+        for (const code of [4, 3, 2]) {
+          await setSmp(code); await new Promise(r => setTimeout(r, 1300));
+          const d = await he.call(he.CMD.LIVE, [0xE0, 16]), g = i => d[2 + 2 * i] | (d[3 + 2 * i] << 8);
+          const hz = g(12), tScan = g(14), tKeys = g(15);
+          const mn = new Array(61).fill(65535), mx = new Array(61).fill(0);
+          for (let t = 0; t < 60; t++) for (let s0 = 0; s0 < 61; s0 += 28) {
+            const c = Math.min(28, 61 - s0);
+            try { const r = await he.call(he.CMD.LIVE, [s0, c]); for (let i = 0; i < c; i++) { const v = r[2 + 2*i] | (r[3 + 2*i] << 8); mn[s0+i] = Math.min(mn[s0+i], v); mx[s0+i] = Math.max(mx[s0+i], v); } } catch (e) {}
+          }
+          const rg = mx.map((v, i) => v - mn[i]).filter((v, i) => mn[i] !== 65535).sort((x, y) => x - y);
+          rows.push(`  code ${code} (${CY[code]} cycles): scan ${hz} Hz  | noise median ${rg[rg.length >> 1]} LSB, worst ${rg[rg.length - 1]} LSB  | scan ${tScan} us, keys ${tKeys} us`);
+        }
+        await setSmp(orig);
+        say("smp test result (hall scan rate and idle noise):\n" + rows.join("\n") + `\n(restored to code ${orig})  pick the slowest code that gives >= 8000 Hz without much more noise`);
+        return;
+      }
+      if (a[0] !== undefined) { const v = Number(a[0]); if (!(v >= 0 && v <= 5)) throw new Error("code must be 0~5 or test"); const r = await setSmp(v); say(`smp: set to code ${r} (${CY[r]} cycles), RAM only - run noise / dbg to check`); }
+      else { const r = await setSmp(0xFE); say(`smp: code ${r} (${CY[r]} cycles)`); }
+    })().catch(e => say("smp: " + e.message));
   }},
   curve: { usage: "curve [1.0~6.0 | off | default]", info: "sensor-to-travel curve exponent n (default 3.0). Hall field falls as 1/distance^n, so a straight line misreads the middle. off = old straight-line conversion. Then save to keep it.", run(a) {
     const he = window.__he; if (!he.isConnected()) throw new Error("not connected");
