@@ -2822,6 +2822,17 @@ function rawCall(cmd, payload, timeoutMs) {
     link.dev.sendReport(0, buf).catch(e => { clearTimeout(timer); link.pending = null; reject(e); });
   });
 }
+/* 센서값 → 트래블(mm): 장치 펌웨어(v0.7.11~)와 같은 식. 자기장 0 = 32768, 거리 ∝ B^(-1/n). n10 = 0.1 단위 지수, 255 = 직선 */
+let curveN10 = null;
+function travelMm(raw, rest, bottom, n10) {
+  const span = bottom - rest, d = raw - rest;
+  if (d <= 0) return 0;
+  if (d >= span) return 4;
+  const bt = rest - 32768, bb = bottom - 32768, b = raw - 32768;
+  if (!n10 || n10 === 255 || bt < 300 || bb < bt + 1500) return d * 4 / span;
+  const pw = -10 / n10, yt = Math.pow(bt, pw), yb = Math.pow(bb, pw), den = yt - yb;
+  return den > 0 ? (yt - Math.pow(b, pw)) / den * 4 : d * 4 / span;
+}
 function call(cmd, payload = [], timeoutMs = 1500) {
   const run = () => rawCall(cmd, Uint8Array.from(payload), timeoutMs).then(r => {
     if (r.status !== 0) throw new Error(`${ST_NAME[r.status] || r.status} (cmd 0x${cmd.toString(16)})`);
@@ -2978,7 +2989,8 @@ async function liveStep() {
     if (idx >= 0) {
       const r = await call(CMD.LIVE, [idx, 1], 600), raw = le16(r, 2);
       const k = currentKeySettings(), span = k.bottomRaw - k.restRaw;
-      let d = Math.abs(span) < 300 ? 0 : (raw - k.restRaw) * 4 / span;
+      if (curveN10 === null) { try { curveN10 = (await call(0x49, [0xFE], 600))[0]; } catch (e) {} }
+      let d = Math.abs(span) < 300 ? 0 : travelMm(raw, k.restRaw, k.bottomRaw, curveN10);
       d = Math.max(0, Math.min(4, d));
       travel.value = Math.round(d * 100); travel.dispatchEvent(new Event("input"));
       k.pressed = !!hallPressed(idx);                       // 눌림 여부는 웹 계산이 아니라 장치 판정을 사용
@@ -3186,6 +3198,17 @@ const COMMANDS = {
     say(`connection : ${he.isConnected() ? "USB (firmware " + he.link.info.fw + ")" : "MOCK (not connected)"}\n` +
         `profile    : ${currentProfile}   polling: ${p.pollingRate} Hz   rapid trigger: ${rt}/61 keys\n` +
         `config     : ${configState}\nhall switch: ${switchNames.hall}\nmech switch: ${switchNames.mech}`);
+  }},
+  curve: { usage: "curve [1.0~6.0 | off | default]", info: "sensor-to-travel curve exponent n (default 3.0). Hall field falls as 1/distance^n, so a straight line misreads the middle. off = old straight-line conversion. Then save to keep it.", run(a) {
+    const he = window.__he; if (!he.isConnected()) throw new Error("not connected");
+    (async () => {
+      let v = 0xFE;
+      if (a[0] === "off") v = 255; else if (a[0] === "default") v = 30;
+      else if (a[0] !== undefined) { const n = Number(a[0]); if (!(n >= 1 && n <= 6)) throw new Error("exponent must be 1.0 ~ 6.0, off or default"); v = Math.round(n * 10); }
+      const r = await he.call(0x49, [v]);
+      curveN10 = r[0];
+      say(`curve: ${r[0] === 255 ? "off (straight line)" : "n = " + (r[0] / 10).toFixed(1)}` + (v === 0xFE ? "" : "  (applied; type save to keep it)"));
+    })().catch(e => say("curve: " + e.message));
   }},
   noise: { usage: "noise [samples]", info: "measure idle noise of all 61 keys at once and list the worst ones (do not touch the keys; default 100 samples)", run(a) {
     const he = window.__he; if (!he.isConnected()) throw new Error("not connected");
