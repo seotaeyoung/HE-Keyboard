@@ -84,6 +84,8 @@ button, input, select { font-family: inherit; }
     font-size: 17px;
     font-weight: 800;
 }
+.ver-line { font-size: 11px; color: var(--purple2); opacity: .85; margin: -8px 0 12px; letter-spacing: .3px; white-space: nowrap; }
+.sidebar-collapsed .ver-line { display: none; }
 .sidebar-collapsed .brand { display: none; }
 .sidebar-collapsed .brand-short { display: block; }
 .device-card {
@@ -1270,6 +1272,7 @@ input[type="range"] { width: 100%; accent-color: var(--purple); }
         <div class="brand">HE_<span>KEYBOARD</span></div>
         <div class="brand-short">HE</div>
     </div>
+    <div class="ver-line" id="verLine"></div>
 
     <div class="device-card">
         <div class="device-title">
@@ -3047,6 +3050,16 @@ function liveReset() {
   document.getElementById("sensorLabel").textContent = "MOCK_SENSOR"; travel.disabled = false;
 }
 
+/* ---------- 버전 표시 ---------- */
+const WEB_VERSION = "0.9.0";
+function showVersions() {
+  const fw = (typeof link !== "undefined" && link.dev && link.info) ? link.info.fw : "—";
+  const el = document.getElementById("verLine");
+  if (el) el.textContent = `web v${WEB_VERSION} · fw ${fw}`;
+  document.title = `HE Keyboard — web v${WEB_VERSION}` + (fw !== "—" ? ` / fw ${fw}` : "");
+}
+document.addEventListener("DOMContentLoaded", showVersions);
+
 /* ---------- 연결/해제 ---------- */
 async function openDevice(dev) {
   if (!dev.opened) await dev.open();
@@ -3057,6 +3070,7 @@ async function openDevice(dev) {
     await readAll();
     setSidebar("CONNECTED"); log(`device connected — firmware ${link.info.fw}, protocol v${link.info.proto}`, true);
     document.getElementById("fwHome").textContent = document.getElementById("fwDevice").textContent = link.info.fw;
+    showVersions();
     document.getElementById("sensorLabel").textContent = "LIVE_SENSOR"; travel.disabled = true;
   } catch (e) {
     log("connect failed: " + e.message); await closeDevice(false);
@@ -3067,6 +3081,7 @@ async function closeDevice(userAction = true) {
   if (dev) { dev.removeEventListener("inputreport", onInput); try { await dev.close(); } catch (e) {} }
   btn.textContent = "CONNECT_USB"; setSidebar("DISCONNECTED [MOCK]");
   document.getElementById("fwHome").textContent = document.getElementById("fwDevice").textContent = "0.3.0 MOCK";
+  setTimeout(showVersions, 0);
   liveReset();
   if (userAction) log("device disconnected — mock mode");
 }
@@ -3227,6 +3242,40 @@ const COMMANDS = {
     say(`connection : ${he.isConnected() ? "USB (firmware " + he.link.info.fw + ")" : "MOCK (not connected)"}\n` +
         `profile    : ${currentProfile}   polling: ${p.pollingRate} Hz   rapid trigger: ${rt}/61 keys\n` +
         `config     : ${configState}\nhall switch: ${switchNames.hall}\nmech switch: ${switchNames.mech}`);
+  }},
+  version: { usage: "version", info: "show web driver and firmware versions", run() {
+    const he = window.__he;
+    say(`web driver : v${WEB_VERSION}\nfirmware   : ${he.isConnected() ? he.link.info.fw : "(not connected)"}`);
+  }},
+  stress: { usage: "stress [seconds 1~30] [keys 1~12]", info: "USB report stress test: the keyboard sends 'N keys down / all up' reports as fast as possible and the number actually read by the PC is counted. Shows whether multi-key reports keep 8000 reports/s. Sends harmless F13~F24 key events.", run(a) {
+    const he = window.__he; if (!he.isConnected()) throw new Error("not connected");
+    const sec = Math.max(1, Math.min(30, Number(a[0]) || 5)), nk = Math.max(1, Math.min(12, Number(a[1]) || 10));
+    (async () => {
+      say(`stress: ${sec} s, ${nk} keys per report (F13~F${12 + nk}) ... do not type`);
+      const rd = async () => { const r = await he.call(he.CMD.LIVE, [0xE0, 13]); const g = i => r[2 + 2 * i] | (r[3 + 2 * i] << 8); return {sent: g(0), fail: g(1), done: g(8), hz: g(12), t: performance.now()}; };
+      const d16 = (b, a2) => (b - a2) & 0xFFFF;
+      const a0 = await rd();
+      await he.call(0x4A, [sec, nk]);
+      let prev = a0, done = 0, sent = 0, fail = 0, peak = 0, hzMin = 65535, samples = [];
+      const t0 = performance.now();
+      while (performance.now() - t0 < sec * 1000 + 300) {
+        await new Promise(r => setTimeout(r, 100));
+        let cur; try { cur = await rd(); } catch (e) { continue; }
+        const dt = (cur.t - prev.t) / 1000, dd = d16(cur.done, prev.done);
+        done += dd; sent += d16(cur.sent, prev.sent); fail += d16(cur.fail, prev.fail);
+        if (performance.now() - t0 < sec * 1000) { peak = Math.max(peak, dd / dt); samples.push(dd / dt); if (cur.hz) hzMin = Math.min(hzMin, cur.hz); }
+        prev = cur;
+      }
+      const secs = samples.length ? samples.length * 0.1 : sec;
+      const avg = samples.length ? samples.reduce((x, y) => x + y, 0) / samples.length : 0;
+      const mid = samples.length > 4 ? samples.slice(1, -1) : samples;     // 시작/끝 구간은 제외
+      const min = mid.length ? Math.min(...mid) : 0;
+      say(`stress result (${nk} keys per report):\n` +
+          `  reports read by the PC : avg ${Math.round(avg)} /s   (peak ${Math.round(peak)} /s, slowest 0.1 s window ${Math.round(min)} /s)\n` +
+          `  send attempts refused   : ${fail}  (USB endpoint busy)\n` +
+          `  hall scan rate (min)    : ${hzMin === 65535 ? "?" : hzMin} Hz\n` +
+          (avg >= 7500 ? "→ OK: multi-key reports keep ~8000 reports/s" : avg >= 5000 ? "→ below 8000/s: check USB cable/port (HS 480M) and what else is running" : "→ far below 8000/s: check connection speed or other USB load"));
+    })().catch(e => say("stress: " + e.message));
   }},
   curve: { usage: "curve [1.0~6.0 | off | default]", info: "sensor-to-travel curve exponent n (default 3.0). Hall field falls as 1/distance^n, so a straight line misreads the middle. off = old straight-line conversion. Then save to keep it.", run(a) {
     const he = window.__he; if (!he.isConnected()) throw new Error("not connected");
